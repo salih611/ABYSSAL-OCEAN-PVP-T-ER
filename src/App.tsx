@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Player {
@@ -14,8 +14,19 @@ interface Player {
   minecraftNick: string;
 }
 
+interface Video {
+  id: string;
+  userId: string;
+  username: string;
+  videoUrl: string;
+  thumbnail: string;
+  likes: number;
+  comments: { id: string; username: string; text: string; }[];
+  createdAt: number;
+}
+
 type KitKey = "overall" | "vanilla" | "sword" | "axe" | "nethpot" | "pot" | "uhc" | "mace" | "smp";
-type PageType = "home" | "rankings";
+type PageType = "home" | "rankings" | "reels";
 type SortType = "rank" | "points" | "name" | "tests";
 type ThemeType = "dark" | "light";
 
@@ -132,6 +143,55 @@ const MoonIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+// Su baloncukları bileşeni
+const Bubbles = () => {
+  const bubbles = useMemo(() => Array.from({ length: 30 }, (_, i) => ({
+    id: i,
+    size: Math.random() * 40 + 10,
+    left: Math.random() * 100,
+    duration: Math.random() * 15 + 8,
+    delay: Math.random() * 10,
+    opacity: Math.random() * 0.3 + 0.1
+  })), []);
+  
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+      {bubbles.map(bubble => (
+        <div
+          key={bubble.id}
+          className="absolute bottom-0 rounded-full bg-gradient-to-t from-cyan-400/30 to-blue-400/20"
+          style={{
+            width: bubble.size,
+            height: bubble.size,
+            left: `${bubble.left}%`,
+            animation: `bubbleFloat ${bubble.duration}s linear infinite`,
+            animationDelay: `${bubble.delay}s`,
+            opacity: bubble.opacity,
+          }}
+        />
+      ))}
+      <style>{`
+        @keyframes bubbleFloat {
+          0% {
+            transform: translateY(0) scale(0.5);
+            opacity: 0;
+          }
+          20% {
+            opacity: 0.3;
+          }
+          80% {
+            opacity: 0.2;
+          }
+          100% {
+            transform: translateY(-100vh) scale(1.2);
+            opacity: 0;
+          }
+        }
+      `}</style>
+    </div>
+  );
+};
+
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageType>("home");
   const [selectedKit, setSelectedKit] = useState<KitKey>("overall");
@@ -142,6 +202,10 @@ export default function App() {
   const [sortType, setSortType] = useState<SortType>("rank");
   const [currentPageRank, setCurrentPageRank] = useState(1);
   const [theme, setTheme] = useState<ThemeType>("dark");
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  const [commentText, setCommentText] = useState("");
   const playersPerPage = 20;
 
   const fetchPlayers = async () => {
@@ -167,13 +231,46 @@ export default function App() {
     }
   };
 
+  // Örnek videolar (gerçekte localStorage veya backend'den gelecek)
+  useEffect(() => {
+    const savedVideos = localStorage.getItem("abyssal_reels");
+    if (savedVideos) {
+      setVideos(JSON.parse(savedVideos));
+    } else {
+      // Örnek demo videolar
+      const demoVideos: Video[] = [
+        {
+          id: "1",
+          userId: "demo1",
+          username: "PvpMaster",
+          videoUrl: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
+          thumbnail: "https://mc-heads.net/avatar/Steve/128",
+          likes: 42,
+          comments: [{ id: "c1", username: "pvp_fan", text: "Harika combo!" }],
+          createdAt: Date.now()
+        },
+        {
+          id: "2",
+          userId: "demo2",
+          username: "SwordLegend",
+          videoUrl: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_2mb.mp4",
+          thumbnail: "https://mc-heads.net/avatar/Alex/128",
+          likes: 28,
+          comments: [],
+          createdAt: Date.now() - 86400000
+        }
+      ];
+      setVideos(demoVideos);
+      localStorage.setItem("abyssal_reels", JSON.stringify(demoVideos));
+    }
+  }, []);
+
   useEffect(() => {
     fetchPlayers();
     const interval = setInterval(fetchPlayers, 30000);
     return () => clearInterval(interval);
   }, []);
 
-  // Sadece TR bölgesindeki oyuncuları filtrele
   const trPlayers = useMemo(() => {
     return players.filter(p => p.region === "TR");
   }, [players]);
@@ -262,25 +359,47 @@ export default function App() {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
+  const likeVideo = (videoId: string) => {
+    setVideos(prev => prev.map(v => 
+      v.id === videoId ? { ...v, likes: v.likes + 1 } : v
+    ));
+    localStorage.setItem("abyssal_reels", JSON.stringify(videos.map(v => 
+      v.id === videoId ? { ...v, likes: v.likes + 1 } : v
+    )));
+  };
+
+  const addComment = (videoId: string) => {
+    if (!commentText.trim()) return;
+    const newComment = {
+      id: Date.now().toString(),
+      username: "Guest",
+      text: commentText
+    };
+    setVideos(prev => prev.map(v =>
+      v.id === videoId ? { ...v, comments: [...v.comments, newComment] } : v
+    ));
+    setCommentText("");
+  };
+
   const themeClasses = theme === "dark" 
-    ? "bg-[#0a0e14] text-white"
-    : "bg-gray-100 text-gray-900";
+    ? "bg-gradient-to-b from-[#0a0e14] via-[#0f1a2e] to-[#0a0e14] text-white"
+    : "bg-gradient-to-b from-sky-100 via-blue-100 to-cyan-100 text-gray-900";
 
   const headerTheme = theme === "dark"
     ? "bg-[#0f141b]/80 border-white/5"
     : "bg-white/80 border-gray-200";
 
   const cardTheme = theme === "dark"
-    ? "bg-[#11161f] border-white/5"
-    : "bg-white border-gray-200 shadow-md";
+    ? "bg-[#11161f]/80 backdrop-blur-sm border-white/5"
+    : "bg-white/80 backdrop-blur-sm border-gray-200 shadow-lg";
 
   const buttonTheme = theme === "dark"
     ? "bg-[#1a1f2e] text-white/60 hover:bg-[#222838] hover:text-white"
     : "bg-gray-200 text-gray-700 hover:bg-gray-300 hover:text-gray-900";
 
   const activeButtonTheme = theme === "dark"
-    ? "bg-white text-black"
-    : "bg-gray-800 text-white";
+    ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30"
+    : "bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/30";
 
   const inputTheme = theme === "dark"
     ? "bg-[#1a1f2e] border-white/10 placeholder-white/30"
@@ -288,14 +407,15 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className={`min-h-screen ${themeClasses} flex items-center justify-center`}>
-        <div className="text-center">
+      <div className={`min-h-screen ${themeClasses} flex items-center justify-center relative`}>
+        <Bubbles />
+        <div className="text-center z-10">
           <div className="relative w-20 h-20 mx-auto mb-4">
             <div className="absolute inset-0 rounded-full border-4 border-cyan-500/20"></div>
             <div className="absolute inset-0 rounded-full border-4 border-t-cyan-500 border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
             <div className="absolute inset-2 rounded-full bg-cyan-500/10 animate-pulse"></div>
           </div>
-          <p className="text-cyan-400 font-medium tracking-wide">Yükleniyor...</p>
+          <p className="text-cyan-400 font-medium tracking-wide">Okyanusun Derinliklerine Dalıyoruz...</p>
           <p className="text-sm text-white/40 mt-2">Oyuncular getiriliyor</p>
         </div>
       </div>
@@ -303,13 +423,18 @@ export default function App() {
   }
 
   return (
-    <div className={`min-h-screen ${themeClasses} transition-colors duration-300`}>
+    <div className={`min-h-screen ${themeClasses} transition-colors duration-300 relative`}>
+      <Bubbles />
+      
       <header className={`relative z-50 sticky top-0 backdrop-blur-xl ${headerTheme} border-b transition-colors duration-300`}>
         <div className="max-w-[1400px] mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentPage("home")}>
-                <img src="/logo.png" alt="Abyssal Ocean" className="h-12 w-12 rounded-xl object-cover" />
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-xl blur-md opacity-50"></div>
+                  <img src="/logo.png" alt="Abyssal Ocean" className="relative h-12 w-12 rounded-xl object-cover" />
+                </div>
                 <div>
                   <h1 className="text-xl font-black tracking-tight leading-none">
                     <span className="bg-gradient-to-r from-cyan-400 via-blue-300 to-cyan-500 bg-clip-text text-transparent">ABYSSAL OCEAN</span>
@@ -318,8 +443,9 @@ export default function App() {
                 </div>
               </div>
               <nav className="hidden lg:flex items-center gap-1">
-                <button onClick={() => setCurrentPage("home")} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${currentPage === "home" ? "bg-white/10 text-white" : "text-white/60 hover:text-white hover:bg-white/5"}`}>🏠 <span>Home</span></button>
-                <button onClick={() => setCurrentPage("rankings")} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${currentPage === "rankings" ? "bg-white/10 text-white" : "text-white/60 hover:text-white hover:bg-white/5"}`}>🏆 <span>Rankings</span></button>
+                <button onClick={() => setCurrentPage("home")} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${currentPage === "home" ? activeButtonTheme : buttonTheme}`}>🏠 <span>Home</span></button>
+                <button onClick={() => setCurrentPage("rankings")} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${currentPage === "rankings" ? activeButtonTheme : buttonTheme}`}>🏆 <span>Rankings</span></button>
+                <button onClick={() => setCurrentPage("reels")} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${currentPage === "reels" ? activeButtonTheme : buttonTheme}`}>📱 <span>Reels</span></button>
               </nav>
             </div>
             <div className="flex items-center gap-3">
@@ -353,9 +479,9 @@ export default function App() {
       <AnimatePresence mode="wait">
         <motion.div
           key={currentPage}
-          initial={{ opacity: 0, x: currentPage === "home" ? -30 : 30 }}
+          initial={{ opacity: 0, x: currentPage === "home" ? -30 : currentPage === "reels" ? 30 : 0 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: currentPage === "home" ? 30 : -30 }}
+          exit={{ opacity: 0, x: currentPage === "home" ? 30 : currentPage === "reels" ? -30 : 0 }}
           transition={{ duration: 0.2, ease: "easeInOut" }}
         >
           {currentPage === "home" && (
@@ -400,21 +526,28 @@ export default function App() {
                 >
                   <button 
                     onClick={() => setCurrentPage("rankings")} 
-                    className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl font-bold text-lg transition-all shadow-lg shadow-cyan-500/30"
+                    className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl font-bold text-lg transition-all shadow-lg shadow-cyan-500/30 hover:scale-105"
                   >
                     🏆 Sıralamaları Gör
+                  </button>
+                  <button 
+                    onClick={() => setCurrentPage("reels")} 
+                    className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 rounded-xl font-bold text-lg transition-all shadow-lg shadow-purple-500/30 hover:scale-105"
+                  >
+                    📱 PvP Reels
                   </button>
                   <a 
                     href="https://discord.gg/cKFwKcfcWn" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="px-8 py-4 bg-[#5865F2] hover:bg-[#4752c4] rounded-xl font-bold text-lg transition-all flex items-center gap-2 shadow-lg shadow-[#5865F2]/30"
+                    className="px-8 py-4 bg-[#5865F2] hover:bg-[#4752c4] rounded-xl font-bold text-lg transition-all flex items-center gap-2 shadow-lg shadow-[#5865F2]/30 hover:scale-105"
                   >
                     <DiscordIcon className="w-6 h-6" /> Sunucuya Katıl
                   </a>
                 </motion.div>
               </div>
 
+              {/* Son Eklenen Oyuncular */}
               <div className="mb-20">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -435,7 +568,7 @@ export default function App() {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.25 + i * 0.05 }}
                       onClick={() => setSelectedPlayer(player)}
-                      className={`${cardTheme} rounded-xl p-4 border cursor-pointer hover:border-cyan-500/40 transition-all group`}
+                      className={`${cardTheme} rounded-xl p-4 border cursor-pointer hover:border-cyan-500/40 transition-all group hover:scale-105`}
                     >
                       <div className="flex items-center gap-3">
                         <img src={player.avatar} alt="" className="w-12 h-12 rounded-lg" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/48`; }} />
@@ -449,6 +582,7 @@ export default function App() {
                 </div>
               </div>
 
+              {/* Kitler */}
               <div className="mb-20">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -469,7 +603,7 @@ export default function App() {
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.35 + i * 0.03 }}
-                      className={`group relative overflow-hidden ${cardTheme} rounded-2xl p-6 hover:border-cyan-500/40 transition-all duration-300 cursor-pointer`}
+                      className={`group relative overflow-hidden ${cardTheme} rounded-2xl p-6 hover:border-cyan-500/40 transition-all duration-300 cursor-pointer hover:scale-105`}
                       onClick={() => { setCurrentPage("rankings"); setSelectedKit(key as KitKey); }}
                     >
                       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 to-cyan-500/0 group-hover:from-cyan-500/5 group-hover:to-blue-500/5 transition-all duration-300" />
@@ -489,14 +623,15 @@ export default function App() {
                 </div>
               </div>
 
+              {/* CTA */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
                 className="relative bg-gradient-to-br from-cyan-600/20 via-blue-600/20 to-purple-600/20 border border-white/10 rounded-3xl p-10 md:p-14 text-center overflow-hidden"
               >
-                <div className="absolute top-0 right-0 w-80 h-80 bg-cyan-500/20 rounded-full blur-[120px]" />
-                <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/20 rounded-full blur-[120px]" />
+                <div className="absolute top-0 right-0 w-80 h-80 bg-cyan-500/20 rounded-full blur-[120px] animate-pulse" />
+                <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/20 rounded-full blur-[120px] animate-pulse" />
                 <div className="relative">
                   <h2 className="text-4xl md:text-6xl font-black mb-4">Hazır mısın?</h2>
                   <p className="text-lg text-white/70 mb-8 max-w-2xl mx-auto">
@@ -515,6 +650,14 @@ export default function App() {
 
               <div className="mt-20 pt-8 border-t border-white/5 text-center text-white/30 text-sm">
                 <p>© 2025 Abyssal Ocean Tier List. Tüm hakları saklıdır.</p>
+                <div className="flex items-center justify-center gap-6 mt-3 text-xs">
+                  <span>🌡️ 21°C</span>
+                  <span>☀️ Güneşli</span>
+                  <span>🔍 Ara</span>
+                  <span>💧 %99 Nem</span>
+                  <span>🕐 19:34</span>
+                  <span>📅 25.05.2026</span>
+                </div>
               </div>
             </main>
           )}
@@ -536,7 +679,7 @@ export default function App() {
                         onClick={() => setSortType(opt.key as SortType)}
                         className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                           sortType === opt.key
-                            ? "bg-cyan-500 text-white"
+                            ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white"
                             : "bg-[#1a1f2e] text-white/60 hover:bg-[#222838]"
                         }`}
                       >
@@ -741,6 +884,161 @@ export default function App() {
                     );
                   })}
                 </motion.div>
+              )}
+            </main>
+          )}
+
+          {currentPage === "reels" && (
+            <main className="relative z-10 max-w-[1200px] mx-auto px-4 py-8">
+              <div className="flex justify-between items-center mb-8">
+                <div>
+                  <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+                    PvP Reels
+                  </h1>
+                  <p className="text-white/50 mt-1">En iyi PvP anlarını keşfet ve paylaş!</p>
+                </div>
+                <button
+                  onClick={() => setShowUploadModal(true)}
+                  className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 rounded-xl font-bold transition-all shadow-lg shadow-purple-500/30 hover:scale-105"
+                >
+                  📤 Video Yükle
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {videos.map((video) => (
+                  <motion.div
+                    key={video.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className={`${cardTheme} rounded-2xl overflow-hidden border hover:border-purple-500/40 transition-all cursor-pointer`}
+                    onClick={() => setSelectedVideo(video)}
+                  >
+                    <div className="relative aspect-video bg-black/50">
+                      <video
+                        src={video.videoUrl}
+                        className="w-full h-full object-cover"
+                        poster={video.thumbnail}
+                      />
+                      <div className="absolute bottom-2 right-2 bg-black/50 rounded-lg px-2 py-1 text-xs">
+                        📱 30sn
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <img src={video.thumbnail} alt="" className="w-8 h-8 rounded-full" />
+                          <span className="font-semibold">{video.username}</span>
+                        </div>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); likeVideo(video.id); }}
+                          className="flex items-center gap-1 text-pink-500 hover:text-pink-400 transition-all"
+                        >
+                          ❤️ {video.likes}
+                        </button>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-white/50">
+                        <span>{new Date(video.createdAt).toLocaleDateString('tr-TR')}</span>
+                        <span>•</span>
+                        <span>💬 {video.comments.length} yorum</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {videos.length === 0 && (
+                <div className="text-center py-20">
+                  <div className="text-6xl mb-4">📹</div>
+                  <h3 className="text-xl font-bold text-white/30 mb-2">Henüz Video Yok</h3>
+                  <p className="text-white/20">İlk PvP reels'ini yükleyen sen ol!</p>
+                </div>
+              )}
+
+              {/* Video Modal */}
+              {selectedVideo && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md" onClick={() => setSelectedVideo(null)}>
+                  <div className="relative w-full max-w-2xl bg-[#11161f] rounded-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+                    <video
+                      src={selectedVideo.videoUrl}
+                      className="w-full aspect-video"
+                      controls
+                      autoPlay
+                    />
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <img src={selectedVideo.thumbnail} alt="" className="w-10 h-10 rounded-full" />
+                          <div>
+                            <h3 className="font-bold">{selectedVideo.username}</h3>
+                            <p className="text-xs text-white/50">{new Date(selectedVideo.createdAt).toLocaleDateString('tr-TR')}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => likeVideo(selectedVideo.id)}
+                          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-pink-500/20 text-pink-400 hover:bg-pink-500/30 transition-all"
+                        >
+                          ❤️ {selectedVideo.likes}
+                        </button>
+                      </div>
+                      <div className="border-t border-white/10 pt-4">
+                        <h4 className="text-sm font-semibold mb-3">Yorumlar ({selectedVideo.comments.length})</h4>
+                        <div className="max-h-48 overflow-y-auto space-y-2 mb-4">
+                          {selectedVideo.comments.map(comment => (
+                            <div key={comment.id} className="flex gap-2 text-sm">
+                              <span className="font-semibold text-cyan-400">{comment.username}:</span>
+                              <span className="text-white/70">{comment.text}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={commentText}
+                            onChange={(e) => setCommentText(e.target.value)}
+                            placeholder="Yorum yaz..."
+                            className={`flex-1 px-4 py-2 rounded-xl ${inputTheme} focus:outline-none focus:border-purple-500/50`}
+                          />
+                          <button
+                            onClick={() => addComment(selectedVideo.id)}
+                            className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl font-semibold hover:opacity-90 transition-all"
+                          >
+                            Gönder
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setSelectedVideo(null)}
+                      className="absolute top-4 right-4 p-2 bg-black/50 rounded-full hover:bg-black/70 transition-all"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Upload Modal */}
+              {showUploadModal && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" onClick={() => setShowUploadModal(false)}>
+                  <div className="relative w-full max-w-md bg-[#11161f] rounded-2xl p-6" onClick={e => e.stopPropagation()}>
+                    <h2 className="text-2xl font-bold mb-4 text-center">Video Yükle</h2>
+                    <div className="border-2 border-dashed border-white/20 rounded-xl p-8 text-center mb-4">
+                      <div className="text-4xl mb-2">📹</div>
+                      <p className="text-white/50 text-sm">Maksimum 30 saniye</p>
+                      <input type="file" accept="video/*" className="hidden" id="videoUpload" />
+                      <label htmlFor="videoUpload" className="mt-3 inline-block px-4 py-2 bg-cyan-500/20 rounded-lg text-cyan-400 cursor-pointer hover:bg-cyan-500/30 transition-all">
+                        Video Seç
+                      </label>
+                    </div>
+                    <button
+                      onClick={() => setShowUploadModal(false)}
+                      className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl font-bold hover:opacity-90 transition-all"
+                    >
+                      Yükle
+                    </button>
+                  </div>
+                </div>
               )}
             </main>
           )}
