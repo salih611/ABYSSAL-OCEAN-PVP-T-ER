@@ -17,7 +17,6 @@ interface Player {
 type KitKey = "overall" | "vanilla" | "sword" | "axe" | "nethpot" | "pot" | "uhc" | "mace" | "smp";
 type PageType = "home" | "rankings";
 type SortType = "rank" | "points" | "name" | "tests";
-type ThemeType = "dark" | "light";
 
 const UPSTASH_URL = import.meta.env.VITE_UPSTASH_URL || 'https://adequate-loon-101577.upstash.io';
 const UPSTASH_TOKEN = import.meta.env.VITE_UPSTASH_TOKEN || 'gQAAAAAAAYzJAAIgcDJhOWJiYWFhM2M2MmE0NThkYTJiMjZjZmM3ZDcxZWMwNA';
@@ -120,27 +119,26 @@ const DiscordIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const SunIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-  </svg>
-);
-
-const MoonIcon = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-  </svg>
+// Batık Gemi efekti
+const Shipwreck = () => (
+  <div className="fixed bottom-10 left-5 opacity-20 pointer-events-none z-0 hidden lg:block">
+    <div className="relative">
+      <div className="text-7xl rotate-[-15deg]">🚢</div>
+      <div className="absolute -top-2 -right-2 text-2xl text-cyan-500/30 animate-pulse">💀</div>
+      <div className="absolute bottom-0 left-4 text-xs text-white/20">⚓</div>
+    </div>
+  </div>
 );
 
 // Su baloncukları efekti
 const Bubbles = () => {
-  const bubbles = useMemo(() => Array.from({ length: 25 }, (_, i) => ({
+  const bubbles = useMemo(() => Array.from({ length: 30 }, (_, i) => ({
     id: i,
-    size: Math.random() * 30 + 8,
+    size: Math.random() * 25 + 5,
     left: Math.random() * 100,
-    duration: Math.random() * 12 + 6,
+    duration: Math.random() * 10 + 5,
     delay: Math.random() * 8,
-    opacity: Math.random() * 0.25 + 0.05
+    opacity: Math.random() * 0.2 + 0.05
   })), []);
   
   return (
@@ -162,8 +160,8 @@ const Bubbles = () => {
       <style>{`
         @keyframes bubbleFloat {
           0% { transform: translateY(0) scale(0.3); opacity: 0; }
-          20% { opacity: 0.3; }
-          80% { opacity: 0.15; }
+          20% { opacity: 0.2; }
+          80% { opacity: 0.1; }
           100% { transform: translateY(-100vh) scale(1); opacity: 0; }
         }
       `}</style>
@@ -174,9 +172,9 @@ const Bubbles = () => {
 // Skeleton loading bileşeni
 const SkeletonRow = () => (
   <tr className="animate-pulse">
-    <td className="px-6 py-4"><div className="w-10 h-10 bg-white/10 rounded-xl"></div></td>
-    <td className="px-6 py-4"><div className="flex items-center gap-4"><div className="w-12 h-12 bg-white/10 rounded-xl"></div><div><div className="w-32 h-4 bg-white/10 rounded mb-2"></div><div className="w-24 h-3 bg-white/10 rounded"></div></div></div></td>
-    <td className="px-6 py-4"><div className="flex justify-end gap-1"><div className="w-9 h-9 bg-white/10 rounded-lg"></div><div className="w-9 h-9 bg-white/10 rounded-lg"></div><div className="w-9 h-9 bg-white/10 rounded-lg"></div></div></td>
+    <td className="px-6 py-4"><div className="w-10 h-10 bg-white/5 rounded-xl"></div></td>
+    <td className="px-6 py-4"><div className="flex items-center gap-4"><div className="w-12 h-12 bg-white/5 rounded-xl"></div><div><div className="w-32 h-4 bg-white/5 rounded mb-2"></div><div className="w-24 h-3 bg-white/5 rounded"></div></div></div></td>
+    <td className="px-6 py-4"><div className="flex justify-end gap-1"><div className="w-9 h-9 bg-white/5 rounded-lg"></div><div className="w-9 h-9 bg-white/5 rounded-lg"></div><div className="w-9 h-9 bg-white/5 rounded-lg"></div></div></td>
   </tr>
 );
 
@@ -189,7 +187,6 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [sortType, setSortType] = useState<SortType>("rank");
   const [currentPageRank, setCurrentPageRank] = useState(1);
-  const [theme, setTheme] = useState<ThemeType>("dark");
   const playersPerPage = 20;
 
   const fetchPlayers = async () => {
@@ -305,59 +302,11 @@ export default function App() {
     return [...players].sort((a, b) => b.tests - a.tests).slice(0, 5);
   }, [players]);
 
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
-  };
-
-  // Tema class'ları - GELİŞTİRİLMİŞ
-  const themeClasses = theme === "dark" 
-    ? "bg-gradient-to-br from-slate-900 via-cyan-950 to-slate-900 text-white"
-    : "bg-gradient-to-br from-sky-100 via-blue-100 to-cyan-100 text-gray-800";
-
-  const headerTheme = theme === "dark"
-    ? "bg-slate-900/80 backdrop-blur-xl border-white/10"
-    : "bg-white/80 backdrop-blur-xl border-gray-200";
-
-  const cardTheme = theme === "dark"
-    ? "bg-slate-800/50 backdrop-blur-sm border-white/10"
-    : "bg-white/70 backdrop-blur-sm border-gray-200 shadow-lg";
-
-  const buttonTheme = theme === "dark"
-    ? "bg-slate-800 text-white/60 hover:bg-slate-700 hover:text-white"
-    : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900";
-
-  const activeButtonTheme = theme === "dark"
-    ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30 ring-2 ring-cyan-400/50"
-    : "bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/30 ring-2 ring-cyan-400/50";
-
-  const inputTheme = theme === "dark"
-    ? "bg-slate-800 border-white/10 placeholder-white/30 focus:ring-2 focus:ring-cyan-500/50"
-    : "bg-white border-gray-300 placeholder-gray-500 focus:ring-2 focus:ring-cyan-500/50";
-
-  // Scroll reveal efekti için ref
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const elementsRef = useRef<(HTMLElement | null)[]>([]);
-
-  useEffect(() => {
-    observerRef.current = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-        }
-      });
-    }, { threshold: 0.1, rootMargin: "50px" });
-
-    elementsRef.current.forEach(el => {
-      if (el) observerRef.current?.observe(el);
-    });
-
-    return () => observerRef.current?.disconnect();
-  }, [currentPage]);
-
   if (loading) {
     return (
-      <div className={`min-h-screen ${themeClasses} flex items-center justify-center relative`}>
+      <div className="min-h-screen bg-[#0a0e14] flex items-center justify-center relative">
         <Bubbles />
+        <Shipwreck />
         <div className="text-center z-10">
           <div className="relative w-20 h-20 mx-auto mb-4">
             <div className="absolute inset-0 rounded-full border-4 border-cyan-500/20"></div>
@@ -371,10 +320,11 @@ export default function App() {
   }
 
   return (
-    <div className={`min-h-screen ${themeClasses} transition-all duration-500 relative`}>
+    <div className="min-h-screen bg-[#0a0e14] text-white relative">
       <Bubbles />
+      <Shipwreck />
       
-      <header className={`relative z-50 sticky top-0 backdrop-blur-xl ${headerTheme} border-b transition-all duration-300`}>
+      <header className="relative z-50 sticky top-0 backdrop-blur-xl bg-[#0f141b]/80 border-b border-white/5">
         <div className="max-w-[1400px] mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-6">
@@ -391,13 +341,11 @@ export default function App() {
                 </div>
               </div>
               <nav className="hidden lg:flex items-center gap-1">
-                <button onClick={() => setCurrentPage("home")} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all relative overflow-hidden group ${currentPage === "home" ? activeButtonTheme : buttonTheme}`}>
+                <button onClick={() => setCurrentPage("home")} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all relative overflow-hidden group ${currentPage === "home" ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30 ring-2 ring-cyan-400/50" : "bg-[#1a1f2e] text-white/60 hover:bg-[#222838] hover:text-white"}`}>
                   <span className="relative z-10">🏠 Home</span>
-                  {currentPage !== "home" && <span className="absolute inset-0 bg-white/5 translate-y-full group-hover:translate-y-0 transition-transform"></span>}
                 </button>
-                <button onClick={() => setCurrentPage("rankings")} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all relative overflow-hidden group ${currentPage === "rankings" ? activeButtonTheme : buttonTheme}`}>
+                <button onClick={() => setCurrentPage("rankings")} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all relative overflow-hidden group ${currentPage === "rankings" ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30 ring-2 ring-cyan-400/50" : "bg-[#1a1f2e] text-white/60 hover:bg-[#222838] hover:text-white"}`}>
                   <span className="relative z-10">🏆 Rankings</span>
-                  {currentPage !== "rankings" && <span className="absolute inset-0 bg-white/5 translate-y-full group-hover:translate-y-0 transition-transform"></span>}
                 </button>
               </nav>
             </div>
@@ -407,19 +355,9 @@ export default function App() {
                   <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                  <input type="text" placeholder="Oyuncu veya Nick ara..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className={`w-[260px] pl-9 pr-4 py-2 rounded-xl text-sm focus:outline-none transition-all ${inputTheme}`} />
+                  <input type="text" placeholder="Oyuncu veya Nick ara..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-[260px] pl-9 pr-4 py-2 bg-[#1a1f2e] border border-white/10 rounded-xl text-sm focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all placeholder-white/30" />
                 </div>
               )}
-              <button
-                onClick={toggleTheme}
-                className="p-2.5 rounded-xl bg-slate-800 border border-white/10 hover:border-cyan-500/50 transition-all hover:scale-110"
-              >
-                {theme === "dark" ? (
-                  <SunIcon className="w-5 h-5 text-yellow-400" />
-                ) : (
-                  <MoonIcon className="w-5 h-5 text-gray-700" />
-                )}
-              </button>
               <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2.5 bg-[#5865F2] hover:bg-[#4752c4] rounded-xl transition-all font-medium text-sm hover:scale-105">
                 <DiscordIcon className="w-5 h-5" />
                 <span className="hidden sm:inline">Discord</span>
@@ -458,14 +396,14 @@ export default function App() {
                 >
                   <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 bg-clip-text text-transparent">ABYSSAL OCEAN</span>
                   <br />
-                  <span className={theme === "dark" ? "text-white" : "text-gray-800"}>TIER LIST</span>
+                  <span className="text-white">TIER LIST</span>
                 </motion.h1>
                 
                 <motion.p
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.1 }}
-                  className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto mb-10"
+                  className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10"
                 >
                   Türkiye'nin en kapsamlı Minecraft PvP tier list platformu.<br />
                   8 farklı kit kategorisinde yeteneğini kanıtla!
@@ -479,7 +417,7 @@ export default function App() {
                 >
                   <button 
                     onClick={() => setCurrentPage("rankings")} 
-                    className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl font-bold text-lg transition-all shadow-lg shadow-cyan-500/30 hover:scale-105 hover:shadow-xl"
+                    className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl font-bold text-lg transition-all shadow-lg shadow-cyan-500/30 hover:scale-105"
                   >
                     🏆 Sıralamaları Gör
                   </button>
@@ -515,7 +453,7 @@ export default function App() {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.25 + i * 0.05 }}
                       onClick={() => setSelectedPlayer(player)}
-                      className={`${cardTheme} rounded-xl p-4 border cursor-pointer hover:border-cyan-500/50 transition-all group hover:scale-105 hover:shadow-xl`}
+                      className="bg-[#11161f] border border-white/5 rounded-xl p-4 cursor-pointer hover:border-cyan-500/50 transition-all group hover:scale-105"
                     >
                       <div className="flex items-center gap-3">
                         <img src={player.avatar} alt="" className="w-12 h-12 rounded-lg group-hover:ring-2 ring-cyan-400 transition-all" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/48`; }} />
@@ -550,7 +488,7 @@ export default function App() {
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.35 + i * 0.03 }}
-                      className={`group relative overflow-hidden ${cardTheme} rounded-2xl p-6 hover:border-cyan-500/50 transition-all duration-300 cursor-pointer hover:scale-105 hover:shadow-xl`}
+                      className="group relative overflow-hidden bg-[#11161f] border border-white/5 rounded-2xl p-6 hover:border-cyan-500/50 transition-all duration-300 cursor-pointer hover:scale-105"
                       onClick={() => { setCurrentPage("rankings"); setSelectedKit(key as KitKey); }}
                     >
                       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 to-cyan-500/0 group-hover:from-cyan-500/10 group-hover:to-blue-500/10 transition-all duration-300" />
@@ -571,7 +509,8 @@ export default function App() {
               </div>
 
               {/* CTA */}
-              <motion.div                initial={{ opacity: 0, y: 30 }}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
                 className="relative bg-gradient-to-br from-cyan-600/20 via-blue-600/20 to-purple-600/20 border border-white/10 rounded-3xl p-10 md:p-14 text-center overflow-hidden"
@@ -594,18 +533,16 @@ export default function App() {
                 </div>
               </motion.div>
 
-              {/* Footer - Düzenlendi */}
-              <div className="mt-20 pt-8 border-t border-white/10 text-center">
+              {/* Footer */}
+              <div className="mt-20 pt-8 border-t border-white/5 text-center">
                 <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/40 mb-3">
-                  <span>© 2025 Abyssal Ocean Net Ltd. Tüm hakları saklıdır.</span>
+                  <span>© 2025 Abyssal Ocean Tier List. Tüm hakları saklıdır.</span>
                 </div>
                 <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-white/30">
-                  <span>🌡️ 21°C</span>
-                  <span>☀️ Güneşli</span>
-                  <span>🔍 Ara</span>
-                  <span>💧 %99 Nem</span>
-                  <span>🕐 19:34</span>
-                  <span>📅 25.05.2026</span>
+                  <span>🌊 Abyssal Ocean</span>
+                  <span>⚔️ PvP Tier List</span>
+                  <span>🐟 8 Kit</span>
+                  <span>🏆 {players.length} Oyuncu</span>
                 </div>
               </div>
             </main>
@@ -629,7 +566,7 @@ export default function App() {
                         className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:scale-105 ${
                           sortType === opt.key
                             ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg"
-                            : "bg-slate-800 text-white/60 hover:bg-slate-700"
+                            : "bg-[#1a1f2e] text-white/60 hover:bg-[#222838]"
                         }`}
                       >
                         {opt.label}
@@ -655,9 +592,11 @@ export default function App() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.02 }}
                         onClick={() => setSelectedKit(key)}
-                        className={`relative px-5 py-3 rounded-2xl font-medium transition-all whitespace-nowrap flex items-center gap-2.5 ${
-                          isActive ? activeButtonTheme : buttonTheme
-                        } hover:scale-105`}
+                        className={`relative px-5 py-3 rounded-2xl font-medium transition-all whitespace-nowrap flex items-center gap-2.5 hover:scale-105 ${
+                          isActive 
+                            ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30 ring-2 ring-cyan-400/50" 
+                            : "bg-[#1a1f2e] text-white/60 hover:bg-[#222838] hover:text-white"
+                        }`}
                       >
                         <div className="w-7 h-7 flex items-center justify-center">{kit.icon}</div>
                         <span className="text-sm font-semibold">{kit.ad}</span>
@@ -674,7 +613,7 @@ export default function App() {
               </div>
 
               {selectedKit === "overall" ? (
-                <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className={`${cardTheme} rounded-[24px] border overflow-hidden`}>
+                <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="bg-[#11161f] rounded-[24px] border border-white/5 overflow-hidden">
                   {currentPlayers.length === 0 ? (
                     <div className="py-32 text-center">
                       <div className="text-6xl mb-4 opacity-20">🏆</div>
@@ -686,13 +625,13 @@ export default function App() {
                       <div className="overflow-x-auto">
                         <table className="w-full">
                           <thead>
-                            <tr className="border-b border-white/10 bg-slate-900/30">
+                            <tr className="border-b border-white/5 bg-[#0f141b]/50">
                               <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider w-16">#</th>
                               <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Oyuncu</th>
                               <th className="text-right px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Tierler</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-white/5">
+                          <tbody className="divide-y divide-white/[0.03]">
                             {loading ? (
                               Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
                             ) : (
@@ -740,7 +679,7 @@ export default function App() {
                                       {Object.entries(KITS).map(([kitKey, kit]) => {
                                         const tier = player.tiers[kitKey];
                                         return (
-                                          <div key={kitKey} className="w-9 h-9 rounded-lg bg-slate-900 border border-white/10 flex flex-col items-center justify-center hover:border-cyan-500/50 transition-all hover:scale-110 group/tier" title={`${kit.ad}: ${tier || 'Test olmamış'}`}>
+                                          <div key={kitKey} className="w-9 h-9 rounded-lg bg-[#0f141b] border border-white/10 flex flex-col items-center justify-center hover:border-cyan-500/50 transition-all hover:scale-110" title={`${kit.ad}: ${tier || 'Test olmamış'}`}>
                                             <div className="text-[10px] leading-none flex justify-center">{kit.icon}</div>
                                             <span className={`text-[9px] font-bold leading-none mt-0.5 ${tier?.startsWith("HT") || tier?.startsWith("Crystal HT") ? "text-amber-400" : tier?.startsWith("LT") || tier?.startsWith("Crystal LT") ? "text-white/60" : "text-white/20"}`}>
                                               {tier ? tier.replace("Crystal ", "") : "—"}
@@ -757,11 +696,11 @@ export default function App() {
                         </table>
                       </div>
                       {totalPages > 1 && (
-                        <div className="flex items-center justify-center gap-2 py-6 border-t border-white/10">
+                        <div className="flex items-center justify-center gap-2 py-6 border-t border-white/5">
                           <button
                             onClick={() => setCurrentPageRank(p => Math.max(1, p - 1))}
                             disabled={currentPageRank === 1}
-                            className="px-4 py-2 rounded-lg bg-slate-800 text-white/60 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-700 transition-all hover:scale-105"
+                            className="px-4 py-2 rounded-lg bg-[#1a1f2e] text-white/60 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#222838] transition-all hover:scale-105"
                           >
                             ◀ Önceki
                           </button>
@@ -771,7 +710,7 @@ export default function App() {
                           <button
                             onClick={() => setCurrentPageRank(p => Math.min(totalPages, p + 1))}
                             disabled={currentPageRank === totalPages}
-                            className="px-4 py-2 rounded-lg bg-slate-800 text-white/60 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-700 transition-all hover:scale-105"
+                            className="px-4 py-2 rounded-lg bg-[#1a1f2e] text-white/60 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#222838] transition-all hover:scale-105"
                           >
                             Sonraki ▶
                           </button>
@@ -792,8 +731,8 @@ export default function App() {
                       5: "🌱"
                     };
                     return (
-                      <motion.div key={tierNum} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} className={`${cardTheme} rounded-[20px] border overflow-hidden hover:scale-105 transition-all`}>
-                        <div className={`px-4 py-3 border-b border-white/10 ${tierNum === 1 ? "bg-gradient-to-r from-amber-500/20 to-yellow-600/20" : tierNum === 2 ? "bg-gradient-to-r from-slate-500/20 to-slate-600/20" : tierNum === 3 ? "bg-gradient-to-r from-orange-600/20 to-amber-700/20" : tierNum === 4 ? "bg-gradient-to-r from-red-500/20 to-orange-600/20" : "bg-gradient-to-r from-green-500/20 to-emerald-600/20"}`}>
+                      <motion.div key={tierNum} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} className="bg-[#11161f] rounded-[20px] border border-white/5 overflow-hidden hover:scale-105 transition-all">
+                        <div className={`px-4 py-3 border-b border-white/5 ${tierNum === 1 ? "bg-gradient-to-r from-amber-500/20 to-yellow-600/20" : tierNum === 2 ? "bg-gradient-to-r from-slate-500/20 to-slate-600/20" : tierNum === 3 ? "bg-gradient-to-r from-orange-600/20 to-amber-700/20" : tierNum === 4 ? "bg-gradient-to-r from-red-500/20 to-orange-600/20" : "bg-gradient-to-r from-green-500/20 to-emerald-600/20"}`}>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <span className="text-xl">{tierEmojis[tierNum]}</span>
@@ -843,14 +782,14 @@ export default function App() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Player Modal - 3D Skin gösterimi buraya eklenecek */}
+      {/* Player Modal */}
       {selectedPlayer && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn" onClick={() => setSelectedPlayer(null)}>
           <motion.div 
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="relative w-full max-w-2xl bg-gradient-to-br from-slate-800 to-slate-900 rounded-[28px] border border-white/10 shadow-2xl overflow-hidden"
+            className="relative w-full max-w-2xl bg-gradient-to-br from-[#11161f] to-[#0a0e14] rounded-[28px] border border-white/10 shadow-2xl overflow-hidden"
             onClick={e => e.stopPropagation()}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-cyan-600/10 via-blue-600/10 to-purple-600/10" />
@@ -887,7 +826,7 @@ export default function App() {
                     const displayTier = tier?.replace("Crystal ", "") || tier;
                     const points = TIER_POINTS[tier] || 0;
                     return (
-                      <div key={kitKey} className="bg-slate-900/50 border border-white/10 rounded-2xl p-4 hover:border-cyan-500/30 transition-all hover:scale-105">
+                      <div key={kitKey} className="bg-[#0f141b] border border-white/10 rounded-2xl p-4 hover:border-cyan-500/30 transition-all hover:scale-105">
                         <div className="flex items-center justify-between mb-2">
                           <div className="w-8 h-8 flex items-center justify-center">{kit.icon}</div>
                           {tier ? (
