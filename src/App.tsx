@@ -16,6 +16,8 @@ interface Player {
 
 type KitKey = "overall" | "vanilla" | "sword" | "axe" | "nethpot" | "pot" | "uhc" | "mace" | "smp";
 type PageType = "home" | "rankings";
+type SortType = "rank" | "points" | "name" | "tests";
+type ThemeType = "dark" | "light";
 
 const UPSTASH_URL = import.meta.env.VITE_UPSTASH_URL || 'https://adequate-loon-101577.upstash.io';
 const UPSTASH_TOKEN = import.meta.env.VITE_UPSTASH_TOKEN || 'gQAAAAAAAYzJAAIgcDJhOWJiYWFhM2M2MmE0NThkYTJiMjZjZmM3ZDcxZWMwNA';
@@ -118,6 +120,18 @@ const DiscordIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const SunIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+  </svg>
+);
+
+const MoonIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+  </svg>
+);
+
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageType>("home");
   const [selectedKit, setSelectedKit] = useState<KitKey>("overall");
@@ -125,6 +139,10 @@ export default function App() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sortType, setSortType] = useState<SortType>("rank");
+  const [currentPageRank, setCurrentPageRank] = useState(1);
+  const [theme, setTheme] = useState<ThemeType>("dark");
+  const playersPerPage = 20;
 
   const fetchPlayers = async () => {
     try {
@@ -155,13 +173,37 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
+  // Sadece TR bölgesindeki oyuncuları filtrele
+  const trPlayers = useMemo(() => {
+    return players.filter(p => p.region === "TR");
+  }, [players]);
+
   const filteredPlayers = useMemo(() => {
-    if (!searchQuery) return players;
-    return players.filter(p =>
-      p.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.minecraftNick?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [players, searchQuery]);
+    let filtered = trPlayers;
+    if (searchQuery) {
+      filtered = filtered.filter(p =>
+        p.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.minecraftNick?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    
+    // Sıralama
+    switch (sortType) {
+      case "points":
+        filtered.sort((a, b) => b.totalPoints - a.totalPoints);
+        break;
+      case "name":
+        filtered.sort((a, b) => a.username.localeCompare(b.username));
+        break;
+      case "tests":
+        filtered.sort((a, b) => b.tests - a.tests);
+        break;
+      default:
+        filtered.sort((a, b) => a.rank - b.rank);
+    }
+    
+    return filtered;
+  }, [trPlayers, searchQuery, sortType]);
 
   const kitPlayers = useMemo(() => {
     if (selectedKit === "overall") return filteredPlayers;
@@ -173,6 +215,13 @@ export default function App() {
         return pb - pa;
       });
   }, [filteredPlayers, selectedKit]);
+
+  // Sayfalama
+  const totalPages = Math.ceil(kitPlayers.length / playersPerPage);
+  const currentPlayers = kitPlayers.slice(
+    (currentPageRank - 1) * playersPerPage,
+    currentPageRank * playersPerPage
+  );
 
   const playersByTier = useMemo(() => {
     if (selectedKit === "overall") return null;
@@ -207,20 +256,60 @@ export default function App() {
     return groups;
   }, [kitPlayers, selectedKit]);
 
+  // Son 5 test olan oyuncu (son eklenenler)
+  const recentPlayers = useMemo(() => {
+    return [...players].sort((a, b) => b.tests - a.tests).slice(0, 5);
+  }, [players]);
+
+  // Tema değiştirme
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
+
+  // Tema class'ları
+  const themeClasses = theme === "dark" 
+    ? "bg-[#0a0e14] text-white"
+    : "bg-gray-100 text-gray-900";
+
+  const headerTheme = theme === "dark"
+    ? "bg-[#0f141b]/80 border-white/5"
+    : "bg-white/80 border-gray-200";
+
+  const cardTheme = theme === "dark"
+    ? "bg-[#11161f] border-white/5"
+    : "bg-white border-gray-200 shadow-md";
+
+  const buttonTheme = theme === "dark"
+    ? "bg-[#1a1f2e] text-white/60 hover:bg-[#222838] hover:text-white"
+    : "bg-gray-200 text-gray-700 hover:bg-gray-300 hover:text-gray-900";
+
+  const activeButtonTheme = theme === "dark"
+    ? "bg-white text-black"
+    : "bg-gray-800 text-white";
+
+  const inputTheme = theme === "dark"
+    ? "bg-[#1a1f2e] border-white/10 placeholder-white/30"
+    : "bg-gray-200 border-gray-300 placeholder-gray-500";
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0e14] flex items-center justify-center">
+      <div className={`min-h-screen ${themeClasses} flex items-center justify-center`}>
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white/60">Yükleniyor...</p>
+          <div className="relative w-20 h-20 mx-auto mb-4">
+            <div className="absolute inset-0 rounded-full border-4 border-cyan-500/20"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-t-cyan-500 border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
+            <div className="absolute inset-2 rounded-full bg-cyan-500/10 animate-pulse"></div>
+          </div>
+          <p className="text-cyan-400 font-medium tracking-wide">Yükleniyor...</p>
+          <p className="text-sm text-white/40 mt-2">Oyuncular getiriliyor</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0e14] text-white">
-      <header className="relative z-50 sticky top-0 backdrop-blur-xl bg-[#0f141b]/80 border-b border-white/5">
+    <div className={`min-h-screen ${themeClasses} transition-colors duration-300`}>
+      <header className={`relative z-50 sticky top-0 backdrop-blur-xl ${headerTheme} border-b transition-colors duration-300`}>
         <div className="max-w-[1400px] mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-6">
@@ -244,9 +333,19 @@ export default function App() {
                   <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                  <input type="text" placeholder="Oyuncu veya Minecraft Nick ara..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-[260px] pl-9 pr-4 py-2 bg-[#1a1f2e] border border-white/10 rounded-xl text-sm focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all placeholder-white/30" />
+                  <input type="text" placeholder="Oyuncu veya Minecraft Nick ara..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className={`w-[260px] pl-9 pr-4 py-2 rounded-xl text-sm focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all ${inputTheme}`} />
                 </div>
               )}
+              <button
+                onClick={toggleTheme}
+                className="p-2.5 rounded-xl bg-[#1a1f2e] border border-white/10 hover:border-cyan-500/50 transition-all"
+              >
+                {theme === "dark" ? (
+                  <SunIcon className="w-5 h-5 text-yellow-400" />
+                ) : (
+                  <MoonIcon className="w-5 h-5 text-gray-700" />
+                )}
+              </button>
               <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2.5 bg-[#5865F2] hover:bg-[#4752c4] rounded-xl transition-colors font-medium text-sm">
                 <DiscordIcon className="w-5 h-5" />
                 <span className="hidden sm:inline">Discord</span>
@@ -262,7 +361,7 @@ export default function App() {
           initial={{ opacity: 0, x: currentPage === "home" ? -30 : 30 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: currentPage === "home" ? 30 : -30 }}
-          transition={{ duration: 0.25, ease: "easeInOut" }}
+          transition={{ duration: 0.2, ease: "easeInOut" }}
         >
           {currentPage === "home" && (
             <main className="relative z-10 max-w-[1400px] mx-auto px-4 py-12">
@@ -270,7 +369,7 @@ export default function App() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
+                  transition={{ duration: 0.4 }}
                   className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-cyan-400 text-sm font-semibold mb-6"
                 >
                   <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span>
@@ -280,19 +379,19 @@ export default function App() {
                 <motion.h1
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                  className="text-6xl md:text-8xl font-black mb-6 leading-tight"
+                  transition={{ duration: 0.4, delay: 0.05 }}
+                  className="text-5xl md:text-8xl font-black mb-6 leading-tight"
                 >
                   <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 bg-clip-text text-transparent">ABYSSAL OCEAN</span>
                   <br />
-                  <span className="text-white">TIER LIST</span>
+                  <span className={theme === "dark" ? "text-white" : "text-gray-800"}>TIER LIST</span>
                 </motion.h1>
                 
                 <motion.p
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  className="text-xl md:text-2xl text-white/60 max-w-2xl mx-auto mb-10"
+                  transition={{ duration: 0.4, delay: 0.1 }}
+                  className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10"
                 >
                   Türkiye'nin en kapsamlı Minecraft PvP tier list platformu.<br />
                   8 farklı kit kategorisinde yeteneğini kanıtla!
@@ -301,7 +400,7 @@ export default function App() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
+                  transition={{ duration: 0.4, delay: 0.15 }}
                   className="flex flex-wrap items-center justify-center gap-4"
                 >
                   <button 
@@ -321,11 +420,46 @@ export default function App() {
                 </motion.div>
               </div>
 
+              {/* Son Eklenen Oyuncular */}
               <div className="mb-20">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-center mb-8"
+                >
+                  <h2 className="text-3xl md:text-4xl font-black mb-2 bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
+                    ⚡ Son Test Olan Oyuncular
+                  </h2>
+                  <p className="text-white/50">En son test olan 5 oyuncu</p>
+                </motion.div>
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                  {recentPlayers.map((player, i) => (
+                    <motion.div
+                      key={player.id}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.25 + i * 0.05 }}
+                      onClick={() => setSelectedPlayer(player)}
+                      className={`${cardTheme} rounded-xl p-4 border cursor-pointer hover:border-cyan-500/40 transition-all group`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <img src={player.avatar} alt="" className="w-12 h-12 rounded-lg" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/48`; }} />
+                        <div>
+                          <h3 className="font-bold group-hover:text-cyan-400 transition-colors">{player.username}</h3>
+                          <p className="text-xs text-white/40">{player.totalPoints} puan • {player.tests} test</p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mb-20">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
                   className="text-center mb-12"
                 >
                   <h2 className="text-4xl md:text-5xl font-black mb-4 bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
@@ -340,8 +474,8 @@ export default function App() {
                       key={key}
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.5 + i * 0.05 }}
-                      className="group relative overflow-hidden bg-[#11161f] border border-white/5 rounded-2xl p-6 hover:border-cyan-500/40 hover:bg-[#151b26] transition-all duration-300 cursor-pointer"
+                      transition={{ delay: 0.35 + i * 0.03 }}
+                      className={`group relative overflow-hidden ${cardTheme} rounded-2xl p-6 hover:border-cyan-500/40 transition-all duration-300 cursor-pointer`}
                       onClick={() => { setCurrentPage("rankings"); setSelectedKit(key as KitKey); }}
                     >
                       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 to-cyan-500/0 group-hover:from-cyan-500/5 group-hover:to-blue-500/5 transition-all duration-300" />
@@ -364,7 +498,7 @@ export default function App() {
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
+                transition={{ delay: 0.4 }}
                 className="relative bg-gradient-to-br from-cyan-600/20 via-blue-600/20 to-purple-600/20 border border-white/10 rounded-3xl p-10 md:p-14 text-center overflow-hidden"
               >
                 <div className="absolute top-0 right-0 w-80 h-80 bg-cyan-500/20 rounded-full blur-[120px]" />
@@ -393,6 +527,36 @@ export default function App() {
 
           {currentPage === "rankings" && (
             <main className="relative z-10 max-w-[1400px] mx-auto px-4 py-6">
+              {/* Sıralama Seçenekleri */}
+              <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-white/50">Sırala:</span>
+                  <div className="flex gap-1">
+                    {[
+                      { key: "rank", label: "🏆 Sıra" },
+                      { key: "points", label: "⭐ Puan" },
+                      { key: "name", label: "📝 İsim" },
+                      { key: "tests", label: "🎯 Test" }
+                    ].map((opt) => (
+                      <button
+                        key={opt.key}
+                        onClick={() => setSortType(opt.key as SortType)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                          sortType === opt.key
+                            ? "bg-cyan-500 text-white"
+                            : "bg-[#1a1f2e] text-white/60 hover:bg-[#222838]"
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="text-sm text-white/40">
+                  Toplam {kitPlayers.length} oyuncu
+                </div>
+              </div>
+
               <div className="mb-6 overflow-x-auto scrollbar-hide">
                 <div className="flex items-center gap-2 min-w-max pb-2">
                   {KIT_ORDER.map((key, index) => {
@@ -404,10 +568,10 @@ export default function App() {
                         key={key}
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05 }}
+                        transition={{ delay: index * 0.02 }}
                         onClick={() => setSelectedKit(key)}
                         className={`relative px-5 py-3 rounded-2xl font-medium transition-all whitespace-nowrap flex items-center gap-2.5 ${
-                          isActive ? "bg-white text-black shadow-lg" : "bg-[#1a1f2e] text-white/60 hover:bg-[#222838] hover:text-white"
+                          isActive ? activeButtonTheme : buttonTheme
                         }`}
                       >
                         <div className="w-7 h-7 flex items-center justify-center">{kit.icon}</div>
@@ -425,83 +589,107 @@ export default function App() {
               </div>
 
               {selectedKit === "overall" ? (
-                <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="bg-[#11161f] rounded-[24px] border border-white/5 overflow-hidden">
-                  {players.length === 0 ? (
+                <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className={`${cardTheme} rounded-[24px] border overflow-hidden`}>
+                  {currentPlayers.length === 0 ? (
                     <div className="py-32 text-center">
                       <div className="text-6xl mb-4 opacity-20">🏆</div>
                       <h3 className="text-xl font-bold text-white/30 mb-2">Henüz Oyuncu Yok</h3>
                       <p className="text-white/20 text-sm max-w-md mx-auto">Bot ile test sonucu gönderdiğinizde oyuncular burada görünecek.</p>
                     </div>
                   ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead>
-                          <tr className="border-b border-white/5 bg-[#0f141b]/50">
-                            <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider w-16">#</th>
-                            <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Oyuncu</th>
-                            <th className="text-right px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Tierler</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-white/[0.03]">
-                          {kitPlayers.slice(0, 50).map((player, idx) => (
-                            <motion.tr
-                              key={player.id}
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: idx * 0.01 }}
-                              onClick={() => setSelectedPlayer(player)}
-                              className="group hover:bg-white/[0.02] cursor-pointer transition-all"
-                            >
-                              <td className="px-6 py-4">
-                                {player.rank <= 3 ? (
-                                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg ${player.rank === 1 ? "bg-gradient-to-br from-amber-400 to-yellow-600 text-black" : player.rank === 2 ? "bg-gradient-to-br from-slate-300 to-slate-500 text-black" : "bg-gradient-to-br from-orange-600 to-amber-700 text-white"}`}>
-                                    {player.rank}
-                                  </div>
-                                ) : (
-                                  <span className="w-10 text-center text-xl font-bold text-white/30 block group-hover:text-white/60 transition-colors">
-                                    {player.rank}
-                                  </span>
-                                )}
-                              </td>
-                              <td className="px-6 py-4">
-                                <div className="flex items-center gap-4">
-                                  <img src={player.avatar} alt={player.username} className="w-12 h-12 rounded-xl ring-2 ring-white/10 group-hover:ring-cyan-500/50 transition-all" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/64`; }} />
-                                  <div>
-                                    <div className="flex items-center gap-2">
-                                      <h3 className="font-bold text-white group-hover:text-cyan-400 transition-colors">{player.username}</h3>
+                    <>
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="border-b border-white/5 bg-[#0f141b]/50">
+                              <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider w-16">#</th>
+                              <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Oyuncu</th>
+                              <th className="text-right px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Tierler</th>
+                            </table>
+                          </thead>
+                          <tbody className="divide-y divide-white/[0.03]">
+                            {currentPlayers.map((player, idx) => (
+                              <motion.tr
+                                key={player.id}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: idx * 0.005 }}
+                                onClick={() => setSelectedPlayer(player)}
+                                className="group hover:bg-white/[0.02] cursor-pointer transition-all"
+                              >
+                                <td className="px-6 py-4">
+                                  {player.rank <= 3 ? (
+                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg ${player.rank === 1 ? "bg-gradient-to-br from-amber-400 to-yellow-600 text-black" : player.rank === 2 ? "bg-gradient-to-br from-slate-300 to-slate-500 text-black" : "bg-gradient-to-br from-orange-600 to-amber-700 text-white"}`}>
+                                      {player.rank}
                                     </div>
-                                    <div className="flex items-center gap-2 mt-1">
-                                      <span className={`text-xs font-medium ${player.totalPoints >= 300 ? "text-amber-400" : player.totalPoints >= 200 ? "text-purple-400" : player.totalPoints >= 100 ? "text-cyan-400" : "text-white/50"}`}>
-                                        {getTitle(player.totalPoints)}
-                                      </span>
-                                      <span className="text-xs text-white/30">•</span>
-                                      <span className="text-xs text-white/50">{player.totalPoints} puan</span>
-                                      <span className="text-xs text-white/30">•</span>
-                                      <span className="text-xs text-white/50">🎮 {player.minecraftNick}</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="px-6 py-4">
-                                <div className="flex items-center justify-end gap-1.5 flex-wrap">
-                                  {Object.entries(KITS).map(([kitKey, kit]) => {
-                                    const tier = player.tiers[kitKey];
-                                    return (
-                                      <div key={kitKey} className="w-9 h-9 rounded-lg bg-[#0f141b] border border-white/10 flex flex-col items-center justify-center hover:border-white/20 transition-all hover:scale-110 group/tier" title={`${kit.ad}: ${tier || 'Test olmamış'}`}>
-                                        <div className="text-[10px] leading-none flex justify-center">{kit.icon}</div>
-                                        <span className={`text-[9px] font-bold leading-none mt-0.5 ${tier?.startsWith("HT") || tier?.startsWith("Crystal HT") ? "text-amber-400" : tier?.startsWith("LT") || tier?.startsWith("Crystal LT") ? "text-white/60" : "text-white/20"}`}>
-                                          {tier ? tier.replace("Crystal ", "") : "—"}
-                                        </span>
+                                  ) : (
+                                    <span className="w-10 text-center text-xl font-bold text-white/30 block group-hover:text-white/60 transition-colors">
+                                      {player.rank}
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="px-6 py-4">
+                                  <div className="flex items-center gap-4">
+                                    <img src={player.avatar} alt={player.username} className="w-12 h-12 rounded-xl ring-2 ring-white/10 group-hover:ring-cyan-500/50 transition-all" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/64`; }} />
+                                    <div>
+                                      <div className="flex items-center gap-2">
+                                        <h3 className="font-bold text-white group-hover:text-cyan-400 transition-colors">{player.username}</h3>
                                       </div>
-                                    );
-                                  })}
-                                </div>
-                              </td>
-                            </motion.tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                                      <div className="flex items-center gap-2 mt-1">
+                                        <span className={`text-xs font-medium ${player.totalPoints >= 300 ? "text-amber-400" : player.totalPoints >= 200 ? "text-purple-400" : player.totalPoints >= 100 ? "text-cyan-400" : "text-white/50"}`}>
+                                          {getTitle(player.totalPoints)}
+                                        </span>
+                                        <span className="text-xs text-white/30">•</span>
+                                        <span className="text-xs text-white/50">{player.totalPoints} puan</span>
+                                        <span className="text-xs text-white/30">•</span>
+                                        <span className="text-xs text-white/50">🎮 {player.minecraftNick}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                                    {Object.entries(KITS).map(([kitKey, kit]) => {
+                                      const tier = player.tiers[kitKey];
+                                      return (
+                                        <div key={kitKey} className="w-9 h-9 rounded-lg bg-[#0f141b] border border-white/10 flex flex-col items-center justify-center hover:border-white/20 transition-all hover:scale-110 group/tier" title={`${kit.ad}: ${tier || 'Test olmamış'}`}>
+                                          <div className="text-[10px] leading-none flex justify-center">{kit.icon}</div>
+                                          <span className={`text-[9px] font-bold leading-none mt-0.5 ${tier?.startsWith("HT") || tier?.startsWith("Crystal HT") ? "text-amber-400" : tier?.startsWith("LT") || tier?.startsWith("Crystal LT") ? "text-white/60" : "text-white/20"}`}>
+                                            {tier ? tier.replace("Crystal ", "") : "—"}
+                                          </span>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </td>
+                              </motion.tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      {/* Sayfalama */}
+                      {totalPages > 1 && (
+                        <div className="flex items-center justify-center gap-2 py-6 border-t border-white/5">
+                          <button
+                            onClick={() => setCurrentPageRank(p => Math.max(1, p - 1))}
+                            disabled={currentPageRank === 1}
+                            className="px-4 py-2 rounded-lg bg-[#1a1f2e] text-white/60 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#222838] transition-all"
+                          >
+                            ◀ Önceki
+                          </button>
+                          <span className="px-4 py-2 text-sm text-white/60">
+                            Sayfa {currentPageRank} / {totalPages}
+                          </span>
+                          <button
+                            onClick={() => setCurrentPageRank(p => Math.min(totalPages, p + 1))}
+                            disabled={currentPageRank === totalPages}
+                            className="px-4 py-2 rounded-lg bg-[#1a1f2e] text-white/60 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#222838] transition-all"
+                          >
+                            Sonraki ▶
+                          </button>
+                        </div>
+                      )}
+                    </>
                   )}
                 </motion.div>
               ) : (
@@ -516,7 +704,7 @@ export default function App() {
                       5: "🌱"
                     };
                     return (
-                      <motion.div key={tierNum} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} className="bg-[#11161f] rounded-[20px] border border-white/5 overflow-hidden">
+                      <motion.div key={tierNum} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} className={`${cardTheme} rounded-[20px] border overflow-hidden`}>
                         <div className={`px-4 py-3 border-b border-white/5 ${tierNum === 1 ? "bg-gradient-to-r from-amber-500/20 to-yellow-600/20" : tierNum === 2 ? "bg-gradient-to-r from-slate-500/20 to-slate-600/20" : tierNum === 3 ? "bg-gradient-to-r from-orange-600/20 to-amber-700/20" : tierNum === 4 ? "bg-gradient-to-r from-red-500/20 to-orange-600/20" : "bg-gradient-to-r from-green-500/20 to-emerald-600/20"}`}>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
