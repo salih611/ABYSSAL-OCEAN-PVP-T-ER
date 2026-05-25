@@ -43,49 +43,49 @@ const UPSTASH_TOKEN = import.meta.env.VITE_UPSTASH_TOKEN || 'gQAAAAAAAYzJAAIgcDJ
 const KITS: Record<string, { ad: string; icon: JSX.Element; color: string; description: string }> = {
   vanilla: { 
     ad: "Vanilla", 
-    icon: <img src="https://www.tierslist.net/tier_icons/vanilla.svg" width="24" height="24" alt="Vanilla" className="w-6 h-6" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/vanilla.svg" width="28" height="28" alt="Vanilla" className="w-7 h-7" />, 
     color: "#fbbf24",
     description: "⚔️ Saf yetenek ve refleks!"
   },
   sword: { 
     ad: "Sword", 
-    icon: <img src="https://www.tierslist.net/tier_icons/sword.svg" width="24" height="24" alt="Sword" className="w-6 h-6" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/sword.svg" width="28" height="28" alt="Sword" className="w-7 h-7" />, 
     color: "#60a5fa",
     description: "🗡️ Kılıç ustalığı! Hızlı vuruşlar."
   },
   axe: { 
     ad: "Axe", 
-    icon: <img src="https://www.tierslist.net/tier_icons/axe.svg" width="24" height="24" alt="Axe" className="w-6 h-6" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/axe.svg" width="28" height="28" alt="Axe" className="w-7 h-7" />, 
     color: "#a78bfa",
     description: "🪓 Ağır darbe ustası! Yüksek hasar."
   },
   nethpot: { 
     ad: "NethOP", 
-    icon: <img src="https://www.tierslist.net/tier_icons/nethop.svg" width="24" height="24" alt="NethOP" className="w-6 h-6" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/nethop.svg" width="28" height="28" alt="NethOP" className="w-7 h-7" />, 
     color: "#ec4899",
     description: "🌌 Netherite zırh ve OP itemler!"
   },
   pot: { 
     ad: "Pot", 
-    icon: <img src="https://www.tierslist.net/tier_icons/pot.svg" width="24" height="24" alt="Pot" className="w-6 h-6" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/pot.svg" width="28" height="28" alt="Pot" className="w-7 h-7" />, 
     color: "#f43f5e",
     description: "🧪 Pot PvP ustası! Hız ve güç."
   },
   uhc: { 
     ad: "UHC", 
-    icon: <img src="https://www.tierslist.net/tier_icons/uhc.svg" width="24" height="24" alt="UHC" className="w-6 h-6" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/uhc.svg" width="28" height="28" alt="UHC" className="w-7 h-7" />, 
     color: "#ef4444",
     description: "🍎 Hardcore PvP! Can yenilenmez."
   },
   smp: { 
     ad: "SMP", 
-    icon: <img src="https://www.tierslist.net/tier_icons/smp.svg" width="24" height="24" alt="SMP" className="w-6 h-6" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/smp.svg" width="28" height="28" alt="SMP" className="w-7 h-7" />, 
     color: "#22c55e",
     description: "🌿 Survival PvP! Her şey serbest."
   },
   mace: { 
     ad: "Mace", 
-    icon: <img src="https://www.tierslist.net/tier_icons/mace.svg" width="24" height="24" alt="Mace" className="w-6 h-6" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/mace.svg" width="28" height="28" alt="Mace" className="w-7 h-7" />, 
     color: "#eab308",
     description: "🔨 Ağır çekiç ustası! Ezici güç."
   },
@@ -103,19 +103,6 @@ const TIER_POINTS: Record<string, number> = {
   "Crystal HT3": 10, "Crystal LT3": 6,
   "Crystal HT4": 4,  "Crystal LT4": 3,
   "Crystal HT5": 2,  "Crystal LT5": 1
-};
-
-const TIER_COLORS: Record<string, string> = {
-  HT1: "from-amber-400 to-yellow-600",
-  HT2: "from-slate-300 to-slate-500",
-  HT3: "from-orange-600 to-amber-700",
-  HT4: "from-blue-500 to-blue-700",
-  HT5: "from-purple-500 to-purple-700",
-  LT1: "from-emerald-500 to-emerald-700",
-  LT2: "from-cyan-500 to-cyan-700",
-  LT3: "from-indigo-500 to-indigo-700",
-  LT4: "from-pink-500 to-pink-700",
-  LT5: "from-gray-500 to-gray-700",
 };
 
 const KIT_ORDER: KitKey[] = ["overall", "vanilla", "sword", "axe", "nethpot", "pot", "uhc", "mace", "smp"];
@@ -594,9 +581,9 @@ export default function App() {
                           <thead>
                             <tr className="border-b border-white/5 bg-[#0f141b]/50">
                               <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider w-16">#</th>
-                              <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Oyuncu</th>
-                              <th className="text-right px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Bölge</th>
-                              <th className="text-right px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Tierler</th>
+                              <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">PLAYER</th>
+                              <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">REGION</th>
+                              <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">TIERS</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-white/[0.03]">
@@ -607,37 +594,40 @@ export default function App() {
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: idx * 0.005 }}
                                 onClick={() => setSelectedPlayer(player)}
-                                className="group hover:bg-white/5 cursor-pointer transition-all hover:scale-[1.01]"
+                                className="group hover:bg-white/5 cursor-pointer transition-all"
                               >
-                                <td className="px-6 py-4">
-                                  <span className="text-lg font-bold text-white/80">{player.rank}</span>
+                                <td className="px-6 py-4 align-top">
+                                  <span className="text-lg font-bold text-white/60">{player.rank}</span>
                                 </td>
                                 <td className="px-6 py-4">
                                   <div className="flex items-center gap-3">
-                                    <img src={player.avatar} alt={player.minecraftNick} className="w-10 h-10 rounded-full ring-1 ring-white/20" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/40`; }} />
+                                    <img src={player.avatar} alt={player.minecraftNick} className="w-12 h-12 rounded-full ring-1 ring-white/20" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/48`; }} />
                                     <div>
-                                      <div className="font-bold text-white group-hover:text-cyan-400 transition-colors">{player.minecraftNick}</div>
-                                      <div className="text-xs text-white/50">{getTitle(player.totalPoints)} ({player.totalPoints} points)</div>
+                                      <div className="font-bold text-white text-lg group-hover:text-cyan-400 transition-colors">{player.minecraftNick}</div>
+                                      <div className="text-sm text-white/50">{getTitle(player.totalPoints)} ({player.totalPoints} points)</div>
                                     </div>
                                   </div>
                                 </td>
-                                <td className="px-6 py-4 text-right">
-                                  <span className="inline-flex px-2 py-1 rounded text-xs font-bold bg-white/10 text-white/70">{player.region}</span>
+                                <td className="px-6 py-4 align-top">
+                                  <span className="inline-flex px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-white/80">{player.region}</span>
                                 </td>
                                 <td className="px-6 py-4">
-                                  <div className="flex items-center justify-end gap-1 flex-wrap">
+                                  <div className="flex flex-wrap items-center gap-1.5">
                                     {Object.entries(KITS).map(([kitKey, kit]) => {
                                       const tier = player.tiers[kitKey];
                                       const displayTier = tier ? tier.replace("Crystal ", "") : null;
                                       if (!displayTier) return null;
                                       return (
-                                        <span 
+                                        <div 
                                           key={kitKey} 
-                                          className={`text-xs font-bold px-1.5 py-0.5 rounded ${displayTier.startsWith("HT") ? "text-amber-400 bg-amber-400/10" : "text-white/60 bg-white/10"}`}
-                                          title={`${kit.ad}`}
+                                          className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 transition-all cursor-help group/tier"
+                                          title={kit.ad}
                                         >
-                                          {displayTier}
-                                        </span>
+                                          <span className="w-4 h-4">{kit.icon}</span>
+                                          <span className={`text-xs font-bold ${displayTier.startsWith("HT") ? "text-amber-400" : "text-white/60"}`}>
+                                            {displayTier}
+                                          </span>
+                                        </div>
                                       );
                                     })}
                                   </div>
@@ -708,10 +698,9 @@ export default function App() {
                                     <div className="flex-1 min-w-0">
                                       <span className="text-sm font-medium truncate group-hover:text-cyan-400 transition-colors block">{player.minecraftNick}</span>
                                       <div className="flex items-center gap-1.5 mt-0.5">
-                                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold bg-gradient-to-r ${TIER_COLORS[tier] || "from-gray-600 to-gray-700"} text-white`}>{displayTier}</span>
+                                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold bg-gradient-to-r ${displayTier?.startsWith("HT") ? "from-amber-500/20 to-yellow-600/20" : "from-gray-600/20 to-gray-700/20"} text-white`}>{displayTier}</span>
                                         <span className="text-[10px] text-white/40">{TIER_POINTS[tier] || 0}p</span>
                                       </div>
-                                      <div className="text-[9px] text-white/30 truncate mt-0.5">@{player.username}</div>
                                     </div>
                                     <svg className="w-3.5 h-3.5 text-white/20 group-hover:text-white/60 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -775,17 +764,21 @@ export default function App() {
                     const displayTier = tier?.replace("Crystal ", "") || tier;
                     const points = TIER_POINTS[tier] || 0;
                     return (
-                      <div key={kitKey} className="bg-[#0f141b] border border-white/10 rounded-2xl p-4 hover:border-cyan-500/30 transition-all hover:scale-105">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="w-8 h-8 flex items-center justify-center">{kit.icon}</div>
+                      <div key={kitKey} className="flex items-center justify-between bg-[#0f141b] border border-white/10 rounded-xl p-3 hover:border-cyan-500/30 transition-all">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6">{kit.icon}</div>
+                          <span className="text-sm text-white/80">{kit.ad}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
                           {tier ? (
-                            <span className={`text-xs font-bold px-2 py-1 rounded-lg bg-gradient-to-r ${TIER_COLORS[tier] || "from-gray-600 to-gray-700"} text-white`}>{displayTier}</span>
+                            <span className={`text-xs font-bold px-2 py-1 rounded ${displayTier?.startsWith("HT") ? "text-amber-400 bg-amber-400/10" : "text-white/60 bg-white/10"}`}>
+                              {displayTier}
+                            </span>
                           ) : (
                             <span className="text-xs text-white/30">—</span>
                           )}
+                          <span className="text-xs text-white/40">{points}p</span>
                         </div>
-                        <div className="text-sm font-medium text-white/90">{kit.ad}</div>
-                        <div className="text-xs text-white/40 mt-1">{points} puan</div>
                       </div>
                     );
                   })}
