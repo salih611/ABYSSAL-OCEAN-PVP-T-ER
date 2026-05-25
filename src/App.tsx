@@ -187,7 +187,6 @@ export default function App() {
       );
     }
     
-    // Sıralama
     switch (sortType) {
       case "points":
         filtered.sort((a, b) => b.totalPoints - a.totalPoints);
@@ -216,7 +215,6 @@ export default function App() {
       });
   }, [filteredPlayers, selectedKit]);
 
-  // Sayfalama
   const totalPages = Math.ceil(kitPlayers.length / playersPerPage);
   const currentPlayers = kitPlayers.slice(
     (currentPageRank - 1) * playersPerPage,
@@ -256,17 +254,14 @@ export default function App() {
     return groups;
   }, [kitPlayers, selectedKit]);
 
-  // Son 5 test olan oyuncu (son eklenenler)
   const recentPlayers = useMemo(() => {
     return [...players].sort((a, b) => b.tests - a.tests).slice(0, 5);
   }, [players]);
 
-  // Tema değiştirme
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
-  // Tema class'ları
   const themeClasses = theme === "dark" 
     ? "bg-[#0a0e14] text-white"
     : "bg-gray-100 text-gray-900";
@@ -420,7 +415,6 @@ export default function App() {
                 </motion.div>
               </div>
 
-              {/* Son Eklenen Oyuncular */}
               <div className="mb-20">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -527,7 +521,6 @@ export default function App() {
 
           {currentPage === "rankings" && (
             <main className="relative z-10 max-w-[1400px] mx-auto px-4 py-6">
-              {/* Sıralama Seçenekleri */}
               <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-white/50">Sırala:</span>
@@ -605,7 +598,7 @@ export default function App() {
                               <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider w-16">#</th>
                               <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Oyuncu</th>
                               <th className="text-right px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Tierler</th>
-                            </table>
+                             </tr>
                           </thead>
                           <tbody className="divide-y divide-white/[0.03]">
                             {currentPlayers.map((player, idx) => (
@@ -627,7 +620,7 @@ export default function App() {
                                       {player.rank}
                                     </span>
                                   )}
-                                </td>
+                                 </td>
                                 <td className="px-6 py-4">
                                   <div className="flex items-center gap-4">
                                     <img src={player.avatar} alt={player.username} className="w-12 h-12 rounded-xl ring-2 ring-white/10 group-hover:ring-cyan-500/50 transition-all" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/64`; }} />
@@ -646,7 +639,7 @@ export default function App() {
                                       </div>
                                     </div>
                                   </div>
-                                </td>
+                                 </td>
                                 <td className="px-6 py-4">
                                   <div className="flex items-center justify-end gap-1.5 flex-wrap">
                                     {Object.entries(KITS).map(([kitKey, kit]) => {
@@ -661,13 +654,12 @@ export default function App() {
                                       );
                                     })}
                                   </div>
-                                </td>
+                                 </td>
                               </motion.tr>
                             ))}
                           </tbody>
                         </table>
                       </div>
-                      {/* Sayfalama */}
                       {totalPages > 1 && (
                         <div className="flex items-center justify-center gap-2 py-6 border-t border-white/5">
                           <button
