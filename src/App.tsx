@@ -18,7 +18,9 @@ type KitKey = "overall" | "vanilla" | "sword" | "axe" | "nethpot" | "pot" | "uhc
 type PageType = "home" | "rankings";
 type SortType = "rank" | "points" | "name" | "tests";
 
+// ==========================================
 // F12 KORUMASI
+// ==========================================
 const disableDevTools = () => {
   if (typeof window === 'undefined') return;
   document.addEventListener('keydown', (e) => {
@@ -121,12 +123,12 @@ const TIER_COLORS: Record<string, string> = {
 const KIT_ORDER: KitKey[] = ["overall", "vanilla", "sword", "axe", "nethpot", "pot", "uhc", "mace", "smp"];
 
 const getTitle = (points: number): string => {
-  if (points >= 300) return "Combat Master";
-  if (points >= 200) return "Combat Ace";
-  if (points >= 150) return "Combat Veteran";
-  if (points >= 100) return "Combat Expert";
-  if (points >= 50) return "Combat Novice";
-  return "Rookie";
+  if (points >= 300) return "🏆 Efsanevi Savaşçı";
+  if (points >= 200) return "⚡ Usta Savaşçı";
+  if (points >= 150) return "🌟 Tecrübeli Savaşçı";
+  if (points >= 100) return "📈 Uzman Savaşçı";
+  if (points >= 50) return "🌱 Acemi Savaşçı";
+  return "🆕 Çaylak";
 };
 
 // En yüksek tier'ı bulan fonksiyon
@@ -302,11 +304,11 @@ export default function App() {
       let groupNum = 0;
       const tierUpper = tier.toUpperCase();
       
-      if (tierUpper.includes("HT1") || tierUpper.includes("LT1")) groupNum = 1;
-      else if (tierUpper.includes("HT2") || tierUpper.includes("LT2")) groupNum = 2;
-      else if (tierUpper.includes("HT3") || tierUpper.includes("LT3")) groupNum = 3;
-      else if (tierUpper.includes("HT4") || tierUpper.includes("LT4")) groupNum = 4;
-      else if (tierUpper.includes("HT5") || tierUpper.includes("LT5")) groupNum = 5;
+      if (tierUpper.includes("HT1") || tierUpper.includes("LT1") || tierUpper === "CRYSTAL HT1") groupNum = 1;
+      else if (tierUpper.includes("HT2") || tierUpper.includes("LT2") || tierUpper === "CRYSTAL HT2") groupNum = 2;
+      else if (tierUpper.includes("HT3") || tierUpper.includes("LT3") || tierUpper === "CRYSTAL HT3") groupNum = 3;
+      else if (tierUpper.includes("HT4") || tierUpper.includes("LT4") || tierUpper === "CRYSTAL HT4") groupNum = 4;
+      else if (tierUpper.includes("HT5") || tierUpper.includes("LT5") || tierUpper === "CRYSTAL HT5") groupNum = 5;
       
       if (groupNum >= 1 && groupNum <= 5) {
         groups[groupNum].push(player);
@@ -623,11 +625,14 @@ export default function App() {
                                   <div className="flex items-center gap-4">
                                     <img src={player.avatar} alt={player.username} className="w-12 h-12 rounded-xl ring-2 ring-white/10 group-hover:ring-cyan-500/50 transition-all" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/64`; }} />
                                     <div>
+                                      {/* Minecraft nick BÜYÜK, Discord nick KÜÇÜK */}
                                       <h3 className="font-bold text-white group-hover:text-cyan-400 transition-colors text-lg">{player.minecraftNick}</h3>
-                                      <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                      <div className="flex items-center gap-2 mt-1">
                                         <span className={`text-xs font-medium ${player.totalPoints >= 300 ? "text-amber-400" : player.totalPoints >= 200 ? "text-purple-400" : player.totalPoints >= 100 ? "text-cyan-400" : "text-white/50"}`}>
-                                          {getTitle(player.totalPoints)} ({player.totalPoints} puan)
+                                          {getTitle(player.totalPoints)}
                                         </span>
+                                        <span className="text-xs text-white/30">•</span>
+                                        <span className="text-xs text-white/50">{player.totalPoints} puan</span>
                                         <span className="text-xs text-white/30">•</span>
                                         <span className="text-xs text-white/50">@{player.username}</span>
                                       </div>
@@ -635,23 +640,26 @@ export default function App() {
                                   </div>
                                  </td>
                                 <td className="px-6 py-4">
-                                  <div className="flex items-center justify-end gap-2 flex-wrap">
+                                  <div className="flex items-center justify-end gap-1.5 flex-wrap">
                                     {Object.entries(KITS).map(([kitKey, kit]) => {
                                       const tier = player.tiers[kitKey];
+                                      // Sadece tier adını göster (HT1, LT2 vb.)
                                       const displayTier = tier ? tier.replace("Crystal ", "") : null;
-                                      if (!displayTier) return null;
                                       return (
                                         <div 
                                           key={kitKey} 
-                                          className="px-2.5 py-1.5 rounded-lg bg-[#0f141b] border border-white/10 hover:border-cyan-500/50 transition-all hover:scale-105 cursor-help text-sm font-bold" 
-                                          title={`${kit.ad}`}
+                                          className="w-9 h-9 rounded-lg bg-[#0f141b] border border-white/10 flex flex-col items-center justify-center hover:border-cyan-500/50 transition-all hover:scale-110 group/tier cursor-help" 
+                                          title={`${kit.ad}: ${displayTier || 'Test olmamış'}`}
                                         >
-                                          {displayTier}
+                                          <div className="text-[10px] leading-none flex justify-center">{kit.icon}</div>
+                                          <span className={`text-[9px] font-bold leading-none mt-0.5 ${displayTier?.startsWith("HT") ? "text-amber-400" : displayTier?.startsWith("LT") ? "text-white/60" : "text-white/20"}`}>
+                                            {displayTier || "—"}
+                                          </span>
                                         </div>
                                       );
                                     })}
                                   </div>
-                                </td>
+                                 </td>
                               </motion.tr>
                             ))}
                           </tbody>
@@ -742,6 +750,7 @@ export default function App() {
         </motion.div>
       </AnimatePresence>
 
+      {/* Player Modal - GÜNCELLENDİ */}
       {selectedPlayer && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" onClick={() => setSelectedPlayer(null)}>
           <motion.div 
@@ -761,12 +770,15 @@ export default function App() {
                     <img src={selectedPlayer.avatar} alt="" className="relative w-20 h-20 rounded-2xl ring-2 ring-white/20" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/64`; }} />
                   </div>
                   <div>
+                    {/* Minecraft nick BÜYÜK */}
                     <h2 className="text-2xl font-black">{selectedPlayer.minecraftNick}</h2>
                     <div className="flex items-center gap-3 mt-1.5">
                       <span className={`px-3 py-1 rounded-full text-xs font-bold ${selectedPlayer.totalPoints >= 300 ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" : selectedPlayer.totalPoints >= 200 ? "bg-purple-500/20 text-purple-400 border border-purple-500/30" : selectedPlayer.totalPoints >= 100 ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30" : "bg-gray-500/20 text-gray-400 border border-gray-500/30"}`}>
-                        {getTitle(selectedPlayer.totalPoints)} ({selectedPlayer.totalPoints} puan)
+                        {getTitle(selectedPlayer.totalPoints)}
                       </span>
+                      <span className="text-sm text-white/60">#{selectedPlayer.rank} • {selectedPlayer.totalPoints} puan</span>
                     </div>
+                    {/* Discord nick KÜÇÜK */}
                     <div className="mt-2 text-sm text-white/50">Discord: <span className="text-cyan-400">@{selectedPlayer.username}</span></div>
                   </div>
                 </div>
