@@ -266,7 +266,6 @@ export default function App() {
         >
           {currentPage === "home" && (
             <main className="relative z-10 max-w-[1400px] mx-auto px-4 py-12">
-              {/* Hero Section - Sade ve şık */}
               <div className="text-center mb-20">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -322,7 +321,6 @@ export default function App() {
                 </motion.div>
               </div>
 
-              {/* Kitler Bölümü */}
               <div className="mb-20">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -363,7 +361,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* CTA Bölümü */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -388,7 +385,6 @@ export default function App() {
                 </div>
               </motion.div>
 
-              {/* Footer */}
               <div className="mt-20 pt-8 border-t border-white/5 text-center text-white/30 text-sm">
                 <p>© 2025 Abyssal Ocean Tier List. Tüm hakları saklıdır.</p>
               </div>
@@ -485,7 +481,7 @@ export default function App() {
                                     </div>
                                   </div>
                                 </div>
-                               </td>
+                              </td>
                               <td className="px-6 py-4">
                                 <div className="flex items-center justify-end gap-1.5 flex-wrap">
                                   {Object.entries(KITS).map(([kitKey, kit]) => {
@@ -500,11 +496,11 @@ export default function App() {
                                     );
                                   })}
                                 </div>
-                               </td>
+                              </td>
                             </motion.tr>
                           ))}
                         </tbody>
-                      <tr>
+                      </table>
                     </div>
                   )}
                 </motion.div>
