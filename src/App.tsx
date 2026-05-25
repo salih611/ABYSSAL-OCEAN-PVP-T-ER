@@ -17,6 +17,10 @@ interface Player {
 type KitKey = "overall" | "vanilla" | "sword" | "axe" | "nethpot" | "pot" | "uhc" | "mace" | "smp";
 type PageType = "home" | "rankings";
 
+// UPSTASH BİLGİLERİ (Environment Variables'dan al veya direkt yaz)
+const UPSTASH_URL = import.meta.env.VITE_UPSTASH_URL || 'https://adequate-loon-101577.upstash.io';
+const UPSTASH_TOKEN = import.meta.env.VITE_UPSTASH_TOKEN || 'gQAAAAAAAYzJAAIgcDJhOWJiYWFhM2M2MmE0NThkYTJiMjZjZmM3ZDcxZWMwNA';
+
 const KITS: Record<string, { ad: string; icon: JSX.Element; color: string }> = {
   vanilla: { 
     ad: "Vanilla", 
@@ -103,28 +107,29 @@ export default function App() {
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Redis'ten veri çek
+  // Redis'ten doğrudan veri çek
   const fetchPlayers = async () => {
     try {
-      const res = await fetch('/api/players');
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.length > 0) {
-          setPlayers(data);
+      const response = await fetch(`${UPSTASH_URL}/get/players`, {
+        headers: { 
+          Authorization: `Bearer ${UPSTASH_TOKEN}`,
+          'Content-Type': 'application/json'
         }
+      });
+      
+      const data = await response.json();
+      let players: Player[] = [];
+      
+      if (data.result) {
+        players = JSON.parse(data.result);
       }
+      
+      setPlayers(players);
+      console.log('✅ Veriler çekildi:', players.length, 'oyuncu');
+      
     } catch (e) {
-      console.log("Redis bağlantı hatası:", e);
-      // Fallback: JSON dosyası
-      try {
-        const fallbackRes = await fetch('/web_oyuncular.json');
-        if (fallbackRes.ok) {
-          const fallbackData = await fallbackRes.json();
-          setPlayers(fallbackData);
-        }
-      } catch(fallbackErr) {
-        console.log("JSON da okunamadı");
-      }
+      console.log('❌ Bağlantı hatası:', e);
+      setPlayers([]);
     } finally {
       setLoading(false);
     }
@@ -132,7 +137,7 @@ export default function App() {
 
   useEffect(() => {
     fetchPlayers();
-    const interval = setInterval(fetchPlayers, 10000); // 10 saniyede bir yenile
+    const interval = setInterval(fetchPlayers, 30000); // 30 saniyede bir yenile
     return () => clearInterval(interval);
   }, []);
 
@@ -185,7 +190,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#0a0e14] text-white">
-      {/* Header - Aynı kalabilir */}
       <header className="relative z-50 sticky top-0 backdrop-blur-xl bg-[#0f141b]/80 border-b border-white/5">
         <div className="max-w-[1400px] mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-4">
@@ -232,7 +236,6 @@ export default function App() {
         >
           {currentPage === "home" && (
             <main className="relative z-10 max-w-[1400px] mx-auto px-4 py-12">
-              {/* Home Page Content - Aynı kalabilir */}
               <div className="text-center mb-16">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-cyan-400 text-sm font-semibold mb-6">
                   <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span>
@@ -250,7 +253,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Stats Grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
                 {[
                   { label: "Toplam Oyuncu", value: players.length, icon: "👥", color: "from-cyan-500 to-blue-600" },
@@ -266,7 +268,6 @@ export default function App() {
                 ))}
               </div>
 
-              {/* Kit Showcase */}
               <div className="mb-16">
                 <div className="text-center mb-10">
                   <h2 className="text-3xl md:text-4xl font-black mb-3">Test Edebileceğin Kitler</h2>
@@ -283,7 +284,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* CTA Section */}
               <div className="relative bg-gradient-to-br from-cyan-600/20 via-blue-600/20 to-purple-600/20 border border-white/10 rounded-3xl p-8 md:p-12 text-center overflow-hidden">
                 <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/20 rounded-full blur-[100px]" />
                 <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-[100px]" />
@@ -302,7 +302,6 @@ export default function App() {
 
           {currentPage === "rankings" && (
             <main className="relative z-10 max-w-[1400px] mx-auto px-4 py-6">
-              {/* Kit Butonları */}
               <div className="mb-6 overflow-x-auto scrollbar-hide">
                 <div className="flex items-center gap-2 min-w-max pb-2">
                   {KIT_ORDER.map((key, index) => {
@@ -471,7 +470,6 @@ export default function App() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Player Modal - GÜNCELLENDİ */}
       {selectedPlayer && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" onClick={() => setSelectedPlayer(null)}>
           <div className="relative w-full max-w-2xl bg-[#11161f] rounded-[28px] border border-white/10 shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
