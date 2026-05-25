@@ -72,8 +72,10 @@ const KITS: Record<string, { ad: string; icon: JSX.Element; color: string; descr
 };
 
 const TIER_POINTS: Record<string, number> = {
-  HT1: 100, HT2: 85, HT3: 70, HT4: 60, HT5: 50,
-  LT1: 40,  LT2: 30, LT3: 20, LT4: 10, LT5: 5,
+  "HT1": 100, "HT2": 85, "HT3": 70, "HT4": 60, "HT5": 50,
+  "LT1": 40, "LT2": 30, "LT3": 20, "LT4": 10, "LT5": 5,
+  "Crystal HT1": 100, "Crystal HT2": 85, "Crystal HT3": 70, "Crystal HT4": 60, "Crystal HT5": 50,
+  "Crystal LT1": 40, "Crystal LT2": 30, "Crystal LT3": 20, "Crystal LT4": 10, "Crystal LT5": 5
 };
 
 const TIER_COLORS: Record<string, string> = {
@@ -87,6 +89,16 @@ const TIER_COLORS: Record<string, string> = {
   LT3: "from-indigo-500 to-indigo-700",
   LT4: "from-pink-500 to-pink-700",
   LT5: "from-gray-500 to-gray-700",
+  "Crystal HT1": "from-amber-400 to-yellow-600",
+  "Crystal HT2": "from-slate-300 to-slate-500",
+  "Crystal HT3": "from-orange-600 to-amber-700",
+  "Crystal HT4": "from-blue-500 to-blue-700",
+  "Crystal HT5": "from-purple-500 to-purple-700",
+  "Crystal LT1": "from-emerald-500 to-emerald-700",
+  "Crystal LT2": "from-cyan-500 to-cyan-700",
+  "Crystal LT3": "from-indigo-500 to-indigo-700",
+  "Crystal LT4": "from-pink-500 to-pink-700",
+  "Crystal LT5": "from-gray-500 to-gray-700",
 };
 
 const KIT_ORDER: KitKey[] = ["overall", "vanilla", "sword", "axe", "nethpot", "pot", "uhc", "mace", "smp"];
@@ -96,7 +108,7 @@ const getTitle = (points: number): string => {
   if (points >= 200) return "⚡ Usta Savaşçı";
   if (points >= 150) return "🌟 Tecrübeli Savaşçı";
   if (points >= 100) return "📈 Uzman Savaşçı";
-  if (points >= 50)  return "🌱 Acemi Savaşçı";
+  if (points >= 50) return "🌱 Acemi Savaşçı";
   return "🆕 Çaylak";
 };
 
@@ -118,22 +130,18 @@ export default function App() {
   const fetchPlayers = async () => {
     try {
       const response = await fetch(`${UPSTASH_URL}/get/players`, {
-        headers: { 
+        headers: {
           Authorization: `Bearer ${UPSTASH_TOKEN}`,
           'Content-Type': 'application/json'
         }
       });
-      
       const data = await response.json();
       let players: Player[] = [];
-      
       if (data.result) {
         players = JSON.parse(data.result);
       }
-      
       setPlayers(players);
       console.log('✅ Veriler çekildi:', players.length, 'oyuncu');
-      
     } catch (e) {
       console.log('❌ Bağlantı hatası:', e);
       setPlayers([]);
@@ -167,20 +175,38 @@ export default function App() {
       });
   }, [filteredPlayers, selectedKit]);
 
+  // GÜNCELLENMİŞ: Tier 1-5 gruplama (Crystal ve normal tier'ları destekler)
   const playersByTier = useMemo(() => {
     if (selectedKit === "overall") return null;
     const groups: Record<number, Player[]> = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+    
     kitPlayers.forEach(player => {
       const tier = player.tiers[selectedKit];
       if (!tier) return;
+      
       let groupNum = 0;
-      if (tier === "HT1" || tier === "LT1") groupNum = 1;
-      else if (tier === "HT2" || tier === "LT2") groupNum = 2;
-      else if (tier === "HT3" || tier === "LT3") groupNum = 3;
-      else if (tier === "HT4" || tier === "LT4") groupNum = 4;
-      else if (tier === "HT5" || tier === "LT5") groupNum = 5;
-      if (groupNum >= 1 && groupNum <= 5) groups[groupNum].push(player);
+      const tierUpper = tier.toUpperCase();
+      
+      if (tierUpper.includes("HT1") || tierUpper.includes("LT1") || tierUpper === "CRYSTAL HT1" || tierUpper === "CRYSTAL LT1") groupNum = 1;
+      else if (tierUpper.includes("HT2") || tierUpper.includes("LT2") || tierUpper === "CRYSTAL HT2" || tierUpper === "CRYSTAL LT2") groupNum = 2;
+      else if (tierUpper.includes("HT3") || tierUpper.includes("LT3") || tierUpper === "CRYSTAL HT3" || tierUpper === "CRYSTAL LT3") groupNum = 3;
+      else if (tierUpper.includes("HT4") || tierUpper.includes("LT4") || tierUpper === "CRYSTAL HT4" || tierUpper === "CRYSTAL LT4") groupNum = 4;
+      else if (tierUpper.includes("HT5") || tierUpper.includes("LT5") || tierUpper === "CRYSTAL HT5" || tierUpper === "CRYSTAL LT5") groupNum = 5;
+      
+      if (groupNum >= 1 && groupNum <= 5) {
+        groups[groupNum].push(player);
+      }
     });
+    
+    // Her tier grubunu puanlarına göre sırala
+    for (let i = 1; i <= 5; i++) {
+      groups[i].sort((a, b) => {
+        const pa = TIER_POINTS[a.tiers[selectedKit]] || 0;
+        const pb = TIER_POINTS[b.tiers[selectedKit]] || 0;
+        return pb - pa;
+      });
+    }
+    
     return groups;
   }, [kitPlayers, selectedKit]);
 
@@ -412,8 +438,8 @@ export default function App() {
                                     return (
                                       <div key={kitKey} className="w-9 h-9 rounded-lg bg-[#0f141b] border border-white/10 flex flex-col items-center justify-center hover:border-white/20 transition-all hover:scale-110 group/tier" title={`${kit.ad}: ${tier || 'Test olmamış'}`}>
                                         <div className="text-[10px] leading-none flex justify-center">{kit.icon}</div>
-                                        <span className={`text-[9px] font-bold leading-none mt-0.5 ${tier?.startsWith("HT") ? "text-amber-400" : tier?.startsWith("LT") ? "text-white/60" : "text-white/20"}`}>
-                                          {tier || "—"}
+                                        <span className={`text-[9px] font-bold leading-none mt-0.5 ${tier?.startsWith("HT") || tier?.startsWith("Crystal HT") ? "text-amber-400" : tier?.startsWith("LT") || tier?.startsWith("Crystal LT") ? "text-white/60" : "text-white/20"}`}>
+                                          {tier ? tier.replace("Crystal ", "") : "—"}
                                         </span>
                                       </div>
                                     );
@@ -454,14 +480,15 @@ export default function App() {
                             <div className="space-y-1">
                               {tierPlayers.map((player) => {
                                 const tier = player.tiers[selectedKit];
+                                const displayTier = tier?.replace("Crystal ", "") || tier;
                                 return (
                                   <button key={player.id} onClick={() => setSelectedPlayer(player)} className="w-full flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/5 transition-all group text-left">
                                     <img src={player.avatar} alt="" className="w-8 h-8 rounded-lg ring-1 ring-white/10 group-hover:ring-cyan-500/50 transition-all" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/32`; }} />
                                     <div className="flex-1 min-w-0">
                                       <span className="text-sm font-medium truncate group-hover:text-cyan-400 transition-colors block">{player.username}</span>
                                       <div className="flex items-center gap-1.5 mt-0.5">
-                                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold bg-gradient-to-r ${TIER_COLORS[tier] || "from-gray-600 to-gray-700"} text-white`}>{tier}</span>
-                                        <span className="text-[10px] text-white/40">{TIER_POINTS[tier]}p</span>
+                                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold bg-gradient-to-r ${TIER_COLORS[tier] || TIER_COLORS[displayTier] || "from-gray-600 to-gray-700"} text-white`}>{displayTier}</span>
+                                        <span className="text-[10px] text-white/40">{TIER_POINTS[tier] || 0}p</span>
                                       </div>
                                       <div className="text-[9px] text-white/30 truncate mt-0.5">🎮 {player.minecraftNick}</div>
                                     </div>
@@ -518,13 +545,14 @@ export default function App() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {Object.entries(KITS).map(([kitKey, kit]) => {
                     const tier = selectedPlayer.tiers[kitKey];
+                    const displayTier = tier?.replace("Crystal ", "") || tier;
                     const points = TIER_POINTS[tier] || 0;
                     return (
                       <div key={kitKey} className="bg-[#0f141b] border border-white/10 rounded-2xl p-4 hover:border-white/20 transition-all">
                         <div className="flex items-center justify-between mb-2">
                           <div className="w-8 h-8 flex items-center justify-center">{kit.icon}</div>
                           {tier ? (
-                            <span className={`text-xs font-bold px-2 py-1 rounded-lg bg-gradient-to-r ${TIER_COLORS[tier]} text-white`}>{tier}</span>
+                            <span className={`text-xs font-bold px-2 py-1 rounded-lg bg-gradient-to-r ${TIER_COLORS[tier] || TIER_COLORS[displayTier] || "from-gray-600 to-gray-700"} text-white`}>{displayTier}</span>
                           ) : (
                             <span className="text-xs text-white/30">—</span>
                           )}
@@ -538,7 +566,7 @@ export default function App() {
                 <div className="mt-6 pt-6 border-t border-white/5 grid grid-cols-3 gap-4">
                   {[
                     { label: "Toplam Test", value: selectedPlayer.tests },
-                    { label: "HT Kit Sayısı", value: Object.values(selectedPlayer.tiers).filter(t => t?.startsWith("HT")).length },
+                    { label: "HT Kit Sayısı", value: Object.values(selectedPlayer.tiers).filter(t => t?.startsWith("HT") || t?.startsWith("Crystal HT")).length },
                     { label: "Bölge", value: selectedPlayer.region },
                   ].map((stat) => (
                     <div key={stat.label} className="text-center">
