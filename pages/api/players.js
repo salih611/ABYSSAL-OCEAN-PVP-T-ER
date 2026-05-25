@@ -1,6 +1,4 @@
 // pages/api/players.js
-// Bu dosyayı Vercel projendeki pages/api klasörüne KAYDET
-
 export default async function handler(req, res) {
     // CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -10,15 +8,13 @@ export default async function handler(req, res) {
         return res.status(200).end();
     }
     
-    // !!! BURAYA KENDİ YENİ UPSTASH BİLGİLERİNİ YAZ !!!
-    // Upstash Dashboard > Database > Details > REST API
-    const UPSTASH_URL = 'https://real-urchin-90350.upstash.io';
-    const UPSTASH_TOKEN = 'ggAAAAAAAWDuAAIgcDHgONANYCCw_HIarBfhvrDX0CHEIsrIIMeaKvpSXNtKgg';
+    // YENİ UPSTASH BİLGİLERİ
+    const UPSTASH_URL = 'https://adequate-loon-101577.upstash.io';
+    const UPSTASH_TOKEN = 'gQAAAAAAAYzJAAIgcDJhOWJiYWFhM2M2MmE0NThkYTJiMjZjZmM3ZDcxZWMwNA';
     
     try {
         console.log('📡 Redis bağlanıyor...');
         
-        // Players verisini al
         const response = await fetch(`${UPSTASH_URL}/get/players`, {
             method: 'GET',
             headers: { 
