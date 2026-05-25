@@ -14,19 +14,8 @@ interface Player {
   minecraftNick: string;
 }
 
-interface Video {
-  id: string;
-  userId: string;
-  username: string;
-  videoUrl: string;
-  thumbnail: string;
-  likes: number;
-  comments: { id: string; username: string; text: string; }[];
-  createdAt: number;
-}
-
 type KitKey = "overall" | "vanilla" | "sword" | "axe" | "nethpot" | "pot" | "uhc" | "mace" | "smp";
-type PageType = "home" | "rankings" | "reels";
+type PageType = "home" | "rankings";
 type SortType = "rank" | "points" | "name" | "tests";
 type ThemeType = "dark" | "light";
 
@@ -143,15 +132,15 @@ const MoonIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-// Su baloncukları bileşeni
+// Su baloncukları efekti
 const Bubbles = () => {
-  const bubbles = useMemo(() => Array.from({ length: 30 }, (_, i) => ({
+  const bubbles = useMemo(() => Array.from({ length: 25 }, (_, i) => ({
     id: i,
-    size: Math.random() * 40 + 10,
+    size: Math.random() * 30 + 8,
     left: Math.random() * 100,
-    duration: Math.random() * 15 + 8,
-    delay: Math.random() * 10,
-    opacity: Math.random() * 0.3 + 0.1
+    duration: Math.random() * 12 + 6,
+    delay: Math.random() * 8,
+    opacity: Math.random() * 0.25 + 0.05
   })), []);
   
   return (
@@ -159,7 +148,7 @@ const Bubbles = () => {
       {bubbles.map(bubble => (
         <div
           key={bubble.id}
-          className="absolute bottom-0 rounded-full bg-gradient-to-t from-cyan-400/30 to-blue-400/20"
+          className="absolute bottom-0 rounded-full bg-gradient-to-t from-cyan-400/20 to-blue-400/10"
           style={{
             width: bubble.size,
             height: bubble.size,
@@ -172,25 +161,24 @@ const Bubbles = () => {
       ))}
       <style>{`
         @keyframes bubbleFloat {
-          0% {
-            transform: translateY(0) scale(0.5);
-            opacity: 0;
-          }
-          20% {
-            opacity: 0.3;
-          }
-          80% {
-            opacity: 0.2;
-          }
-          100% {
-            transform: translateY(-100vh) scale(1.2);
-            opacity: 0;
-          }
+          0% { transform: translateY(0) scale(0.3); opacity: 0; }
+          20% { opacity: 0.3; }
+          80% { opacity: 0.15; }
+          100% { transform: translateY(-100vh) scale(1); opacity: 0; }
         }
       `}</style>
     </div>
   );
 };
+
+// Skeleton loading bileşeni
+const SkeletonRow = () => (
+  <tr className="animate-pulse">
+    <td className="px-6 py-4"><div className="w-10 h-10 bg-white/10 rounded-xl"></div></td>
+    <td className="px-6 py-4"><div className="flex items-center gap-4"><div className="w-12 h-12 bg-white/10 rounded-xl"></div><div><div className="w-32 h-4 bg-white/10 rounded mb-2"></div><div className="w-24 h-3 bg-white/10 rounded"></div></div></div></td>
+    <td className="px-6 py-4"><div className="flex justify-end gap-1"><div className="w-9 h-9 bg-white/10 rounded-lg"></div><div className="w-9 h-9 bg-white/10 rounded-lg"></div><div className="w-9 h-9 bg-white/10 rounded-lg"></div></div></td>
+  </tr>
+);
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageType>("home");
@@ -202,10 +190,6 @@ export default function App() {
   const [sortType, setSortType] = useState<SortType>("rank");
   const [currentPageRank, setCurrentPageRank] = useState(1);
   const [theme, setTheme] = useState<ThemeType>("dark");
-  const [videos, setVideos] = useState<Video[]>([]);
-  const [showUploadModal, setShowUploadModal] = useState(false);
-  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
-  const [commentText, setCommentText] = useState("");
   const playersPerPage = 20;
 
   const fetchPlayers = async () => {
@@ -230,40 +214,6 @@ export default function App() {
       setLoading(false);
     }
   };
-
-  // Örnek videolar (gerçekte localStorage veya backend'den gelecek)
-  useEffect(() => {
-    const savedVideos = localStorage.getItem("abyssal_reels");
-    if (savedVideos) {
-      setVideos(JSON.parse(savedVideos));
-    } else {
-      // Örnek demo videolar
-      const demoVideos: Video[] = [
-        {
-          id: "1",
-          userId: "demo1",
-          username: "PvpMaster",
-          videoUrl: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
-          thumbnail: "https://mc-heads.net/avatar/Steve/128",
-          likes: 42,
-          comments: [{ id: "c1", username: "pvp_fan", text: "Harika combo!" }],
-          createdAt: Date.now()
-        },
-        {
-          id: "2",
-          userId: "demo2",
-          username: "SwordLegend",
-          videoUrl: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_2mb.mp4",
-          thumbnail: "https://mc-heads.net/avatar/Alex/128",
-          likes: 28,
-          comments: [],
-          createdAt: Date.now() - 86400000
-        }
-      ];
-      setVideos(demoVideos);
-      localStorage.setItem("abyssal_reels", JSON.stringify(demoVideos));
-    }
-  }, []);
 
   useEffect(() => {
     fetchPlayers();
@@ -359,51 +309,50 @@ export default function App() {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
-  const likeVideo = (videoId: string) => {
-    setVideos(prev => prev.map(v => 
-      v.id === videoId ? { ...v, likes: v.likes + 1 } : v
-    ));
-    localStorage.setItem("abyssal_reels", JSON.stringify(videos.map(v => 
-      v.id === videoId ? { ...v, likes: v.likes + 1 } : v
-    )));
-  };
-
-  const addComment = (videoId: string) => {
-    if (!commentText.trim()) return;
-    const newComment = {
-      id: Date.now().toString(),
-      username: "Guest",
-      text: commentText
-    };
-    setVideos(prev => prev.map(v =>
-      v.id === videoId ? { ...v, comments: [...v.comments, newComment] } : v
-    ));
-    setCommentText("");
-  };
-
+  // Tema class'ları - GELİŞTİRİLMİŞ
   const themeClasses = theme === "dark" 
-    ? "bg-gradient-to-b from-[#0a0e14] via-[#0f1a2e] to-[#0a0e14] text-white"
-    : "bg-gradient-to-b from-sky-100 via-blue-100 to-cyan-100 text-gray-900";
+    ? "bg-gradient-to-br from-slate-900 via-cyan-950 to-slate-900 text-white"
+    : "bg-gradient-to-br from-sky-100 via-blue-100 to-cyan-100 text-gray-800";
 
   const headerTheme = theme === "dark"
-    ? "bg-[#0f141b]/80 border-white/5"
-    : "bg-white/80 border-gray-200";
+    ? "bg-slate-900/80 backdrop-blur-xl border-white/10"
+    : "bg-white/80 backdrop-blur-xl border-gray-200";
 
   const cardTheme = theme === "dark"
-    ? "bg-[#11161f]/80 backdrop-blur-sm border-white/5"
-    : "bg-white/80 backdrop-blur-sm border-gray-200 shadow-lg";
+    ? "bg-slate-800/50 backdrop-blur-sm border-white/10"
+    : "bg-white/70 backdrop-blur-sm border-gray-200 shadow-lg";
 
   const buttonTheme = theme === "dark"
-    ? "bg-[#1a1f2e] text-white/60 hover:bg-[#222838] hover:text-white"
-    : "bg-gray-200 text-gray-700 hover:bg-gray-300 hover:text-gray-900";
+    ? "bg-slate-800 text-white/60 hover:bg-slate-700 hover:text-white"
+    : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900";
 
   const activeButtonTheme = theme === "dark"
-    ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30"
-    : "bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/30";
+    ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30 ring-2 ring-cyan-400/50"
+    : "bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/30 ring-2 ring-cyan-400/50";
 
   const inputTheme = theme === "dark"
-    ? "bg-[#1a1f2e] border-white/10 placeholder-white/30"
-    : "bg-gray-200 border-gray-300 placeholder-gray-500";
+    ? "bg-slate-800 border-white/10 placeholder-white/30 focus:ring-2 focus:ring-cyan-500/50"
+    : "bg-white border-gray-300 placeholder-gray-500 focus:ring-2 focus:ring-cyan-500/50";
+
+  // Scroll reveal efekti için ref
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const elementsRef = useRef<(HTMLElement | null)[]>([]);
+
+  useEffect(() => {
+    observerRef.current = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: "50px" });
+
+    elementsRef.current.forEach(el => {
+      if (el) observerRef.current?.observe(el);
+    });
+
+    return () => observerRef.current?.disconnect();
+  }, [currentPage]);
 
   if (loading) {
     return (
@@ -416,23 +365,22 @@ export default function App() {
             <div className="absolute inset-2 rounded-full bg-cyan-500/10 animate-pulse"></div>
           </div>
           <p className="text-cyan-400 font-medium tracking-wide">Okyanusun Derinliklerine Dalıyoruz...</p>
-          <p className="text-sm text-white/40 mt-2">Oyuncular getiriliyor</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen ${themeClasses} transition-colors duration-300 relative`}>
+    <div className={`min-h-screen ${themeClasses} transition-all duration-500 relative`}>
       <Bubbles />
       
-      <header className={`relative z-50 sticky top-0 backdrop-blur-xl ${headerTheme} border-b transition-colors duration-300`}>
+      <header className={`relative z-50 sticky top-0 backdrop-blur-xl ${headerTheme} border-b transition-all duration-300`}>
         <div className="max-w-[1400px] mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-6">
-              <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentPage("home")}>
+              <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setCurrentPage("home")}>
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-xl blur-md opacity-50"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-xl blur-md opacity-50 group-hover:opacity-100 transition-all"></div>
                   <img src="/logo.png" alt="Abyssal Ocean" className="relative h-12 w-12 rounded-xl object-cover" />
                 </div>
                 <div>
@@ -443,9 +391,14 @@ export default function App() {
                 </div>
               </div>
               <nav className="hidden lg:flex items-center gap-1">
-                <button onClick={() => setCurrentPage("home")} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${currentPage === "home" ? activeButtonTheme : buttonTheme}`}>🏠 <span>Home</span></button>
-                <button onClick={() => setCurrentPage("rankings")} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${currentPage === "rankings" ? activeButtonTheme : buttonTheme}`}>🏆 <span>Rankings</span></button>
-                <button onClick={() => setCurrentPage("reels")} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${currentPage === "reels" ? activeButtonTheme : buttonTheme}`}>📱 <span>Reels</span></button>
+                <button onClick={() => setCurrentPage("home")} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all relative overflow-hidden group ${currentPage === "home" ? activeButtonTheme : buttonTheme}`}>
+                  <span className="relative z-10">🏠 Home</span>
+                  {currentPage !== "home" && <span className="absolute inset-0 bg-white/5 translate-y-full group-hover:translate-y-0 transition-transform"></span>}
+                </button>
+                <button onClick={() => setCurrentPage("rankings")} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all relative overflow-hidden group ${currentPage === "rankings" ? activeButtonTheme : buttonTheme}`}>
+                  <span className="relative z-10">🏆 Rankings</span>
+                  {currentPage !== "rankings" && <span className="absolute inset-0 bg-white/5 translate-y-full group-hover:translate-y-0 transition-transform"></span>}
+                </button>
               </nav>
             </div>
             <div className="flex items-center gap-3">
@@ -454,12 +407,12 @@ export default function App() {
                   <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                  <input type="text" placeholder="Oyuncu veya Minecraft Nick ara..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className={`w-[260px] pl-9 pr-4 py-2 rounded-xl text-sm focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all ${inputTheme}`} />
+                  <input type="text" placeholder="Oyuncu veya Nick ara..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className={`w-[260px] pl-9 pr-4 py-2 rounded-xl text-sm focus:outline-none transition-all ${inputTheme}`} />
                 </div>
               )}
               <button
                 onClick={toggleTheme}
-                className="p-2.5 rounded-xl bg-[#1a1f2e] border border-white/10 hover:border-cyan-500/50 transition-all"
+                className="p-2.5 rounded-xl bg-slate-800 border border-white/10 hover:border-cyan-500/50 transition-all hover:scale-110"
               >
                 {theme === "dark" ? (
                   <SunIcon className="w-5 h-5 text-yellow-400" />
@@ -467,7 +420,7 @@ export default function App() {
                   <MoonIcon className="w-5 h-5 text-gray-700" />
                 )}
               </button>
-              <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2.5 bg-[#5865F2] hover:bg-[#4752c4] rounded-xl transition-colors font-medium text-sm">
+              <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2.5 bg-[#5865F2] hover:bg-[#4752c4] rounded-xl transition-all font-medium text-sm hover:scale-105">
                 <DiscordIcon className="w-5 h-5" />
                 <span className="hidden sm:inline">Discord</span>
               </a>
@@ -479,10 +432,10 @@ export default function App() {
       <AnimatePresence mode="wait">
         <motion.div
           key={currentPage}
-          initial={{ opacity: 0, x: currentPage === "home" ? -30 : currentPage === "reels" ? 30 : 0 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: currentPage === "home" ? 30 : currentPage === "reels" ? -30 : 0 }}
-          transition={{ duration: 0.2, ease: "easeInOut" }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
         >
           {currentPage === "home" && (
             <main className="relative z-10 max-w-[1400px] mx-auto px-4 py-12">
@@ -512,7 +465,7 @@ export default function App() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.1 }}
-                  className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10"
+                  className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto mb-10"
                 >
                   Türkiye'nin en kapsamlı Minecraft PvP tier list platformu.<br />
                   8 farklı kit kategorisinde yeteneğini kanıtla!
@@ -526,15 +479,9 @@ export default function App() {
                 >
                   <button 
                     onClick={() => setCurrentPage("rankings")} 
-                    className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl font-bold text-lg transition-all shadow-lg shadow-cyan-500/30 hover:scale-105"
+                    className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl font-bold text-lg transition-all shadow-lg shadow-cyan-500/30 hover:scale-105 hover:shadow-xl"
                   >
                     🏆 Sıralamaları Gör
-                  </button>
-                  <button 
-                    onClick={() => setCurrentPage("reels")} 
-                    className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 rounded-xl font-bold text-lg transition-all shadow-lg shadow-purple-500/30 hover:scale-105"
-                  >
-                    📱 PvP Reels
                   </button>
                   <a 
                     href="https://discord.gg/cKFwKcfcWn" 
@@ -568,10 +515,10 @@ export default function App() {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.25 + i * 0.05 }}
                       onClick={() => setSelectedPlayer(player)}
-                      className={`${cardTheme} rounded-xl p-4 border cursor-pointer hover:border-cyan-500/40 transition-all group hover:scale-105`}
+                      className={`${cardTheme} rounded-xl p-4 border cursor-pointer hover:border-cyan-500/50 transition-all group hover:scale-105 hover:shadow-xl`}
                     >
                       <div className="flex items-center gap-3">
-                        <img src={player.avatar} alt="" className="w-12 h-12 rounded-lg" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/48`; }} />
+                        <img src={player.avatar} alt="" className="w-12 h-12 rounded-lg group-hover:ring-2 ring-cyan-400 transition-all" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/48`; }} />
                         <div>
                           <h3 className="font-bold group-hover:text-cyan-400 transition-colors">{player.username}</h3>
                           <p className="text-xs text-white/40">{player.totalPoints} puan • {player.tests} test</p>
@@ -603,10 +550,10 @@ export default function App() {
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.35 + i * 0.03 }}
-                      className={`group relative overflow-hidden ${cardTheme} rounded-2xl p-6 hover:border-cyan-500/40 transition-all duration-300 cursor-pointer hover:scale-105`}
+                      className={`group relative overflow-hidden ${cardTheme} rounded-2xl p-6 hover:border-cyan-500/50 transition-all duration-300 cursor-pointer hover:scale-105 hover:shadow-xl`}
                       onClick={() => { setCurrentPage("rankings"); setSelectedKit(key as KitKey); }}
                     >
-                      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 to-cyan-500/0 group-hover:from-cyan-500/5 group-hover:to-blue-500/5 transition-all duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 to-cyan-500/0 group-hover:from-cyan-500/10 group-hover:to-blue-500/10 transition-all duration-300" />
                       <div className="relative">
                         <div className="mb-4 group-hover:scale-110 transition-transform duration-300 flex justify-center">
                           {kit.icon}
@@ -624,8 +571,7 @@ export default function App() {
               </div>
 
               {/* CTA */}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
+              <motion.div                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
                 className="relative bg-gradient-to-br from-cyan-600/20 via-blue-600/20 to-purple-600/20 border border-white/10 rounded-3xl p-10 md:p-14 text-center overflow-hidden"
@@ -648,9 +594,12 @@ export default function App() {
                 </div>
               </motion.div>
 
-              <div className="mt-20 pt-8 border-t border-white/5 text-center text-white/30 text-sm">
-                <p>© 2025 Abyssal Ocean Tier List. Tüm hakları saklıdır.</p>
-                <div className="flex items-center justify-center gap-6 mt-3 text-xs">
+              {/* Footer - Düzenlendi */}
+              <div className="mt-20 pt-8 border-t border-white/10 text-center">
+                <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/40 mb-3">
+                  <span>© 2025 Abyssal Ocean Net Ltd. Tüm hakları saklıdır.</span>
+                </div>
+                <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-white/30">
                   <span>🌡️ 21°C</span>
                   <span>☀️ Güneşli</span>
                   <span>🔍 Ara</span>
@@ -677,10 +626,10 @@ export default function App() {
                       <button
                         key={opt.key}
                         onClick={() => setSortType(opt.key as SortType)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:scale-105 ${
                           sortType === opt.key
-                            ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white"
-                            : "bg-[#1a1f2e] text-white/60 hover:bg-[#222838]"
+                            ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg"
+                            : "bg-slate-800 text-white/60 hover:bg-slate-700"
                         }`}
                       >
                         {opt.label}
@@ -708,14 +657,14 @@ export default function App() {
                         onClick={() => setSelectedKit(key)}
                         className={`relative px-5 py-3 rounded-2xl font-medium transition-all whitespace-nowrap flex items-center gap-2.5 ${
                           isActive ? activeButtonTheme : buttonTheme
-                        }`}
+                        } hover:scale-105`}
                       >
                         <div className="w-7 h-7 flex items-center justify-center">{kit.icon}</div>
                         <span className="text-sm font-semibold">{kit.ad}</span>
                         {isActive && (
                           <motion.div
                             layoutId="activeTab"
-                            className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-8 h-1 bg-white rounded-full"
+                            className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-8 h-1 bg-cyan-400 rounded-full shadow-lg shadow-cyan-400/50"
                           />
                         )}
                       </motion.button>
@@ -737,78 +686,82 @@ export default function App() {
                       <div className="overflow-x-auto">
                         <table className="w-full">
                           <thead>
-                            <tr className="border-b border-white/5 bg-[#0f141b]/50">
+                            <tr className="border-b border-white/10 bg-slate-900/30">
                               <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider w-16">#</th>
                               <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Oyuncu</th>
                               <th className="text-right px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Tierler</th>
-                             </tr>
+                            </tr>
                           </thead>
-                          <tbody className="divide-y divide-white/[0.03]">
-                            {currentPlayers.map((player, idx) => (
-                              <motion.tr
-                                key={player.id}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: idx * 0.005 }}
-                                onClick={() => setSelectedPlayer(player)}
-                                className="group hover:bg-white/[0.02] cursor-pointer transition-all"
-                              >
-                                <td className="px-6 py-4">
-                                  {player.rank <= 3 ? (
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg ${player.rank === 1 ? "bg-gradient-to-br from-amber-400 to-yellow-600 text-black" : player.rank === 2 ? "bg-gradient-to-br from-slate-300 to-slate-500 text-black" : "bg-gradient-to-br from-orange-600 to-amber-700 text-white"}`}>
-                                      {player.rank}
-                                    </div>
-                                  ) : (
-                                    <span className="w-10 text-center text-xl font-bold text-white/30 block group-hover:text-white/60 transition-colors">
-                                      {player.rank}
-                                    </span>
-                                  )}
-                                 </td>
-                                <td className="px-6 py-4">
-                                  <div className="flex items-center gap-4">
-                                    <img src={player.avatar} alt={player.username} className="w-12 h-12 rounded-xl ring-2 ring-white/10 group-hover:ring-cyan-500/50 transition-all" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/64`; }} />
-                                    <div>
-                                      <div className="flex items-center gap-2">
-                                        <h3 className="font-bold text-white group-hover:text-cyan-400 transition-colors">{player.username}</h3>
+                          <tbody className="divide-y divide-white/5">
+                            {loading ? (
+                              Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
+                            ) : (
+                              currentPlayers.map((player, idx) => (
+                                <motion.tr
+                                  key={player.id}
+                                  initial={{ opacity: 0, x: -20 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay: idx * 0.01 }}
+                                  onClick={() => setSelectedPlayer(player)}
+                                  className="group hover:bg-white/5 cursor-pointer transition-all hover:scale-[1.01]"
+                                >
+                                  <td className="px-6 py-4">
+                                    {player.rank <= 3 ? (
+                                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg ${player.rank === 1 ? "bg-gradient-to-br from-amber-400 to-yellow-600 text-black shadow-lg" : player.rank === 2 ? "bg-gradient-to-br from-slate-300 to-slate-500 text-black shadow-lg" : "bg-gradient-to-br from-orange-600 to-amber-700 text-white shadow-lg"}`}>
+                                        {player.rank}
                                       </div>
-                                      <div className="flex items-center gap-2 mt-1">
-                                        <span className={`text-xs font-medium ${player.totalPoints >= 300 ? "text-amber-400" : player.totalPoints >= 200 ? "text-purple-400" : player.totalPoints >= 100 ? "text-cyan-400" : "text-white/50"}`}>
-                                          {getTitle(player.totalPoints)}
-                                        </span>
-                                        <span className="text-xs text-white/30">•</span>
-                                        <span className="text-xs text-white/50">{player.totalPoints} puan</span>
-                                        <span className="text-xs text-white/30">•</span>
-                                        <span className="text-xs text-white/50">🎮 {player.minecraftNick}</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                 </td>
-                                <td className="px-6 py-4">
-                                  <div className="flex items-center justify-end gap-1.5 flex-wrap">
-                                    {Object.entries(KITS).map(([kitKey, kit]) => {
-                                      const tier = player.tiers[kitKey];
-                                      return (
-                                        <div key={kitKey} className="w-9 h-9 rounded-lg bg-[#0f141b] border border-white/10 flex flex-col items-center justify-center hover:border-white/20 transition-all hover:scale-110 group/tier" title={`${kit.ad}: ${tier || 'Test olmamış'}`}>
-                                          <div className="text-[10px] leading-none flex justify-center">{kit.icon}</div>
-                                          <span className={`text-[9px] font-bold leading-none mt-0.5 ${tier?.startsWith("HT") || tier?.startsWith("Crystal HT") ? "text-amber-400" : tier?.startsWith("LT") || tier?.startsWith("Crystal LT") ? "text-white/60" : "text-white/20"}`}>
-                                            {tier ? tier.replace("Crystal ", "") : "—"}
-                                          </span>
+                                    ) : (
+                                      <span className="w-10 text-center text-xl font-bold text-white/30 block group-hover:text-white/60 transition-colors">
+                                        {player.rank}
+                                      </span>
+                                    )}
+                                   </td>
+                                  <td className="px-6 py-4">
+                                    <div className="flex items-center gap-4">
+                                      <img src={player.avatar} alt={player.username} className="w-12 h-12 rounded-xl ring-2 ring-white/10 group-hover:ring-cyan-500/50 transition-all" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/64`; }} />
+                                      <div>
+                                        <div className="flex items-center gap-2">
+                                          <h3 className="font-bold text-white group-hover:text-cyan-400 transition-colors">{player.username}</h3>
                                         </div>
-                                      );
-                                    })}
-                                  </div>
-                                 </td>
-                              </motion.tr>
-                            ))}
+                                        <div className="flex items-center gap-2 mt-1">
+                                          <span className={`text-xs font-medium ${player.totalPoints >= 300 ? "text-amber-400" : player.totalPoints >= 200 ? "text-purple-400" : player.totalPoints >= 100 ? "text-cyan-400" : "text-white/50"}`}>
+                                            {getTitle(player.totalPoints)}
+                                          </span>
+                                          <span className="text-xs text-white/30">•</span>
+                                          <span className="text-xs text-white/50">{player.totalPoints} puan</span>
+                                          <span className="text-xs text-white/30">•</span>
+                                          <span className="text-xs text-white/50">🎮 {player.minecraftNick}</span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                   </td>
+                                  <td className="px-6 py-4">
+                                    <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                                      {Object.entries(KITS).map(([kitKey, kit]) => {
+                                        const tier = player.tiers[kitKey];
+                                        return (
+                                          <div key={kitKey} className="w-9 h-9 rounded-lg bg-slate-900 border border-white/10 flex flex-col items-center justify-center hover:border-cyan-500/50 transition-all hover:scale-110 group/tier" title={`${kit.ad}: ${tier || 'Test olmamış'}`}>
+                                            <div className="text-[10px] leading-none flex justify-center">{kit.icon}</div>
+                                            <span className={`text-[9px] font-bold leading-none mt-0.5 ${tier?.startsWith("HT") || tier?.startsWith("Crystal HT") ? "text-amber-400" : tier?.startsWith("LT") || tier?.startsWith("Crystal LT") ? "text-white/60" : "text-white/20"}`}>
+                                              {tier ? tier.replace("Crystal ", "") : "—"}
+                                            </span>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                   </td>
+                                </motion.tr>
+                              ))
+                            )}
                           </tbody>
                         </table>
                       </div>
                       {totalPages > 1 && (
-                        <div className="flex items-center justify-center gap-2 py-6 border-t border-white/5">
+                        <div className="flex items-center justify-center gap-2 py-6 border-t border-white/10">
                           <button
                             onClick={() => setCurrentPageRank(p => Math.max(1, p - 1))}
                             disabled={currentPageRank === 1}
-                            className="px-4 py-2 rounded-lg bg-[#1a1f2e] text-white/60 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#222838] transition-all"
+                            className="px-4 py-2 rounded-lg bg-slate-800 text-white/60 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-700 transition-all hover:scale-105"
                           >
                             ◀ Önceki
                           </button>
@@ -818,7 +771,7 @@ export default function App() {
                           <button
                             onClick={() => setCurrentPageRank(p => Math.min(totalPages, p + 1))}
                             disabled={currentPageRank === totalPages}
-                            className="px-4 py-2 rounded-lg bg-[#1a1f2e] text-white/60 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#222838] transition-all"
+                            className="px-4 py-2 rounded-lg bg-slate-800 text-white/60 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-700 transition-all hover:scale-105"
                           >
                             Sonraki ▶
                           </button>
@@ -839,8 +792,8 @@ export default function App() {
                       5: "🌱"
                     };
                     return (
-                      <motion.div key={tierNum} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} className={`${cardTheme} rounded-[20px] border overflow-hidden`}>
-                        <div className={`px-4 py-3 border-b border-white/5 ${tierNum === 1 ? "bg-gradient-to-r from-amber-500/20 to-yellow-600/20" : tierNum === 2 ? "bg-gradient-to-r from-slate-500/20 to-slate-600/20" : tierNum === 3 ? "bg-gradient-to-r from-orange-600/20 to-amber-700/20" : tierNum === 4 ? "bg-gradient-to-r from-red-500/20 to-orange-600/20" : "bg-gradient-to-r from-green-500/20 to-emerald-600/20"}`}>
+                      <motion.div key={tierNum} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }} className={`${cardTheme} rounded-[20px] border overflow-hidden hover:scale-105 transition-all`}>
+                        <div className={`px-4 py-3 border-b border-white/10 ${tierNum === 1 ? "bg-gradient-to-r from-amber-500/20 to-yellow-600/20" : tierNum === 2 ? "bg-gradient-to-r from-slate-500/20 to-slate-600/20" : tierNum === 3 ? "bg-gradient-to-r from-orange-600/20 to-amber-700/20" : tierNum === 4 ? "bg-gradient-to-r from-red-500/20 to-orange-600/20" : "bg-gradient-to-r from-green-500/20 to-emerald-600/20"}`}>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <span className="text-xl">{tierEmojis[tierNum]}</span>
@@ -861,7 +814,7 @@ export default function App() {
                                 const tier = player.tiers[selectedKit];
                                 const displayTier = tier?.replace("Crystal ", "") || tier;
                                 return (
-                                  <button key={player.id} onClick={() => setSelectedPlayer(player)} className="w-full flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/5 transition-all group text-left">
+                                  <button key={player.id} onClick={() => setSelectedPlayer(player)} className="w-full flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/5 transition-all group text-left hover:scale-105">
                                     <img src={player.avatar} alt="" className="w-8 h-8 rounded-lg ring-1 ring-white/10 group-hover:ring-cyan-500/50 transition-all" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/32`; }} />
                                     <div className="flex-1 min-w-0">
                                       <span className="text-sm font-medium truncate group-hover:text-cyan-400 transition-colors block">{player.username}</span>
@@ -887,174 +840,26 @@ export default function App() {
               )}
             </main>
           )}
-
-          {currentPage === "reels" && (
-            <main className="relative z-10 max-w-[1200px] mx-auto px-4 py-8">
-              <div className="flex justify-between items-center mb-8">
-                <div>
-                  <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-                    PvP Reels
-                  </h1>
-                  <p className="text-white/50 mt-1">En iyi PvP anlarını keşfet ve paylaş!</p>
-                </div>
-                <button
-                  onClick={() => setShowUploadModal(true)}
-                  className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 rounded-xl font-bold transition-all shadow-lg shadow-purple-500/30 hover:scale-105"
-                >
-                  📤 Video Yükle
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {videos.map((video) => (
-                  <motion.div
-                    key={video.id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className={`${cardTheme} rounded-2xl overflow-hidden border hover:border-purple-500/40 transition-all cursor-pointer`}
-                    onClick={() => setSelectedVideo(video)}
-                  >
-                    <div className="relative aspect-video bg-black/50">
-                      <video
-                        src={video.videoUrl}
-                        className="w-full h-full object-cover"
-                        poster={video.thumbnail}
-                      />
-                      <div className="absolute bottom-2 right-2 bg-black/50 rounded-lg px-2 py-1 text-xs">
-                        📱 30sn
-                      </div>
-                    </div>
-                    <div className="p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <img src={video.thumbnail} alt="" className="w-8 h-8 rounded-full" />
-                          <span className="font-semibold">{video.username}</span>
-                        </div>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); likeVideo(video.id); }}
-                          className="flex items-center gap-1 text-pink-500 hover:text-pink-400 transition-all"
-                        >
-                          ❤️ {video.likes}
-                        </button>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-white/50">
-                        <span>{new Date(video.createdAt).toLocaleDateString('tr-TR')}</span>
-                        <span>•</span>
-                        <span>💬 {video.comments.length} yorum</span>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-
-              {videos.length === 0 && (
-                <div className="text-center py-20">
-                  <div className="text-6xl mb-4">📹</div>
-                  <h3 className="text-xl font-bold text-white/30 mb-2">Henüz Video Yok</h3>
-                  <p className="text-white/20">İlk PvP reels'ini yükleyen sen ol!</p>
-                </div>
-              )}
-
-              {/* Video Modal */}
-              {selectedVideo && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md" onClick={() => setSelectedVideo(null)}>
-                  <div className="relative w-full max-w-2xl bg-[#11161f] rounded-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
-                    <video
-                      src={selectedVideo.videoUrl}
-                      className="w-full aspect-video"
-                      controls
-                      autoPlay
-                    />
-                    <div className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <img src={selectedVideo.thumbnail} alt="" className="w-10 h-10 rounded-full" />
-                          <div>
-                            <h3 className="font-bold">{selectedVideo.username}</h3>
-                            <p className="text-xs text-white/50">{new Date(selectedVideo.createdAt).toLocaleDateString('tr-TR')}</p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => likeVideo(selectedVideo.id)}
-                          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-pink-500/20 text-pink-400 hover:bg-pink-500/30 transition-all"
-                        >
-                          ❤️ {selectedVideo.likes}
-                        </button>
-                      </div>
-                      <div className="border-t border-white/10 pt-4">
-                        <h4 className="text-sm font-semibold mb-3">Yorumlar ({selectedVideo.comments.length})</h4>
-                        <div className="max-h-48 overflow-y-auto space-y-2 mb-4">
-                          {selectedVideo.comments.map(comment => (
-                            <div key={comment.id} className="flex gap-2 text-sm">
-                              <span className="font-semibold text-cyan-400">{comment.username}:</span>
-                              <span className="text-white/70">{comment.text}</span>
-                            </div>
-                          ))}
-                        </div>
-                        <div className="flex gap-2">
-                          <input
-                            type="text"
-                            value={commentText}
-                            onChange={(e) => setCommentText(e.target.value)}
-                            placeholder="Yorum yaz..."
-                            className={`flex-1 px-4 py-2 rounded-xl ${inputTheme} focus:outline-none focus:border-purple-500/50`}
-                          />
-                          <button
-                            onClick={() => addComment(selectedVideo.id)}
-                            className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl font-semibold hover:opacity-90 transition-all"
-                          >
-                            Gönder
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setSelectedVideo(null)}
-                      className="absolute top-4 right-4 p-2 bg-black/50 rounded-full hover:bg-black/70 transition-all"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Upload Modal */}
-              {showUploadModal && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" onClick={() => setShowUploadModal(false)}>
-                  <div className="relative w-full max-w-md bg-[#11161f] rounded-2xl p-6" onClick={e => e.stopPropagation()}>
-                    <h2 className="text-2xl font-bold mb-4 text-center">Video Yükle</h2>
-                    <div className="border-2 border-dashed border-white/20 rounded-xl p-8 text-center mb-4">
-                      <div className="text-4xl mb-2">📹</div>
-                      <p className="text-white/50 text-sm">Maksimum 30 saniye</p>
-                      <input type="file" accept="video/*" className="hidden" id="videoUpload" />
-                      <label htmlFor="videoUpload" className="mt-3 inline-block px-4 py-2 bg-cyan-500/20 rounded-lg text-cyan-400 cursor-pointer hover:bg-cyan-500/30 transition-all">
-                        Video Seç
-                      </label>
-                    </div>
-                    <button
-                      onClick={() => setShowUploadModal(false)}
-                      className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl font-bold hover:opacity-90 transition-all"
-                    >
-                      Yükle
-                    </button>
-                  </div>
-                </div>
-              )}
-            </main>
-          )}
         </motion.div>
       </AnimatePresence>
 
+      {/* Player Modal - 3D Skin gösterimi buraya eklenecek */}
       {selectedPlayer && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" onClick={() => setSelectedPlayer(null)}>
-          <div className="relative w-full max-w-2xl bg-[#11161f] rounded-[28px] border border-white/10 shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn" onClick={() => setSelectedPlayer(null)}>
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="relative w-full max-w-2xl bg-gradient-to-br from-slate-800 to-slate-900 rounded-[28px] border border-white/10 shadow-2xl overflow-hidden"
+            onClick={e => e.stopPropagation()}
+          >
             <div className="absolute inset-0 bg-gradient-to-br from-cyan-600/10 via-blue-600/10 to-purple-600/10" />
             <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-[100px]" />
             <div className="relative">
-              <div className="flex items-start justify-between p-6 border-b border-white/5">
+              <div className="flex items-start justify-between p-6 border-b border-white/10">
                 <div className="flex items-center gap-4">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 to-blue-600 blur-xl opacity-50" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 to-blue-600 blur-xl opacity-50 rounded-2xl" />
                     <img src={selectedPlayer.avatar} alt="" className="relative w-20 h-20 rounded-2xl ring-2 ring-white/20" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/64`; }} />
                   </div>
                   <div>
@@ -1068,7 +873,7 @@ export default function App() {
                     <div className="mt-2 text-sm text-white/50">🎮 Minecraft: <span className="text-cyan-400 font-medium">{selectedPlayer.minecraftNick}</span></div>
                   </div>
                 </div>
-                <button onClick={() => setSelectedPlayer(null)} className="p-2 hover:bg-white/10 rounded-xl transition-colors">
+                <button onClick={() => setSelectedPlayer(null)} className="p-2 hover:bg-white/10 rounded-xl transition-all hover:scale-110">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -1082,7 +887,7 @@ export default function App() {
                     const displayTier = tier?.replace("Crystal ", "") || tier;
                     const points = TIER_POINTS[tier] || 0;
                     return (
-                      <div key={kitKey} className="bg-[#0f141b] border border-white/10 rounded-2xl p-4 hover:border-white/20 transition-all">
+                      <div key={kitKey} className="bg-slate-900/50 border border-white/10 rounded-2xl p-4 hover:border-cyan-500/30 transition-all hover:scale-105">
                         <div className="flex items-center justify-between mb-2">
                           <div className="w-8 h-8 flex items-center justify-center">{kit.icon}</div>
                           {tier ? (
@@ -1097,7 +902,7 @@ export default function App() {
                     );
                   })}
                 </div>
-                <div className="mt-6 pt-6 border-t border-white/5 grid grid-cols-3 gap-4">
+                <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-3 gap-4">
                   {[
                     { label: "Toplam Test", value: selectedPlayer.tests },
                     { label: "HT Kit Sayısı", value: Object.values(selectedPlayer.tiers).filter(t => t?.startsWith("HT") || t?.startsWith("Crystal HT")).length },
@@ -1111,7 +916,7 @@ export default function App() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
 
@@ -1122,6 +927,14 @@ export default function App() {
         .custom-scroll::-webkit-scrollbar-thumb:hover { background: rgb(255 255 255 / 0.2); }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
+        
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.2s ease-out;
+        }
       `}</style>
     </div>
   );
