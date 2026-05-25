@@ -266,71 +266,169 @@ export default function App() {
         >
           {currentPage === "home" && (
             <main className="relative z-10 max-w-[1400px] mx-auto px-4 py-12">
-              <div className="text-center mb-16">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-cyan-400 text-sm font-semibold mb-6">
+              {/* Hero Section - Yenilendi */}
+              <div className="text-center mb-20">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-cyan-400 text-sm font-semibold mb-6"
+                >
                   <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span>
                   Minecraft Tier Sunucusu
-                </div>
-                <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
+                </motion.div>
+                
+                <motion.h1
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                  className="text-6xl md:text-8xl font-black mb-6 leading-tight"
+                >
                   <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 bg-clip-text text-transparent">ABYSSAL OCEAN</span>
                   <br />
-                  <span className="text-white">Tier Sunucusu</span>
-                </h1>
-                <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-8">Türkiye'nin en kaliteli Minecraft PvP tier test sunucusu. Yeteneğini kanıtla, sıralamada yüksel, efsane ol!</p>
-                <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
-                  <button onClick={() => setCurrentPage("rankings")} className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl font-semibold transition-all shadow-lg shadow-cyan-500/30">🏆 Sıralamayı Gör</button>
-                  <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-[#5865F2] hover:bg-[#4752c4] rounded-xl font-semibold transition-all flex items-center gap-2"><DiscordIcon className="w-5 h-5" /> Discord'a Katıl</a>
-                </div>
+                  <span className="text-white">Tier List</span>
+                </motion.h1>
+                
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  className="text-xl md:text-2xl text-white/60 max-w-2xl mx-auto mb-10"
+                >
+                  Türkiye'nin en kaliteli Minecraft PvP tier test sunucusu.<br />
+                  Yeteneğini kanıtla, sıralamada yüksel, efsane ol!
+                </motion.p>
+                
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  className="flex flex-wrap items-center justify-center gap-4"
+                >
+                  <button 
+                    onClick={() => setCurrentPage("rankings")} 
+                    className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl font-bold text-lg transition-all shadow-lg shadow-cyan-500/30"
+                  >
+                    🏆 Sıralamayı Gör
+                  </button>
+                  <a 
+                    href="https://discord.gg/cKFwKcfcWn" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="px-8 py-4 bg-[#5865F2] hover:bg-[#4752c4] rounded-xl font-bold text-lg transition-all flex items-center gap-2 shadow-lg shadow-[#5865F2]/30"
+                  >
+                    <DiscordIcon className="w-6 h-6" /> Discord'a Katıl
+                  </a>
+                </motion.div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-16">
-                {[
-                  { label: "Toplam Oyuncu", value: players.length, icon: "👥", color: "from-cyan-500 to-blue-600" },
-                  { label: "Aktif Kit", value: 8, icon: "⚔️", color: "from-purple-500 to-pink-600" },
-                  { label: "Tier Seviyesi", value: 10, icon: "🏆", color: "from-amber-500 to-orange-600" },
-                ].map((stat, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="bg-[#11161f] border border-white/5 rounded-2xl p-6">
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center text-2xl mb-4`}>{stat.icon}</div>
-                    <div className="text-3xl font-black mb-1">{stat.value}</div>
-                    <div className="text-sm text-white/50">{stat.label}</div>
-                  </motion.div>
-                ))}
+              {/* İstatistikler - YENİ TASARIM */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="relative overflow-hidden bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-white/10 rounded-2xl p-8 text-center backdrop-blur-sm"
+                >
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/20 rounded-full blur-3xl" />
+                  <div className="text-5xl mb-3">👥</div>
+                  <div className="text-5xl font-black text-white mb-2">{players.length}</div>
+                  <div className="text-white/50 font-medium">Toplam Savaşçı</div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="relative overflow-hidden bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-white/10 rounded-2xl p-8 text-center backdrop-blur-sm"
+                >
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/20 rounded-full blur-3xl" />
+                  <div className="text-5xl mb-3">⚔️</div>
+                  <div className="text-5xl font-black text-white mb-2">8</div>
+                  <div className="text-white/50 font-medium">Aktif Kit</div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="relative overflow-hidden bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-white/10 rounded-2xl p-8 text-center backdrop-blur-sm"
+                >
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/20 rounded-full blur-3xl" />
+                  <div className="text-5xl mb-3">🏆</div>
+                  <div className="text-5xl font-black text-white mb-2">10</div>
+                  <div className="text-white/50 font-medium">Tier Seviyesi</div>
+                </motion.div>
               </div>
 
-              <div className="mb-16">
-                <div className="text-center mb-10">
-                  <h2 className="text-3xl md:text-4xl font-black mb-3">Test Edebileceğin Kitler</h2>
-                  <p className="text-white/60">8 farklı kit, kendi tarzını bul!</p>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Kitler Bölümü */}
+              <div className="mb-20">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="text-center mb-12"
+                >
+                  <h2 className="text-4xl md:text-5xl font-black mb-4 bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
+                    Test Edebileceğin Kitler
+                  </h2>
+                  <p className="text-white/50 text-lg">8 farklı kit, kendi tarzını bul!</p>
+                </motion.div>
+                
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
                   {Object.entries(KITS).map(([key, kit], i) => (
                     <motion.div
                       key={key}
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: i * 0.05 }}
-                      className="bg-[#11161f] border border-white/5 rounded-2xl p-6 hover:border-cyan-500/30 hover:bg-[#151b26] transition-all cursor-pointer group"
+                      transition={{ delay: 0.5 + i * 0.05 }}
+                      className="group relative overflow-hidden bg-[#11161f] border border-white/5 rounded-2xl p-6 hover:border-cyan-500/40 hover:bg-[#151b26] transition-all duration-300 cursor-pointer"
                       onClick={() => { setCurrentPage("rankings"); setSelectedKit(key as KitKey); }}
                     >
-                      <div className="mb-3 group-hover:scale-110 transition-transform flex justify-center">{kit.icon}</div>
-                      <h3 className="text-lg font-bold mb-2 text-center">{kit.ad}</h3>
-                      <p className="text-xs text-white/40 text-center leading-relaxed">{kit.description}</p>
+                      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 to-cyan-500/0 group-hover:from-cyan-500/5 group-hover:to-blue-500/5 transition-all duration-300" />
+                      <div className="relative">
+                        <div className="mb-4 group-hover:scale-110 transition-transform duration-300 flex justify-center">
+                          {kit.icon}
+                        </div>
+                        <h3 className="text-xl font-bold mb-2 text-center group-hover:text-cyan-400 transition-colors">
+                          {kit.ad}
+                        </h3>
+                        <p className="text-xs text-white/40 text-center leading-relaxed">
+                          {kit.description}
+                        </p>
+                      </div>
                     </motion.div>
                   ))}
                 </div>
               </div>
 
-              <div className="relative bg-gradient-to-br from-cyan-600/20 via-blue-600/20 to-purple-600/20 border border-white/10 rounded-3xl p-8 md:p-12 text-center overflow-hidden">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/20 rounded-full blur-[100px]" />
-                <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-[100px]" />
+              {/* CTA Bölümü */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="relative bg-gradient-to-br from-cyan-600/20 via-blue-600/20 to-purple-600/20 border border-white/10 rounded-3xl p-10 md:p-14 text-center overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 w-80 h-80 bg-cyan-500/20 rounded-full blur-[120px]" />
+                <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/20 rounded-full blur-[120px]" />
                 <div className="relative">
-                  <h2 className="text-3xl md:text-5xl font-black mb-4">Hazır mısın?</h2>
-                  <p className="text-lg text-white/70 mb-6 max-w-2xl mx-auto">Discord sunucumuza katıl, tier test başvurusu yap ve yeteneğini herkese kanıtla!</p>
-                  <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-8 py-4 bg-[#5865F2] hover:bg-[#4752c4] rounded-xl font-bold text-lg transition-all shadow-2xl shadow-[#5865F2]/30"><DiscordIcon className="w-6 h-6" /> Hemen Katıl</a>
+                  <h2 className="text-4xl md:text-6xl font-black mb-4">Hazır mısın?</h2>
+                  <p className="text-lg text-white/70 mb-8 max-w-2xl mx-auto">
+                    Discord sunucumuza katıl, tier test başvurusu yap ve yeteneğini herkese kanıtla!
+                  </p>
+                  <a 
+                    href="https://discord.gg/cKFwKcfcWn" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="inline-flex items-center gap-3 px-10 py-5 bg-[#5865F2] hover:bg-[#4752c4] rounded-xl font-bold text-xl transition-all shadow-2xl shadow-[#5865F2]/40 hover:scale-105"
+                  >
+                    <DiscordIcon className="w-7 h-7" /> Hemen Katıl
+                  </a>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="mt-16 pt-8 border-t border-white/5 text-center text-white/40 text-sm">
+              {/* Footer */}
+              <div className="mt-20 pt-8 border-t border-white/5 text-center text-white/30 text-sm">
                 <p>© 2025 Abyssal Ocean Tier List. Tüm hakları saklıdır.</p>
               </div>
             </main>
@@ -445,7 +543,7 @@ export default function App() {
                             </motion.tr>
                           ))}
                         </tbody>
-                       </table>
+                      </table>
                     </div>
                   )}
                 </motion.div>
@@ -453,14 +551,20 @@ export default function App() {
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
                   {[1, 2, 3, 4, 5].map((tierNum, idx) => {
                     const tierPlayers = playersByTier?.[tierNum] || [];
+                    // Düzeltilmiş emojiler
+                    const tierEmojis: Record<number, string> = {
+                      1: "👑",
+                      2: "🥈",
+                      3: "🥉",
+                      4: "🔥",
+                      5: "🌱"
+                    };
                     return (
                       <motion.div key={tierNum} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} className="bg-[#11161f] rounded-[20px] border border-white/5 overflow-hidden">
-                        <div className={`px-4 py-3 border-b border-white/5 ${tierNum === 1 ? "bg-gradient-to-r from-amber-500/20 to-yellow-600/20" : tierNum === 2 ? "bg-gradient-to-r from-slate-500/20 to-slate-600/20" : tierNum === 3 ? "bg-gradient-to-r from-orange-600/20 to-amber-700/20" : tierNum === 4 ? "bg-gradient-to-r from-blue-500/20 to-blue-600/20" : "bg-gradient-to-r from-gray-500/20 to-gray-600/20"}`}>
+                        <div className={`px-4 py-3 border-b border-white/5 ${tierNum === 1 ? "bg-gradient-to-r from-amber-500/20 to-yellow-600/20" : tierNum === 2 ? "bg-gradient-to-r from-slate-500/20 to-slate-600/20" : tierNum === 3 ? "bg-gradient-to-r from-orange-600/20 to-amber-700/20" : tierNum === 4 ? "bg-gradient-to-r from-red-500/20 to-orange-600/20" : "bg-gradient-to-r from-green-500/20 to-emerald-600/20"}`}>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <span className="text-xl">
-                                {tierNum === 1 ? "👑" : tierNum === 2 ? "🥈" : tierNum === 3 ? "🥉" : tierNum === 4 ? "📈" : "🌱"}
-                              </span>
+                              <span className="text-xl">{tierEmojis[tierNum]}</span>
                               <h3 className="font-bold">Tier {tierNum}</h3>
                             </div>
                             <span className="text-xs text-white/50">{tierPlayers.length}</span>
