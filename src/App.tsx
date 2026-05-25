@@ -18,6 +18,125 @@ type KitKey = "overall" | "vanilla" | "sword" | "axe" | "nethpot" | "pot" | "uhc
 type PageType = "home" | "rankings";
 type SortType = "rank" | "points" | "name" | "tests";
 
+// ==========================================
+// F12 KORUMASI - Geliştirici konsolunu engelle
+// ==========================================
+const disableDevTools = () => {
+  // F12 ve kısayol tuşlarını engelle
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'F12' || 
+        (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+        (e.ctrlKey && e.shiftKey && e.key === 'C') ||
+        (e.ctrlKey && e.key === 'U') ||
+        (e.ctrlKey && e.key === 'S') ||
+        (e.metaKey && e.altKey && e.key === 'I')) {
+      e.preventDefault();
+      return false;
+    }
+  });
+  
+  // Sağ tıklamayı engelle
+  document.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    return false;
+  });
+  
+  // Konsol açıldığında tespit et ve engelle
+  let devToolsOpen = false;
+  const checkDevTools = () => {
+    const startTime = performance.now();
+    debugger;
+    const endTime = performance.now();
+    if (endTime - startTime > 100) {
+      if (!devToolsOpen) {
+        devToolsOpen = true;
+        document.body.innerHTML = `
+          <div style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0e14;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            color: white;
+            font-family: monospace;
+            text-align: center;
+            padding: 20px;
+          ">
+            <div>
+              <h1 style="font-size: 48px; margin-bottom: 20px;">🚫</h1>
+              <h2>Geliştirici Araçları Devre Dışı</h2>
+              <p>Bu siteyi görüntülemek için lütfen geliştirici konsolunu kapatın.</p>
+              <button onclick="location.reload()" style="
+                margin-top: 20px;
+                padding: 10px 30px;
+                background: #06b6d4;
+                border: none;
+                border-radius: 10px;
+                color: white;
+                cursor: pointer;
+                font-size: 16px;
+              ">Sayfayı Yenile</button>
+            </div>
+          </div>
+        `;
+      }
+    } else {
+      devToolsOpen = false;
+    }
+  };
+  setInterval(checkDevTools, 1000);
+};
+
+// ==========================================
+// RATE LIMITING (DDoS koruması)
+// ==========================================
+let lastRequestTime = 0;
+const MIN_REQUEST_INTERVAL = 2000; // 2 saniye
+let requestQueue: (() => void)[] = [];
+let isProcessingQueue = false;
+
+async function rateLimitedFetch(url: string, options: RequestInit): Promise<Response> {
+  return new Promise((resolve, reject) => {
+    const executeRequest = async () => {
+      const now = Date.now();
+      const timeSinceLastRequest = now - lastRequestTime;
+      
+      if (timeSinceLastRequest < MIN_REQUEST_INTERVAL) {
+        await new Promise(r => setTimeout(r, MIN_REQUEST_INTERVAL - timeSinceLastRequest));
+      }
+      
+      lastRequestTime = Date.now();
+      try {
+        const response = await fetch(url, options);
+        resolve(response);
+      } catch (error) {
+        reject(error);
+      } finally {
+        isProcessingQueue = false;
+        if (requestQueue.length > 0) {
+          const next = requestQueue.shift();
+          if (next) {
+            isProcessingQueue = true;
+            next();
+          }
+        }
+      }
+    };
+    
+    if (isProcessingQueue) {
+      requestQueue.push(executeRequest);
+    } else {
+      isProcessingQueue = true;
+      executeRequest();
+    }
+  });
+}
+
 const UPSTASH_URL = import.meta.env.VITE_UPSTASH_URL || 'https://adequate-loon-101577.upstash.io';
 const UPSTASH_TOKEN = import.meta.env.VITE_UPSTASH_TOKEN || 'gQAAAAAAAYzJAAIgcDJhOWJiYWFhM2M2MmE0NThkYTJiMjZjZmM3ZDcxZWMwNA';
 
@@ -119,17 +238,6 @@ const DiscordIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-// Batık Gemi efekti
-const Shipwreck = () => (
-  <div className="fixed bottom-10 left-5 opacity-20 pointer-events-none z-0 hidden lg:block">
-    <div className="relative">
-      <div className="text-7xl rotate-[-15deg]">🚢</div>
-      <div className="absolute -top-2 -right-2 text-2xl text-cyan-500/30 animate-pulse">💀</div>
-      <div className="absolute bottom-0 left-4 text-xs text-white/20">⚓</div>
-    </div>
-  </div>
-);
-
 // Su baloncukları efekti
 const Bubbles = () => {
   const bubbles = useMemo(() => Array.from({ length: 30 }, (_, i) => ({
@@ -175,7 +283,7 @@ const SkeletonRow = () => (
     <td className="px-6 py-4"><div className="w-10 h-10 bg-white/5 rounded-xl"></div></td>
     <td className="px-6 py-4"><div className="flex items-center gap-4"><div className="w-12 h-12 bg-white/5 rounded-xl"></div><div><div className="w-32 h-4 bg-white/5 rounded mb-2"></div><div className="w-24 h-3 bg-white/5 rounded"></div></div></div></td>
     <td className="px-6 py-4"><div className="flex justify-end gap-1"><div className="w-9 h-9 bg-white/5 rounded-lg"></div><div className="w-9 h-9 bg-white/5 rounded-lg"></div><div className="w-9 h-9 bg-white/5 rounded-lg"></div></div></td>
-  </tr>
+  </table>
 );
 
 export default function App() {
@@ -189,9 +297,14 @@ export default function App() {
   const [currentPageRank, setCurrentPageRank] = useState(1);
   const playersPerPage = 20;
 
+  // F12 korumasını aktif et
+  useEffect(() => {
+    disableDevTools();
+  }, []);
+
   const fetchPlayers = async () => {
     try {
-      const response = await fetch(`${UPSTASH_URL}/get/players`, {
+      const response = await rateLimitedFetch(`${UPSTASH_URL}/get/players`, {
         headers: {
           Authorization: `Bearer ${UPSTASH_TOKEN}`,
           'Content-Type': 'application/json'
@@ -298,7 +411,6 @@ export default function App() {
     return groups;
   }, [kitPlayers, selectedKit]);
 
-  // Son test olan oyuncular (artık kullanılmıyor ama hesaplama kalabilir)
   const recentPlayers = useMemo(() => {
     return [...players].sort((a, b) => b.tests - a.tests).slice(0, 5);
   }, [players]);
@@ -307,7 +419,6 @@ export default function App() {
     return (
       <div className="min-h-screen bg-[#0a0e14] flex items-center justify-center relative">
         <Bubbles />
-        <Shipwreck />
         <div className="text-center z-10">
           <div className="relative w-20 h-20 mx-auto mb-4">
             <div className="absolute inset-0 rounded-full border-4 border-cyan-500/20"></div>
@@ -323,7 +434,6 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#0a0e14] text-white relative">
       <Bubbles />
-      <Shipwreck />
       
       <header className="relative z-50 sticky top-0 backdrop-blur-xl bg-[#0f141b]/80 border-b border-white/5">
         <div className="max-w-[1400px] mx-auto px-4 py-3">
@@ -378,7 +488,6 @@ export default function App() {
         >
           {currentPage === "home" && (
             <main className="relative z-10 max-w-[1400px] mx-auto px-4 py-12">
-              {/* Hero Section */}
               <div className="text-center mb-20">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -433,7 +542,6 @@ export default function App() {
                 </motion.div>
               </div>
 
-              {/* Tanıtım Metni - Yeni eklendi */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -470,7 +578,6 @@ export default function App() {
                 </div>
               </motion.div>
 
-              {/* Kitler */}
               <div className="mb-20">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -511,7 +618,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* CTA */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -536,7 +642,6 @@ export default function App() {
                 </div>
               </motion.div>
 
-              {/* Footer */}
               <div className="mt-20 pt-8 border-t border-white/5 text-center">
                 <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/40 mb-3">
                   <span>© 2025 Abyssal Ocean Tier List. Tüm hakları saklıdır.</span>
@@ -785,7 +890,6 @@ export default function App() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Player Modal */}
       {selectedPlayer && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn" onClick={() => setSelectedPlayer(null)}>
           <motion.div 
