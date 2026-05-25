@@ -298,6 +298,7 @@ export default function App() {
     return groups;
   }, [kitPlayers, selectedKit]);
 
+  // Son test olan oyuncular (artık kullanılmıyor ama hesaplama kalabilir)
   const recentPlayers = useMemo(() => {
     return [...players].sort((a, b) => b.tests - a.tests).slice(0, 5);
   }, [players]);
@@ -377,6 +378,7 @@ export default function App() {
         >
           {currentPage === "home" && (
             <main className="relative z-10 max-w-[1400px] mx-auto px-4 py-12">
+              {/* Hero Section */}
               <div className="text-center mb-20">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -405,8 +407,7 @@ export default function App() {
                   transition={{ duration: 0.4, delay: 0.1 }}
                   className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10"
                 >
-                  Türkiye'nin en kapsamlı Minecraft PvP tier list platformu.<br />
-                  8 farklı kit kategorisinde yeteneğini kanıtla!
+                  Seviyeni Seç, Gücünü Kanıtla!
                 </motion.p>
                 
                 <motion.div
@@ -432,40 +433,42 @@ export default function App() {
                 </motion.div>
               </div>
 
-              {/* Son Eklenen Oyuncular */}
-              <div className="mb-20">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-center mb-8"
-                >
-                  <h2 className="text-3xl md:text-4xl font-black mb-2 bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
-                    ⚡ Son Test Olan Oyuncular
+              {/* Tanıtım Metni - Yeni eklendi */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="relative mb-20 p-8 md:p-10 rounded-2xl bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-purple-500/10 border border-white/10 backdrop-blur-sm text-center"
+              >
+                <div className="absolute top-0 right-0 w-40 h-40 bg-cyan-500/10 rounded-full blur-2xl"></div>
+                <div className="absolute bottom-0 left-0 w-40 h-40 bg-purple-500/10 rounded-full blur-2xl"></div>
+                <div className="relative">
+                  <h2 className="text-2xl md:text-3xl font-black mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                    Abyssal Ocean: Seviyeni Seç, Gücünü Kanıtla!
                   </h2>
-                  <p className="text-white/50">En son test olan 5 oyuncu</p>
-                </motion.div>
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                  {recentPlayers.map((player, i) => (
-                    <motion.div
-                      key={player.id}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.25 + i * 0.05 }}
-                      onClick={() => setSelectedPlayer(player)}
-                      className="bg-[#11161f] border border-white/5 rounded-xl p-4 cursor-pointer hover:border-cyan-500/50 transition-all group hover:scale-105"
-                    >
-                      <div className="flex items-center gap-3">
-                        <img src={player.avatar} alt="" className="w-12 h-12 rounded-lg group-hover:ring-2 ring-cyan-400 transition-all" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/48`; }} />
-                        <div>
-                          <h3 className="font-bold group-hover:text-cyan-400 transition-colors">{player.username}</h3>
-                          <p className="text-xs text-white/40">{player.totalPoints} puan • {player.tests} test</p>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
+                  <p className="text-white/70 leading-relaxed max-w-3xl mx-auto">
+                    Gelişmekte olan Minecraft tier sunucumuz Abyssal Ocean'da, 8 farklı kit ile kendini test edip 
+                    gerçek PvP seviyeni hemen öğrenebilirsin. Üstelik yeteneğine güveniyorsan sunucumuzda Tester olabilir 
+                    ya da yönetim kadromuza katılarak yetkili olarak yer alabilirsin. Kitini seç ve bu maceraya ortak ol!
+                  </p>
+                  <div className="flex flex-wrap items-center justify-center gap-4 mt-6">
+                    <div className="flex items-center gap-2 text-cyan-400">
+                      <span className="text-xl">⚔️</span>
+                      <span className="text-sm">8 Farklı Kit</span>
+                    </div>
+                    <div className="w-1 h-1 bg-white/20 rounded-full"></div>
+                    <div className="flex items-center gap-2 text-cyan-400">
+                      <span className="text-xl">🏆</span>
+                      <span className="text-sm">Tier Sistemi</span>
+                    </div>
+                    <div className="w-1 h-1 bg-white/20 rounded-full"></div>
+                    <div className="flex items-center gap-2 text-cyan-400">
+                      <span className="text-xl">👑</span>
+                      <span className="text-sm">Tester Olma Fırsatı</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Kitler */}
               <div className="mb-20">
