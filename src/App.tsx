@@ -18,7 +18,9 @@ type KitKey = "overall" | "vanilla" | "sword" | "axe" | "nethpot" | "pot" | "uhc
 type PageType = "home" | "rankings";
 type SortType = "rank" | "points" | "name" | "tests";
 
+// ==========================================
 // F12 KORUMASI
+// ==========================================
 const disableDevTools = () => {
   if (typeof window === 'undefined') return;
   document.addEventListener('keydown', (e) => {
@@ -43,49 +45,49 @@ const UPSTASH_TOKEN = import.meta.env.VITE_UPSTASH_TOKEN || 'gQAAAAAAAYzJAAIgcDJ
 const KITS: Record<string, { ad: string; icon: JSX.Element; color: string; description: string }> = {
   vanilla: { 
     ad: "Vanilla", 
-    icon: <img src="https://www.tierslist.net/tier_icons/vanilla.svg" width="28" height="28" alt="Vanilla" className="w-7 h-7" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/vanilla.svg" width="30" height="30" alt="Vanilla" className="w-7 h-7" />, 
     color: "#fbbf24",
     description: "⚔️ Saf yetenek ve refleks!"
   },
   sword: { 
     ad: "Sword", 
-    icon: <img src="https://www.tierslist.net/tier_icons/sword.svg" width="28" height="28" alt="Sword" className="w-7 h-7" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/sword.svg" width="30" height="30" alt="Sword" className="w-7 h-7" />, 
     color: "#60a5fa",
     description: "🗡️ Kılıç ustalığı! Hızlı vuruşlar."
   },
   axe: { 
     ad: "Axe", 
-    icon: <img src="https://www.tierslist.net/tier_icons/axe.svg" width="28" height="28" alt="Axe" className="w-7 h-7" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/axe.svg" width="30" height="30" alt="Axe" className="w-7 h-7" />, 
     color: "#a78bfa",
     description: "🪓 Ağır darbe ustası! Yüksek hasar."
   },
   nethpot: { 
     ad: "NethOP", 
-    icon: <img src="https://www.tierslist.net/tier_icons/nethop.svg" width="28" height="28" alt="NethOP" className="w-7 h-7" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/nethop.svg" width="30" height="30" alt="NethOP" className="w-7 h-7" />, 
     color: "#ec4899",
     description: "🌌 Netherite zırh ve OP itemler!"
   },
   pot: { 
     ad: "Pot", 
-    icon: <img src="https://www.tierslist.net/tier_icons/pot.svg" width="28" height="28" alt="Pot" className="w-7 h-7" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/pot.svg" width="30" height="30" alt="Pot" className="w-7 h-7" />, 
     color: "#f43f5e",
     description: "🧪 Pot PvP ustası! Hız ve güç."
   },
   uhc: { 
     ad: "UHC", 
-    icon: <img src="https://www.tierslist.net/tier_icons/uhc.svg" width="28" height="28" alt="UHC" className="w-7 h-7" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/uhc.svg" width="30" height="30" alt="UHC" className="w-7 h-7" />, 
     color: "#ef4444",
     description: "🍎 Hardcore PvP! Can yenilenmez."
   },
   smp: { 
     ad: "SMP", 
-    icon: <img src="https://www.tierslist.net/tier_icons/smp.svg" width="28" height="28" alt="SMP" className="w-7 h-7" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/smp.svg" width="30" height="30" alt="SMP" className="w-7 h-7" />, 
     color: "#22c55e",
     description: "🌿 Survival PvP! Her şey serbest."
   },
   mace: { 
     ad: "Mace", 
-    icon: <img src="https://www.tierslist.net/tier_icons/mace.svg" width="28" height="28" alt="Mace" className="w-7 h-7" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/mace.svg" width="30" height="30" alt="Mace" className="w-7 h-7" />, 
     color: "#eab308",
     description: "🔨 Ağır çekiç ustası! Ezici güç."
   },
@@ -105,15 +107,28 @@ const TIER_POINTS: Record<string, number> = {
   "Crystal HT5": 2,  "Crystal LT5": 1
 };
 
+const TIER_COLORS: Record<string, string> = {
+  HT1: "from-amber-400 to-yellow-600",
+  HT2: "from-slate-300 to-slate-500",
+  HT3: "from-orange-600 to-amber-700",
+  HT4: "from-blue-500 to-blue-700",
+  HT5: "from-purple-500 to-purple-700",
+  LT1: "from-emerald-500 to-emerald-700",
+  LT2: "from-cyan-500 to-cyan-700",
+  LT3: "from-indigo-500 to-indigo-700",
+  LT4: "from-pink-500 to-pink-700",
+  LT5: "from-gray-500 to-gray-700",
+};
+
 const KIT_ORDER: KitKey[] = ["overall", "vanilla", "sword", "axe", "nethpot", "pot", "uhc", "mace", "smp"];
 
 const getTitle = (points: number): string => {
-  if (points >= 300) return "Combat Master";
-  if (points >= 200) return "Combat Ace";
-  if (points >= 150) return "Combat Veteran";
-  if (points >= 100) return "Combat Expert";
-  if (points >= 50) return "Combat Novice";
-  return "Rookie";
+  if (points >= 300) return "🏆 Efsanevi Savaşçı";
+  if (points >= 200) return "⚡ Usta Savaşçı";
+  if (points >= 150) return "🌟 Tecrübeli Savaşçı";
+  if (points >= 100) return "📈 Uzman Savaşçı";
+  if (points >= 50) return "🌱 Acemi Savaşçı";
+  return "🆕 Çaylak";
 };
 
 // En yüksek tier'ı bulan fonksiyon
@@ -151,13 +166,13 @@ const DiscordIcon = ({ className }: { className?: string }) => (
 
 // Su baloncukları efekti
 const Bubbles = () => {
-  const bubbles = useMemo(() => Array.from({ length: 30 }, (_, i) => ({
+  const bubbles = useMemo(() => Array.from({ length: 25 }, (_, i) => ({
     id: i,
-    size: Math.random() * 30 + 5,
+    size: Math.random() * 25 + 5,
     left: Math.random() * 100,
-    duration: Math.random() * 12 + 5,
-    delay: Math.random() * 10,
-    opacity: Math.random() * 0.25 + 0.1
+    duration: Math.random() * 10 + 5,
+    delay: Math.random() * 8,
+    opacity: Math.random() * 0.15 + 0.05
   })), []);
   
   return (
@@ -165,7 +180,7 @@ const Bubbles = () => {
       {bubbles.map(bubble => (
         <div
           key={bubble.id}
-          className="absolute bottom-0 rounded-full bg-gradient-to-t from-cyan-400/25 to-blue-400/15"
+          className="absolute bottom-0 rounded-full bg-gradient-to-t from-cyan-400/15 to-blue-400/5"
           style={{
             width: bubble.size,
             height: bubble.size,
@@ -179,8 +194,8 @@ const Bubbles = () => {
       <style>{`
         @keyframes bubbleFloat {
           0% { transform: translateY(0) scale(0.3); opacity: 0; }
-          20% { opacity: 0.3; }
-          80% { opacity: 0.15; }
+          20% { opacity: 0.15; }
+          80% { opacity: 0.08; }
           100% { transform: translateY(-100vh) scale(1); opacity: 0; }
         }
       `}</style>
@@ -239,8 +254,8 @@ export default function App() {
     let filtered = trPlayers;
     if (searchQuery) {
       filtered = filtered.filter(p =>
-        p.minecraftNick?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.username.toLowerCase().includes(searchQuery.toLowerCase())
+        p.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.minecraftNick?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
     
@@ -249,7 +264,7 @@ export default function App() {
         filtered.sort((a, b) => b.totalPoints - a.totalPoints);
         break;
       case "name":
-        filtered.sort((a, b) => a.minecraftNick?.localeCompare(b.minecraftNick || ""));
+        filtered.sort((a, b) => a.username.localeCompare(b.username));
         break;
       case "tests":
         filtered.sort((a, b) => b.tests - a.tests);
@@ -289,11 +304,11 @@ export default function App() {
       let groupNum = 0;
       const tierUpper = tier.toUpperCase();
       
-      if (tierUpper.includes("HT1") || tierUpper.includes("LT1")) groupNum = 1;
-      else if (tierUpper.includes("HT2") || tierUpper.includes("LT2")) groupNum = 2;
-      else if (tierUpper.includes("HT3") || tierUpper.includes("LT3")) groupNum = 3;
-      else if (tierUpper.includes("HT4") || tierUpper.includes("LT4")) groupNum = 4;
-      else if (tierUpper.includes("HT5") || tierUpper.includes("LT5")) groupNum = 5;
+      if (tierUpper.includes("HT1") || tierUpper.includes("LT1") || tierUpper === "CRYSTAL HT1") groupNum = 1;
+      else if (tierUpper.includes("HT2") || tierUpper.includes("LT2") || tierUpper === "CRYSTAL HT2") groupNum = 2;
+      else if (tierUpper.includes("HT3") || tierUpper.includes("LT3") || tierUpper === "CRYSTAL HT3") groupNum = 3;
+      else if (tierUpper.includes("HT4") || tierUpper.includes("LT4") || tierUpper === "CRYSTAL HT4") groupNum = 4;
+      else if (tierUpper.includes("HT5") || tierUpper.includes("LT5") || tierUpper === "CRYSTAL HT5") groupNum = 5;
       
       if (groupNum >= 1 && groupNum <= 5) {
         groups[groupNum].push(player);
@@ -358,7 +373,7 @@ export default function App() {
                   <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                  <input type="text" placeholder="Minecraft Nick ara..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-[260px] pl-9 pr-4 py-2 bg-[#1a1f2e] border border-white/10 rounded-xl text-sm focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all placeholder-white/30" />
+                  <input type="text" placeholder="Oyuncu veya Nick ara..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-[260px] pl-9 pr-4 py-2 bg-[#1a1f2e] border border-white/10 rounded-xl text-sm focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all placeholder-white/30" />
                 </div>
               )}
               <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2.5 bg-[#5865F2] hover:bg-[#4752c4] rounded-xl transition-all font-medium text-sm hover:scale-105">
@@ -581,9 +596,8 @@ export default function App() {
                           <thead>
                             <tr className="border-b border-white/5 bg-[#0f141b]/50">
                               <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider w-16">#</th>
-                              <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">PLAYER</th>
-                              <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">REGION</th>
-                              <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">TIERS</th>
+                              <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Oyuncu</th>
+                              <th className="text-right px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Tierler</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-white/[0.03]">
@@ -594,44 +608,58 @@ export default function App() {
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: idx * 0.005 }}
                                 onClick={() => setSelectedPlayer(player)}
-                                className="group hover:bg-white/5 cursor-pointer transition-all"
+                                className="group hover:bg-white/5 cursor-pointer transition-all hover:scale-[1.01]"
                               >
-                                <td className="px-6 py-4 align-top">
-                                  <span className="text-lg font-bold text-white/60">{player.rank}</span>
-                                </td>
                                 <td className="px-6 py-4">
-                                  <div className="flex items-center gap-3">
-                                    <img src={player.avatar} alt={player.minecraftNick} className="w-12 h-12 rounded-full ring-1 ring-white/20" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/48`; }} />
+                                  {player.rank <= 3 ? (
+                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg ${player.rank === 1 ? "bg-gradient-to-br from-amber-400 to-yellow-600 text-black shadow-lg" : player.rank === 2 ? "bg-gradient-to-br from-slate-300 to-slate-500 text-black shadow-lg" : "bg-gradient-to-br from-orange-600 to-amber-700 text-white shadow-lg"}`}>
+                                      {player.rank}
+                                    </div>
+                                  ) : (
+                                    <span className="w-10 text-center text-xl font-bold text-white/30 block group-hover:text-white/60 transition-colors">
+                                      {player.rank}
+                                    </span>
+                                  )}
+                                 </td>
+                                <td className="px-6 py-4">
+                                  <div className="flex items-center gap-4">
+                                    <img src={player.avatar} alt={player.username} className="w-12 h-12 rounded-xl ring-2 ring-white/10 group-hover:ring-cyan-500/50 transition-all" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/64`; }} />
                                     <div>
-                                      <div className="font-bold text-white text-lg group-hover:text-cyan-400 transition-colors">{player.minecraftNick}</div>
-                                      <div className="text-sm text-white/50">{getTitle(player.totalPoints)} ({player.totalPoints} points)</div>
+                                      {/* Minecraft nick BÜYÜK, Discord nick KÜÇÜK */}
+                                      <h3 className="font-bold text-white group-hover:text-cyan-400 transition-colors text-lg">{player.minecraftNick}</h3>
+                                      <div className="flex items-center gap-2 mt-1">
+                                        <span className={`text-xs font-medium ${player.totalPoints >= 300 ? "text-amber-400" : player.totalPoints >= 200 ? "text-purple-400" : player.totalPoints >= 100 ? "text-cyan-400" : "text-white/50"}`}>
+                                          {getTitle(player.totalPoints)}
+                                        </span>
+                                        <span className="text-xs text-white/30">•</span>
+                                        <span className="text-xs text-white/50">{player.totalPoints} puan</span>
+                                        <span className="text-xs text-white/30">•</span>
+                                        <span className="text-xs text-white/50">@{player.username}</span>
+                                      </div>
                                     </div>
                                   </div>
-                                </td>
-                                <td className="px-6 py-4 align-top">
-                                  <span className="inline-flex px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-white/80">{player.region}</span>
-                                </td>
+                                 </td>
                                 <td className="px-6 py-4">
-                                  <div className="flex flex-wrap items-center gap-1.5">
+                                  <div className="flex items-center justify-end gap-1.5 flex-wrap">
                                     {Object.entries(KITS).map(([kitKey, kit]) => {
                                       const tier = player.tiers[kitKey];
+                                      // Sadece tier adını göster (HT1, LT2 vb.)
                                       const displayTier = tier ? tier.replace("Crystal ", "") : null;
-                                      if (!displayTier) return null;
                                       return (
                                         <div 
                                           key={kitKey} 
-                                          className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 transition-all cursor-help group/tier"
-                                          title={kit.ad}
+                                          className="w-9 h-9 rounded-lg bg-[#0f141b] border border-white/10 flex flex-col items-center justify-center hover:border-cyan-500/50 transition-all hover:scale-110 group/tier cursor-help" 
+                                          title={`${kit.ad}: ${displayTier || 'Test olmamış'}`}
                                         >
-                                          <span className="w-4 h-4">{kit.icon}</span>
-                                          <span className={`text-xs font-bold ${displayTier.startsWith("HT") ? "text-amber-400" : "text-white/60"}`}>
-                                            {displayTier}
+                                          <div className="text-[10px] leading-none flex justify-center">{kit.icon}</div>
+                                          <span className={`text-[9px] font-bold leading-none mt-0.5 ${displayTier?.startsWith("HT") ? "text-amber-400" : displayTier?.startsWith("LT") ? "text-white/60" : "text-white/20"}`}>
+                                            {displayTier || "—"}
                                           </span>
                                         </div>
                                       );
                                     })}
                                   </div>
-                                </td>
+                                 </td>
                               </motion.tr>
                             ))}
                           </tbody>
@@ -698,9 +726,10 @@ export default function App() {
                                     <div className="flex-1 min-w-0">
                                       <span className="text-sm font-medium truncate group-hover:text-cyan-400 transition-colors block">{player.minecraftNick}</span>
                                       <div className="flex items-center gap-1.5 mt-0.5">
-                                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold bg-gradient-to-r ${displayTier?.startsWith("HT") ? "from-amber-500/20 to-yellow-600/20" : "from-gray-600/20 to-gray-700/20"} text-white`}>{displayTier}</span>
+                                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold bg-gradient-to-r ${TIER_COLORS[tier] || "from-gray-600 to-gray-700"} text-white`}>{displayTier}</span>
                                         <span className="text-[10px] text-white/40">{TIER_POINTS[tier] || 0}p</span>
                                       </div>
+                                      <div className="text-[9px] text-white/30 truncate mt-0.5">@{player.username}</div>
                                     </div>
                                     <svg className="w-3.5 h-3.5 text-white/20 group-hover:text-white/60 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -721,6 +750,7 @@ export default function App() {
         </motion.div>
       </AnimatePresence>
 
+      {/* Player Modal - GÜNCELLENDİ */}
       {selectedPlayer && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" onClick={() => setSelectedPlayer(null)}>
           <motion.div 
@@ -740,6 +770,7 @@ export default function App() {
                     <img src={selectedPlayer.avatar} alt="" className="relative w-20 h-20 rounded-2xl ring-2 ring-white/20" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/64`; }} />
                   </div>
                   <div>
+                    {/* Minecraft nick BÜYÜK */}
                     <h2 className="text-2xl font-black">{selectedPlayer.minecraftNick}</h2>
                     <div className="flex items-center gap-3 mt-1.5">
                       <span className={`px-3 py-1 rounded-full text-xs font-bold ${selectedPlayer.totalPoints >= 300 ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" : selectedPlayer.totalPoints >= 200 ? "bg-purple-500/20 text-purple-400 border border-purple-500/30" : selectedPlayer.totalPoints >= 100 ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30" : "bg-gray-500/20 text-gray-400 border border-gray-500/30"}`}>
@@ -747,6 +778,7 @@ export default function App() {
                       </span>
                       <span className="text-sm text-white/60">#{selectedPlayer.rank} • {selectedPlayer.totalPoints} puan</span>
                     </div>
+                    {/* Discord nick KÜÇÜK */}
                     <div className="mt-2 text-sm text-white/50">Discord: <span className="text-cyan-400">@{selectedPlayer.username}</span></div>
                   </div>
                 </div>
@@ -764,21 +796,17 @@ export default function App() {
                     const displayTier = tier?.replace("Crystal ", "") || tier;
                     const points = TIER_POINTS[tier] || 0;
                     return (
-                      <div key={kitKey} className="flex items-center justify-between bg-[#0f141b] border border-white/10 rounded-xl p-3 hover:border-cyan-500/30 transition-all">
-                        <div className="flex items-center gap-2">
-                          <div className="w-6 h-6">{kit.icon}</div>
-                          <span className="text-sm text-white/80">{kit.ad}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
+                      <div key={kitKey} className="bg-[#0f141b] border border-white/10 rounded-2xl p-4 hover:border-cyan-500/30 transition-all hover:scale-105">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="w-8 h-8 flex items-center justify-center">{kit.icon}</div>
                           {tier ? (
-                            <span className={`text-xs font-bold px-2 py-1 rounded ${displayTier?.startsWith("HT") ? "text-amber-400 bg-amber-400/10" : "text-white/60 bg-white/10"}`}>
-                              {displayTier}
-                            </span>
+                            <span className={`text-xs font-bold px-2 py-1 rounded-lg bg-gradient-to-r ${TIER_COLORS[tier] || "from-gray-600 to-gray-700"} text-white`}>{displayTier}</span>
                           ) : (
                             <span className="text-xs text-white/30">—</span>
                           )}
-                          <span className="text-xs text-white/40">{points}p</span>
                         </div>
+                        <div className="text-sm font-medium text-white/90">{kit.ad}</div>
+                        <div className="text-xs text-white/40 mt-1">{points} puan</div>
                       </div>
                     );
                   })}
@@ -800,9 +828,10 @@ export default function App() {
       )}
 
       <style>{`
-        .custom-scroll::-webkit-scrollbar { width: 0px; height: 0px; }
+        .custom-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgb(255 255 255 / 0.1); border-radius: 2px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: rgb(255 255 255 / 0.2); }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
       `}</style>
