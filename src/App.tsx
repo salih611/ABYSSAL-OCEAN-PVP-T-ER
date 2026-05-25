@@ -25,49 +25,49 @@ const KITS: Record<string, { ad: string; icon: JSX.Element; color: string; descr
     ad: "Vanilla", 
     icon: <img src="https://www.tierslist.net/tier_icons/vanilla.svg" width="30" height="30" alt="Vanilla" className="w-7 h-7" />, 
     color: "#fbbf24",
-    description: "⚔️ Saf yetenek ve refleks! Vanilla PvP'nin zirvesi, hiçbir eklenti yok, sadece sen ve kılıcın."
+    description: "⚔️ Saf yetenek ve refleks! Vanilla PvP'nin zirvesi."
   },
   sword: { 
     ad: "Sword", 
     icon: <img src="https://www.tierslist.net/tier_icons/sword.svg" width="30" height="30" alt="Sword" className="w-7 h-7" />, 
     color: "#60a5fa",
-    description: "🗡️ Kılıç ustalığı! Hızlı vuruşlar, mükemmel combo ve zamanlama. Gerçek bir savaşçı ol."
+    description: "🗡️ Kılıç ustalığı! Hızlı vuruşlar, mükemmel combo."
   },
   axe: { 
     ad: "Axe", 
     icon: <img src="https://www.tierslist.net/tier_icons/axe.svg" width="30" height="30" alt="Axe" className="w-7 h-7" />, 
     color: "#a78bfa",
-    description: "🪓 Ağır darbe ustası! Yüksek hasar, kalkan kırma ve stratejik savaş. Güç seninle olsun."
+    description: "🪓 Ağır darbe ustası! Yüksek hasar, kalkan kırma."
   },
   nethpot: { 
     ad: "NethOP", 
     icon: <img src="https://www.tierslist.net/tier_icons/nethop.svg" width="30" height="30" alt="NethOP" className="w-7 h-7" />, 
     color: "#ec4899",
-    description: "🌌 Netherite zırh ve OP itemler! En güçlü ekipmanlarla rakibine üstünlük kur."
+    description: "🌌 Netherite zırh ve OP itemler! En güçlü ekipmanlar."
   },
   pot: { 
     ad: "Pot", 
     icon: <img src="https://www.tierslist.net/tier_icons/pot.svg" width="30" height="30" alt="Pot" className="w-7 h-7" />, 
     color: "#f43f5e",
-    description: "🧪 Pot PvP ustası! Hız, güç ve anlık kararlarla rakibini alt et. İksirlerin gücünü hisset."
+    description: "🧪 Pot PvP ustası! Hız, güç ve anlık kararlar."
   },
   uhc: { 
     ad: "UHC", 
     icon: <img src="https://www.tierslist.net/tier_icons/uhc.svg" width="30" height="30" alt="UHC" className="w-7 h-7" />, 
     color: "#ef4444",
-    description: "🍎 Hardcore PvP! Can yenilenmez, her vuruş önemli. Gerçek hayatta kalma mücadelesi."
+    description: "🍎 Hardcore PvP! Can yenilenmez, her vuruş önemli."
   },
   smp: { 
     ad: "SMP", 
     icon: <img src="https://www.tierslist.net/tier_icons/smp.svg" width="30" height="30" alt="SMP" className="w-7 h-7" />, 
     color: "#22c55e",
-    description: "🌿 Survival PvP! Her şey serbest, strateji senin elinde. Hayatta kalan en güçlüdür."
+    description: "🌿 Survival PvP! Her şey serbest, strateji senin elinde."
   },
   mace: { 
     ad: "Mace", 
     icon: <img src="https://www.tierslist.net/tier_icons/mace.svg" width="30" height="30" alt="Mace" className="w-7 h-7" />, 
     color: "#eab308",
-    description: "🔨 Ağır çekiç ustası! Ezici güç, yüksek hasar ve kırıcı darbeler. Düşmanların korksun."
+    description: "🔨 Ağır çekiç ustası! Ezici güç, yüksek hasar."
   },
 };
 
@@ -266,7 +266,7 @@ export default function App() {
         >
           {currentPage === "home" && (
             <main className="relative z-10 max-w-[1400px] mx-auto px-4 py-12">
-              {/* Hero Section - Yenilendi */}
+              {/* Hero Section - Sade ve şık */}
               <div className="text-center mb-20">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -275,7 +275,7 @@ export default function App() {
                   className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-cyan-400 text-sm font-semibold mb-6"
                 >
                   <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></span>
-                  Minecraft Tier Sunucusu
+                  Türkiye'nin #1 PvP Platformu
                 </motion.div>
                 
                 <motion.h1
@@ -286,7 +286,7 @@ export default function App() {
                 >
                   <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 bg-clip-text text-transparent">ABYSSAL OCEAN</span>
                   <br />
-                  <span className="text-white">Tier List</span>
+                  <span className="text-white">TIER LIST</span>
                 </motion.h1>
                 
                 <motion.p
@@ -295,8 +295,8 @@ export default function App() {
                   transition={{ duration: 0.5, delay: 0.2 }}
                   className="text-xl md:text-2xl text-white/60 max-w-2xl mx-auto mb-10"
                 >
-                  Türkiye'nin en kaliteli Minecraft PvP tier test sunucusu.<br />
-                  Yeteneğini kanıtla, sıralamada yüksel, efsane ol!
+                  Türkiye'nin en kapsamlı Minecraft PvP tier list platformu.<br />
+                  8 farklı kit kategorisinde yeteneğini kanıtla!
                 </motion.p>
                 
                 <motion.div
@@ -309,7 +309,7 @@ export default function App() {
                     onClick={() => setCurrentPage("rankings")} 
                     className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl font-bold text-lg transition-all shadow-lg shadow-cyan-500/30"
                   >
-                    🏆 Sıralamayı Gör
+                    🏆 Sıralamaları Gör
                   </button>
                   <a 
                     href="https://discord.gg/cKFwKcfcWn" 
@@ -317,47 +317,8 @@ export default function App() {
                     rel="noopener noreferrer" 
                     className="px-8 py-4 bg-[#5865F2] hover:bg-[#4752c4] rounded-xl font-bold text-lg transition-all flex items-center gap-2 shadow-lg shadow-[#5865F2]/30"
                   >
-                    <DiscordIcon className="w-6 h-6" /> Discord'a Katıl
+                    <DiscordIcon className="w-6 h-6" /> Sunucuya Katıl
                   </a>
-                </motion.div>
-              </div>
-
-              {/* İstatistikler - YENİ TASARIM */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="relative overflow-hidden bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-white/10 rounded-2xl p-8 text-center backdrop-blur-sm"
-                >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/20 rounded-full blur-3xl" />
-                  <div className="text-5xl mb-3">👥</div>
-                  <div className="text-5xl font-black text-white mb-2">{players.length}</div>
-                  <div className="text-white/50 font-medium">Toplam Savaşçı</div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="relative overflow-hidden bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-white/10 rounded-2xl p-8 text-center backdrop-blur-sm"
-                >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/20 rounded-full blur-3xl" />
-                  <div className="text-5xl mb-3">⚔️</div>
-                  <div className="text-5xl font-black text-white mb-2">8</div>
-                  <div className="text-white/50 font-medium">Aktif Kit</div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="relative overflow-hidden bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-white/10 rounded-2xl p-8 text-center backdrop-blur-sm"
-                >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/20 rounded-full blur-3xl" />
-                  <div className="text-5xl mb-3">🏆</div>
-                  <div className="text-5xl font-black text-white mb-2">10</div>
-                  <div className="text-white/50 font-medium">Tier Seviyesi</div>
                 </motion.div>
               </div>
 
@@ -543,7 +504,7 @@ export default function App() {
                             </motion.tr>
                           ))}
                         </tbody>
-                      </table>
+                      <tr>
                     </div>
                   )}
                 </motion.div>
@@ -551,7 +512,6 @@ export default function App() {
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
                   {[1, 2, 3, 4, 5].map((tierNum, idx) => {
                     const tierPlayers = playersByTier?.[tierNum] || [];
-                    // Düzeltilmiş emojiler
                     const tierEmojis: Record<number, string> = {
                       1: "👑",
                       2: "🥈",
