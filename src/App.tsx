@@ -121,12 +121,12 @@ const TIER_COLORS: Record<string, string> = {
 const KIT_ORDER: KitKey[] = ["overall", "vanilla", "sword", "axe", "nethpot", "pot", "uhc", "mace", "smp"];
 
 const getTitle = (points: number): string => {
-  if (points >= 300) return "🏆 Efsanevi Savaşçı";
-  if (points >= 200) return "⚡ Usta Savaşçı";
-  if (points >= 150) return "🌟 Tecrübeli Savaşçı";
-  if (points >= 100) return "📈 Uzman Savaşçı";
-  if (points >= 50) return "🌱 Acemi Savaşçı";
-  return "🆕 Çaylak";
+  if (points >= 300) return "Combat Master";
+  if (points >= 200) return "Combat Ace";
+  if (points >= 150) return "Combat Veteran";
+  if (points >= 100) return "Combat Expert";
+  if (points >= 50) return "Combat Novice";
+  return "Rookie";
 };
 
 // En yüksek tier'ı bulan fonksiyon
@@ -302,11 +302,11 @@ export default function App() {
       let groupNum = 0;
       const tierUpper = tier.toUpperCase();
       
-      if (tierUpper.includes("HT1") || tierUpper.includes("LT1") || tierUpper === "CRYSTAL HT1") groupNum = 1;
-      else if (tierUpper.includes("HT2") || tierUpper.includes("LT2") || tierUpper === "CRYSTAL HT2") groupNum = 2;
-      else if (tierUpper.includes("HT3") || tierUpper.includes("LT3") || tierUpper === "CRYSTAL HT3") groupNum = 3;
-      else if (tierUpper.includes("HT4") || tierUpper.includes("LT4") || tierUpper === "CRYSTAL HT4") groupNum = 4;
-      else if (tierUpper.includes("HT5") || tierUpper.includes("LT5") || tierUpper === "CRYSTAL HT5") groupNum = 5;
+      if (tierUpper.includes("HT1") || tierUpper.includes("LT1")) groupNum = 1;
+      else if (tierUpper.includes("HT2") || tierUpper.includes("LT2")) groupNum = 2;
+      else if (tierUpper.includes("HT3") || tierUpper.includes("LT3")) groupNum = 3;
+      else if (tierUpper.includes("HT4") || tierUpper.includes("LT4")) groupNum = 4;
+      else if (tierUpper.includes("HT5") || tierUpper.includes("LT5")) groupNum = 5;
       
       if (groupNum >= 1 && groupNum <= 5) {
         groups[groupNum].push(player);
@@ -643,15 +643,15 @@ export default function App() {
                                       return (
                                         <div 
                                           key={kitKey} 
-                                          className="px-2 py-1 rounded-lg bg-[#0f141b] border border-white/10 hover:border-cyan-500/50 transition-all hover:scale-105 cursor-help" 
+                                          className="px-2.5 py-1.5 rounded-lg bg-[#0f141b] border border-white/10 hover:border-cyan-500/50 transition-all hover:scale-105 cursor-help text-sm font-bold" 
                                           title={`${kit.ad}`}
                                         >
-                                          <span className="text-xs font-bold whitespace-nowrap">{displayTier}</span>
+                                          {displayTier}
                                         </div>
                                       );
                                     })}
                                   </div>
-                                 </td>
+                                </td>
                               </motion.tr>
                             ))}
                           </tbody>
