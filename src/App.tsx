@@ -125,7 +125,6 @@ export default function App() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [loading, setLoading] = useState(true);
-  const [memberCount, setMemberCount] = useState(0);
 
   const fetchPlayers = async () => {
     try {
@@ -175,7 +174,6 @@ export default function App() {
       });
   }, [filteredPlayers, selectedKit]);
 
-  // GÜNCELLENMİŞ: Tier 1-5 gruplama (Crystal ve normal tier'ları destekler)
   const playersByTier = useMemo(() => {
     if (selectedKit === "overall") return null;
     const groups: Record<number, Player[]> = { 1: [], 2: [], 3: [], 4: [], 5: [] };
@@ -198,7 +196,6 @@ export default function App() {
       }
     });
     
-    // Her tier grubunu puanlarına göre sırala
     for (let i = 1; i <= 5; i++) {
       groups[i].sort((a, b) => {
         const pa = TIER_POINTS[a.tiers[selectedKit]] || 0;
@@ -286,12 +283,11 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-16">
                 {[
                   { label: "Toplam Oyuncu", value: players.length, icon: "👥", color: "from-cyan-500 to-blue-600" },
                   { label: "Aktif Kit", value: 8, icon: "⚔️", color: "from-purple-500 to-pink-600" },
                   { label: "Tier Seviyesi", value: 10, icon: "🏆", color: "from-amber-500 to-orange-600" },
-                  { label: "Discord Üye", value: memberCount, icon: "💬", color: "from-indigo-500 to-purple-600" },
                 ].map((stat, i) => (
                   <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="bg-[#11161f] border border-white/5 rounded-2xl p-6">
                     <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center text-2xl mb-4`}>{stat.icon}</div>
@@ -430,7 +426,7 @@ export default function App() {
                                     </div>
                                   </div>
                                 </div>
-                              </td>
+                               </td>
                               <td className="px-6 py-4">
                                 <div className="flex items-center justify-end gap-1.5 flex-wrap">
                                   {Object.entries(KITS).map(([kitKey, kit]) => {
@@ -445,11 +441,11 @@ export default function App() {
                                     );
                                   })}
                                 </div>
-                              </td>
+                               </td>
                             </motion.tr>
                           ))}
                         </tbody>
-                      </table>
+                       </table>
                     </div>
                   )}
                 </motion.div>
