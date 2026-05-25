@@ -43,49 +43,49 @@ const UPSTASH_TOKEN = import.meta.env.VITE_UPSTASH_TOKEN || 'gQAAAAAAAYzJAAIgcDJ
 const KITS: Record<string, { ad: string; icon: JSX.Element; color: string; description: string }> = {
   vanilla: { 
     ad: "Vanilla", 
-    icon: <img src="https://www.tierslist.net/tier_icons/vanilla.svg" width="30" height="30" alt="Vanilla" className="w-7 h-7" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/vanilla.svg" width="24" height="24" alt="Vanilla" className="w-6 h-6" />, 
     color: "#fbbf24",
     description: "⚔️ Saf yetenek ve refleks!"
   },
   sword: { 
     ad: "Sword", 
-    icon: <img src="https://www.tierslist.net/tier_icons/sword.svg" width="30" height="30" alt="Sword" className="w-7 h-7" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/sword.svg" width="24" height="24" alt="Sword" className="w-6 h-6" />, 
     color: "#60a5fa",
     description: "🗡️ Kılıç ustalığı! Hızlı vuruşlar."
   },
   axe: { 
     ad: "Axe", 
-    icon: <img src="https://www.tierslist.net/tier_icons/axe.svg" width="30" height="30" alt="Axe" className="w-7 h-7" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/axe.svg" width="24" height="24" alt="Axe" className="w-6 h-6" />, 
     color: "#a78bfa",
     description: "🪓 Ağır darbe ustası! Yüksek hasar."
   },
   nethpot: { 
     ad: "NethOP", 
-    icon: <img src="https://www.tierslist.net/tier_icons/nethop.svg" width="30" height="30" alt="NethOP" className="w-7 h-7" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/nethop.svg" width="24" height="24" alt="NethOP" className="w-6 h-6" />, 
     color: "#ec4899",
     description: "🌌 Netherite zırh ve OP itemler!"
   },
   pot: { 
     ad: "Pot", 
-    icon: <img src="https://www.tierslist.net/tier_icons/pot.svg" width="30" height="30" alt="Pot" className="w-7 h-7" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/pot.svg" width="24" height="24" alt="Pot" className="w-6 h-6" />, 
     color: "#f43f5e",
     description: "🧪 Pot PvP ustası! Hız ve güç."
   },
   uhc: { 
     ad: "UHC", 
-    icon: <img src="https://www.tierslist.net/tier_icons/uhc.svg" width="30" height="30" alt="UHC" className="w-7 h-7" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/uhc.svg" width="24" height="24" alt="UHC" className="w-6 h-6" />, 
     color: "#ef4444",
     description: "🍎 Hardcore PvP! Can yenilenmez."
   },
   smp: { 
     ad: "SMP", 
-    icon: <img src="https://www.tierslist.net/tier_icons/smp.svg" width="30" height="30" alt="SMP" className="w-7 h-7" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/smp.svg" width="24" height="24" alt="SMP" className="w-6 h-6" />, 
     color: "#22c55e",
     description: "🌿 Survival PvP! Her şey serbest."
   },
   mace: { 
     ad: "Mace", 
-    icon: <img src="https://www.tierslist.net/tier_icons/mace.svg" width="30" height="30" alt="Mace" className="w-7 h-7" />, 
+    icon: <img src="https://www.tierslist.net/tier_icons/mace.svg" width="24" height="24" alt="Mace" className="w-6 h-6" />, 
     color: "#eab308",
     description: "🔨 Ağır çekiç ustası! Ezici güç."
   },
@@ -121,12 +121,12 @@ const TIER_COLORS: Record<string, string> = {
 const KIT_ORDER: KitKey[] = ["overall", "vanilla", "sword", "axe", "nethpot", "pot", "uhc", "mace", "smp"];
 
 const getTitle = (points: number): string => {
-  if (points >= 300) return "🏆 Efsanevi Savaşçı";
-  if (points >= 200) return "⚡ Usta Savaşçı";
-  if (points >= 150) return "🌟 Tecrübeli Savaşçı";
-  if (points >= 100) return "📈 Uzman Savaşçı";
-  if (points >= 50) return "🌱 Acemi Savaşçı";
-  return "🆕 Çaylak";
+  if (points >= 300) return "Combat Master";
+  if (points >= 200) return "Combat Ace";
+  if (points >= 150) return "Combat Veteran";
+  if (points >= 100) return "Combat Expert";
+  if (points >= 50) return "Combat Novice";
+  return "Rookie";
 };
 
 // En yüksek tier'ı bulan fonksiyon
@@ -164,13 +164,13 @@ const DiscordIcon = ({ className }: { className?: string }) => (
 
 // Su baloncukları efekti
 const Bubbles = () => {
-  const bubbles = useMemo(() => Array.from({ length: 35 }, (_, i) => ({
+  const bubbles = useMemo(() => Array.from({ length: 30 }, (_, i) => ({
     id: i,
-    size: Math.random() * 35 + 8,
+    size: Math.random() * 30 + 5,
     left: Math.random() * 100,
-    duration: Math.random() * 12 + 6,
+    duration: Math.random() * 12 + 5,
     delay: Math.random() * 10,
-    opacity: Math.random() * 0.35 + 0.15
+    opacity: Math.random() * 0.25 + 0.1
   })), []);
   
   return (
@@ -178,7 +178,7 @@ const Bubbles = () => {
       {bubbles.map(bubble => (
         <div
           key={bubble.id}
-          className="absolute bottom-0 rounded-full bg-gradient-to-t from-cyan-400/30 to-blue-400/20"
+          className="absolute bottom-0 rounded-full bg-gradient-to-t from-cyan-400/25 to-blue-400/15"
           style={{
             width: bubble.size,
             height: bubble.size,
@@ -186,17 +186,15 @@ const Bubbles = () => {
             animation: `bubbleFloat ${bubble.duration}s linear infinite`,
             animationDelay: `${bubble.delay}s`,
             opacity: bubble.opacity,
-            boxShadow: '0 0 10px rgba(0,255,255,0.3)'
           }}
         />
       ))}
       <style>{`
         @keyframes bubbleFloat {
           0% { transform: translateY(0) scale(0.3); opacity: 0; }
-          15% { opacity: 0.4; }
-          50% { opacity: 0.3; }
-          85% { opacity: 0.15; }
-          100% { transform: translateY(-100vh) scale(1.2); opacity: 0; }
+          20% { opacity: 0.3; }
+          80% { opacity: 0.15; }
+          100% { transform: translateY(-100vh) scale(1); opacity: 0; }
         }
       `}</style>
     </div>
@@ -254,8 +252,8 @@ export default function App() {
     let filtered = trPlayers;
     if (searchQuery) {
       filtered = filtered.filter(p =>
-        p.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.minecraftNick?.toLowerCase().includes(searchQuery.toLowerCase())
+        p.minecraftNick?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.username.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
     
@@ -264,7 +262,7 @@ export default function App() {
         filtered.sort((a, b) => b.totalPoints - a.totalPoints);
         break;
       case "name":
-        filtered.sort((a, b) => a.username.localeCompare(b.username));
+        filtered.sort((a, b) => a.minecraftNick?.localeCompare(b.minecraftNick || ""));
         break;
       case "tests":
         filtered.sort((a, b) => b.tests - a.tests);
@@ -304,11 +302,11 @@ export default function App() {
       let groupNum = 0;
       const tierUpper = tier.toUpperCase();
       
-      if (tierUpper.includes("HT1") || tierUpper.includes("LT1") || tierUpper === "CRYSTAL HT1") groupNum = 1;
-      else if (tierUpper.includes("HT2") || tierUpper.includes("LT2") || tierUpper === "CRYSTAL HT2") groupNum = 2;
-      else if (tierUpper.includes("HT3") || tierUpper.includes("LT3") || tierUpper === "CRYSTAL HT3") groupNum = 3;
-      else if (tierUpper.includes("HT4") || tierUpper.includes("LT4") || tierUpper === "CRYSTAL HT4") groupNum = 4;
-      else if (tierUpper.includes("HT5") || tierUpper.includes("LT5") || tierUpper === "CRYSTAL HT5") groupNum = 5;
+      if (tierUpper.includes("HT1") || tierUpper.includes("LT1")) groupNum = 1;
+      else if (tierUpper.includes("HT2") || tierUpper.includes("LT2")) groupNum = 2;
+      else if (tierUpper.includes("HT3") || tierUpper.includes("LT3")) groupNum = 3;
+      else if (tierUpper.includes("HT4") || tierUpper.includes("LT4")) groupNum = 4;
+      else if (tierUpper.includes("HT5") || tierUpper.includes("LT5")) groupNum = 5;
       
       if (groupNum >= 1 && groupNum <= 5) {
         groups[groupNum].push(player);
@@ -373,7 +371,7 @@ export default function App() {
                   <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                  <input type="text" placeholder="Oyuncu veya Nick ara..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-[260px] pl-9 pr-4 py-2 bg-[#1a1f2e] border border-white/10 rounded-xl text-sm focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all placeholder-white/30" />
+                  <input type="text" placeholder="Minecraft Nick ara..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-[260px] pl-9 pr-4 py-2 bg-[#1a1f2e] border border-white/10 rounded-xl text-sm focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all placeholder-white/30" />
                 </div>
               )}
               <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2.5 bg-[#5865F2] hover:bg-[#4752c4] rounded-xl transition-all font-medium text-sm hover:scale-105">
@@ -597,6 +595,7 @@ export default function App() {
                             <tr className="border-b border-white/5 bg-[#0f141b]/50">
                               <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider w-16">#</th>
                               <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Oyuncu</th>
+                              <th className="text-right px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Bölge</th>
                               <th className="text-right px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Tierler</th>
                             </tr>
                           </thead>
@@ -611,53 +610,38 @@ export default function App() {
                                 className="group hover:bg-white/5 cursor-pointer transition-all hover:scale-[1.01]"
                               >
                                 <td className="px-6 py-4">
-                                  {player.rank <= 3 ? (
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg ${player.rank === 1 ? "bg-gradient-to-br from-amber-400 to-yellow-600 text-black shadow-lg" : player.rank === 2 ? "bg-gradient-to-br from-slate-300 to-slate-500 text-black shadow-lg" : "bg-gradient-to-br from-orange-600 to-amber-700 text-white shadow-lg"}`}>
-                                      {player.rank}
-                                    </div>
-                                  ) : (
-                                    <span className="w-10 text-center text-xl font-bold text-white/30 block group-hover:text-white/60 transition-colors">
-                                      {player.rank}
-                                    </span>
-                                  )}
-                                 </td>
+                                  <span className="text-lg font-bold text-white/80">{player.rank}</span>
+                                </td>
                                 <td className="px-6 py-4">
-                                  <div className="flex items-center gap-4">
-                                    <img src={player.avatar} alt={player.username} className="w-12 h-12 rounded-xl ring-2 ring-white/10 group-hover:ring-cyan-500/50 transition-all" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/64`; }} />
+                                  <div className="flex items-center gap-3">
+                                    <img src={player.avatar} alt={player.minecraftNick} className="w-10 h-10 rounded-full ring-1 ring-white/20" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/40`; }} />
                                     <div>
-                                      <h3 className="font-bold text-white group-hover:text-cyan-400 transition-colors text-lg">{player.minecraftNick}</h3>
-                                      <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                        <span className={`text-xs font-medium ${player.totalPoints >= 300 ? "text-amber-400" : player.totalPoints >= 200 ? "text-purple-400" : player.totalPoints >= 100 ? "text-cyan-400" : "text-white/50"}`}>
-                                          {getTitle(player.totalPoints)}
-                                        </span>
-                                        <span className="text-xs text-white/30">•</span>
-                                        <span className="text-xs text-white/50">{player.totalPoints} puan</span>
-                                        <span className="text-xs text-white/30">•</span>
-                                        <span className="text-xs text-white/50">@{player.username}</span>
-                                      </div>
+                                      <div className="font-bold text-white group-hover:text-cyan-400 transition-colors">{player.minecraftNick}</div>
+                                      <div className="text-xs text-white/50">{getTitle(player.totalPoints)} ({player.totalPoints} points)</div>
                                     </div>
                                   </div>
-                                 </td>
+                                </td>
+                                <td className="px-6 py-4 text-right">
+                                  <span className="inline-flex px-2 py-1 rounded text-xs font-bold bg-white/10 text-white/70">{player.region}</span>
+                                </td>
                                 <td className="px-6 py-4">
-                                  <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                                  <div className="flex items-center justify-end gap-1 flex-wrap">
                                     {Object.entries(KITS).map(([kitKey, kit]) => {
                                       const tier = player.tiers[kitKey];
                                       const displayTier = tier ? tier.replace("Crystal ", "") : null;
+                                      if (!displayTier) return null;
                                       return (
-                                        <div 
+                                        <span 
                                           key={kitKey} 
-                                          className="w-9 h-9 rounded-lg bg-[#0f141b] border border-white/10 flex flex-col items-center justify-center hover:border-cyan-500/50 transition-all hover:scale-110 group/tier cursor-help" 
-                                          title={`${kit.ad}: ${displayTier || 'Test olmamış'}`}
+                                          className={`text-xs font-bold px-1.5 py-0.5 rounded ${displayTier.startsWith("HT") ? "text-amber-400 bg-amber-400/10" : "text-white/60 bg-white/10"}`}
+                                          title={`${kit.ad}`}
                                         >
-                                          <div className="text-[10px] leading-none flex justify-center">{kit.icon}</div>
-                                          <span className={`text-[9px] font-bold leading-none mt-0.5 ${displayTier?.startsWith("HT") ? "text-amber-400" : displayTier?.startsWith("LT") ? "text-white/60" : "text-white/20"}`}>
-                                            {displayTier || "—"}
-                                          </span>
-                                        </div>
+                                          {displayTier}
+                                        </span>
                                       );
                                     })}
                                   </div>
-                                 </td>
+                                </td>
                               </motion.tr>
                             ))}
                           </tbody>
