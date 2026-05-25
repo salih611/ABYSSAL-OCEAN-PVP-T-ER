@@ -17,50 +17,57 @@ interface Player {
 type KitKey = "overall" | "vanilla" | "sword" | "axe" | "nethpot" | "pot" | "uhc" | "mace" | "smp";
 type PageType = "home" | "rankings";
 
-// UPSTASH BİLGİLERİ (Environment Variables'dan al veya direkt yaz)
 const UPSTASH_URL = import.meta.env.VITE_UPSTASH_URL || 'https://adequate-loon-101577.upstash.io';
 const UPSTASH_TOKEN = import.meta.env.VITE_UPSTASH_TOKEN || 'gQAAAAAAAYzJAAIgcDJhOWJiYWFhM2M2MmE0NThkYTJiMjZjZmM3ZDcxZWMwNA';
 
-const KITS: Record<string, { ad: string; icon: JSX.Element; color: string }> = {
+const KITS: Record<string, { ad: string; icon: JSX.Element; color: string; description: string }> = {
   vanilla: { 
     ad: "Vanilla", 
     icon: <img src="https://www.tierslist.net/tier_icons/vanilla.svg" width="30" height="30" alt="Vanilla" className="w-7 h-7" />, 
-    color: "#fbbf24" 
+    color: "#fbbf24",
+    description: "⚔️ Saf yetenek ve refleks! Vanilla PvP'nin zirvesi, hiçbir eklenti yok, sadece sen ve kılıcın."
   },
-  sword:   { 
+  sword: { 
     ad: "Sword", 
     icon: <img src="https://www.tierslist.net/tier_icons/sword.svg" width="30" height="30" alt="Sword" className="w-7 h-7" />, 
-    color: "#60a5fa" 
+    color: "#60a5fa",
+    description: "🗡️ Kılıç ustalığı! Hızlı vuruşlar, mükemmel combo ve zamanlama. Gerçek bir savaşçı ol."
   },
-  axe:     { 
+  axe: { 
     ad: "Axe", 
     icon: <img src="https://www.tierslist.net/tier_icons/axe.svg" width="30" height="30" alt="Axe" className="w-7 h-7" />, 
-    color: "#a78bfa" 
+    color: "#a78bfa",
+    description: "🪓 Ağır darbe ustası! Yüksek hasar, kalkan kırma ve stratejik savaş. Güç seninle olsun."
   },
   nethpot: { 
     ad: "NethOP", 
     icon: <img src="https://www.tierslist.net/tier_icons/nethop.svg" width="30" height="30" alt="NethOP" className="w-7 h-7" />, 
-    color: "#ec4899" 
+    color: "#ec4899",
+    description: "🌌 Netherite zırh ve OP itemler! En güçlü ekipmanlarla rakibine üstünlük kur."
   },
-  pot:     { 
+  pot: { 
     ad: "Pot", 
     icon: <img src="https://www.tierslist.net/tier_icons/pot.svg" width="30" height="30" alt="Pot" className="w-7 h-7" />, 
-    color: "#f43f5e" 
+    color: "#f43f5e",
+    description: "🧪 Pot PvP ustası! Hız, güç ve anlık kararlarla rakibini alt et. İksirlerin gücünü hisset."
   },
-  uhc:     { 
+  uhc: { 
     ad: "UHC", 
     icon: <img src="https://www.tierslist.net/tier_icons/uhc.svg" width="30" height="30" alt="UHC" className="w-7 h-7" />, 
-    color: "#ef4444" 
+    color: "#ef4444",
+    description: "🍎 Hardcore PvP! Can yenilenmez, her vuruş önemli. Gerçek hayatta kalma mücadelesi."
   },
-  smp:     { 
+  smp: { 
     ad: "SMP", 
     icon: <img src="https://www.tierslist.net/tier_icons/smp.svg" width="30" height="30" alt="SMP" className="w-7 h-7" />, 
-    color: "#22c55e" 
+    color: "#22c55e",
+    description: "🌿 Survival PvP! Her şey serbest, strateji senin elinde. Hayatta kalan en güçlüdür."
   },
-  mace:    { 
+  mace: { 
     ad: "Mace", 
     icon: <img src="https://www.tierslist.net/tier_icons/mace.svg" width="30" height="30" alt="Mace" className="w-7 h-7" />, 
-    color: "#eab308" 
+    color: "#eab308",
+    description: "🔨 Ağır çekiç ustası! Ezici güç, yüksek hasar ve kırıcı darbeler. Düşmanların korksun."
   },
 };
 
@@ -85,12 +92,12 @@ const TIER_COLORS: Record<string, string> = {
 const KIT_ORDER: KitKey[] = ["overall", "vanilla", "sword", "axe", "nethpot", "pot", "uhc", "mace", "smp"];
 
 const getTitle = (points: number): string => {
-  if (points >= 300) return "Combat Master";
-  if (points >= 200) return "Combat Ace";
-  if (points >= 150) return "Combat Veteran";
-  if (points >= 100) return "Combat Expert";
-  if (points >= 50)  return "Combat Novice";
-  return "Rookie";
+  if (points >= 300) return "🏆 Efsanevi Savaşçı";
+  if (points >= 200) return "⚡ Usta Savaşçı";
+  if (points >= 150) return "🌟 Tecrübeli Savaşçı";
+  if (points >= 100) return "📈 Uzman Savaşçı";
+  if (points >= 50)  return "🌱 Acemi Savaşçı";
+  return "🆕 Çaylak";
 };
 
 const DiscordIcon = ({ className }: { className?: string }) => (
@@ -106,8 +113,8 @@ export default function App() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [loading, setLoading] = useState(true);
+  const [memberCount, setMemberCount] = useState(0);
 
-  // Redis'ten doğrudan veri çek
   const fetchPlayers = async () => {
     try {
       const response = await fetch(`${UPSTASH_URL}/get/players`, {
@@ -137,7 +144,7 @@ export default function App() {
 
   useEffect(() => {
     fetchPlayers();
-    const interval = setInterval(fetchPlayers, 30000); // 30 saniyede bir yenile
+    const interval = setInterval(fetchPlayers, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -258,7 +265,7 @@ export default function App() {
                   { label: "Toplam Oyuncu", value: players.length, icon: "👥", color: "from-cyan-500 to-blue-600" },
                   { label: "Aktif Kit", value: 8, icon: "⚔️", color: "from-purple-500 to-pink-600" },
                   { label: "Tier Seviyesi", value: 10, icon: "🏆", color: "from-amber-500 to-orange-600" },
-                  { label: "7/24 Online", value: "ON", icon: "🟢", color: "from-emerald-500 to-green-600" },
+                  { label: "Discord Üye", value: memberCount, icon: "💬", color: "from-indigo-500 to-purple-600" },
                 ].map((stat, i) => (
                   <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="bg-[#11161f] border border-white/5 rounded-2xl p-6">
                     <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center text-2xl mb-4`}>{stat.icon}</div>
@@ -273,12 +280,19 @@ export default function App() {
                   <h2 className="text-3xl md:text-4xl font-black mb-3">Test Edebileceğin Kitler</h2>
                   <p className="text-white/60">8 farklı kit, kendi tarzını bul!</p>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {Object.entries(KITS).map(([key, kit], i) => (
-                    <motion.div key={key} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05 }} className="bg-[#11161f] border border-white/5 rounded-2xl p-6 hover:border-cyan-500/30 hover:bg-[#151b26] transition-all cursor-pointer group" onClick={() => { setCurrentPage("rankings"); setSelectedKit(key as KitKey); }}>
+                    <motion.div
+                      key={key}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: i * 0.05 }}
+                      className="bg-[#11161f] border border-white/5 rounded-2xl p-6 hover:border-cyan-500/30 hover:bg-[#151b26] transition-all cursor-pointer group"
+                      onClick={() => { setCurrentPage("rankings"); setSelectedKit(key as KitKey); }}
+                    >
                       <div className="mb-3 group-hover:scale-110 transition-transform flex justify-center">{kit.icon}</div>
-                      <h3 className="text-lg font-bold mb-1 text-center">{kit.ad}</h3>
-                      <p className="text-xs text-white/40 text-center">Tier sistemiyle test edilebilir</p>
+                      <h3 className="text-lg font-bold mb-2 text-center">{kit.ad}</h3>
+                      <p className="text-xs text-white/40 text-center leading-relaxed">{kit.description}</p>
                     </motion.div>
                   ))}
                 </div>
@@ -380,7 +394,7 @@ export default function App() {
                                       <h3 className="font-bold text-white group-hover:text-cyan-400 transition-colors">{player.username}</h3>
                                     </div>
                                     <div className="flex items-center gap-2 mt-1">
-                                      <span className={`text-xs font-medium ${player.totalPoints >= 300 ? "text-amber-400" : player.totalPoints >= 200 ? "text-purple-400" : "text-cyan-400"}`}>
+                                      <span className={`text-xs font-medium ${player.totalPoints >= 300 ? "text-amber-400" : player.totalPoints >= 200 ? "text-purple-400" : player.totalPoints >= 100 ? "text-cyan-400" : "text-white/50"}`}>
                                         {getTitle(player.totalPoints)}
                                       </span>
                                       <span className="text-xs text-white/30">•</span>
@@ -396,9 +410,9 @@ export default function App() {
                                   {Object.entries(KITS).map(([kitKey, kit]) => {
                                     const tier = player.tiers[kitKey];
                                     return (
-                                      <div key={kitKey} className="w-9 h-9 rounded-lg bg-[#0f141b] border border-white/10 flex flex-col items-center justify-center hover:border-white/20 transition-all hover:scale-110" title={`${kit.ad}: ${tier || 'Yok'}`}>
+                                      <div key={kitKey} className="w-9 h-9 rounded-lg bg-[#0f141b] border border-white/10 flex flex-col items-center justify-center hover:border-white/20 transition-all hover:scale-110 group/tier" title={`${kit.ad}: ${tier || 'Test olmamış'}`}>
                                         <div className="text-[10px] leading-none flex justify-center">{kit.icon}</div>
-                                        <span className={`text-[9px] font-bold leading-none mt-0.5 ${tier?.startsWith("HT") ? "text-amber-400" : tier ? "text-white/60" : "text-white/20"}`}>
+                                        <span className={`text-[9px] font-bold leading-none mt-0.5 ${tier?.startsWith("HT") ? "text-amber-400" : tier?.startsWith("LT") ? "text-white/60" : "text-white/20"}`}>
                                           {tier || "—"}
                                         </span>
                                       </div>
@@ -419,11 +433,11 @@ export default function App() {
                     const tierPlayers = playersByTier?.[tierNum] || [];
                     return (
                       <motion.div key={tierNum} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} className="bg-[#11161f] rounded-[20px] border border-white/5 overflow-hidden">
-                        <div className={`px-4 py-3 border-b border-white/5 ${tierNum === 1 ? "bg-gradient-to-r from-amber-500/20 to-yellow-600/20" : tierNum === 2 ? "bg-gradient-to-r from-slate-500/20 to-slate-600/20" : tierNum === 3 ? "bg-gradient-to-r from-orange-600/20 to-amber-700/20" : "bg-[#0f141b]/50"}`}>
+                        <div className={`px-4 py-3 border-b border-white/5 ${tierNum === 1 ? "bg-gradient-to-r from-amber-500/20 to-yellow-600/20" : tierNum === 2 ? "bg-gradient-to-r from-slate-500/20 to-slate-600/20" : tierNum === 3 ? "bg-gradient-to-r from-orange-600/20 to-amber-700/20" : tierNum === 4 ? "bg-gradient-to-r from-blue-500/20 to-blue-600/20" : "bg-gradient-to-r from-gray-500/20 to-gray-600/20"}`}>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <span className="text-xl">
-                                {tierNum === 1 ? "👑" : tierNum === 2 ? "🥈" : tierNum === 3 ? "🥉" : "🏅"}
+                                {tierNum === 1 ? "👑" : tierNum === 2 ? "🥈" : tierNum === 3 ? "🥉" : tierNum === 4 ? "📈" : "🌱"}
                               </span>
                               <h3 className="font-bold">Tier {tierNum}</h3>
                             </div>
@@ -485,7 +499,7 @@ export default function App() {
                   <div>
                     <h2 className="text-2xl font-black">{selectedPlayer.username}</h2>
                     <div className="flex items-center gap-3 mt-1.5">
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${selectedPlayer.totalPoints >= 300 ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" : selectedPlayer.totalPoints >= 200 ? "bg-purple-500/20 text-purple-400 border border-purple-500/30" : "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30"}`}>
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${selectedPlayer.totalPoints >= 300 ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" : selectedPlayer.totalPoints >= 200 ? "bg-purple-500/20 text-purple-400 border border-purple-500/30" : selectedPlayer.totalPoints >= 100 ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30" : "bg-gray-500/20 text-gray-400 border border-gray-500/30"}`}>
                         {getTitle(selectedPlayer.totalPoints)}
                       </span>
                       <span className="text-sm text-white/60">#{selectedPlayer.rank} • {selectedPlayer.totalPoints} puan</span>
@@ -543,6 +557,7 @@ export default function App() {
         .custom-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background: rgb(255 255 255 / 0.1); border-radius: 2px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: rgb(255 255 255 / 0.2); }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
       `}</style>
