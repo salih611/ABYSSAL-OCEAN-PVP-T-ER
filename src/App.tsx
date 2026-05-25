@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Player {
@@ -22,7 +22,8 @@ type SortType = "rank" | "points" | "name" | "tests";
 // F12 KORUMASI - Geliştirici konsolunu engelle
 // ==========================================
 const disableDevTools = () => {
-  // F12 ve kısayol tuşlarını engelle
+  if (typeof window === 'undefined') return;
+  
   document.addEventListener('keydown', (e) => {
     if (e.key === 'F12' || 
         (e.ctrlKey && e.shiftKey && e.key === 'I') ||
@@ -35,107 +36,11 @@ const disableDevTools = () => {
     }
   });
   
-  // Sağ tıklamayı engelle
   document.addEventListener('contextmenu', (e) => {
     e.preventDefault();
     return false;
   });
-  
-  // Konsol açıldığında tespit et ve engelle
-  let devToolsOpen = false;
-  const checkDevTools = () => {
-    const startTime = performance.now();
-    debugger;
-    const endTime = performance.now();
-    if (endTime - startTime > 100) {
-      if (!devToolsOpen) {
-        devToolsOpen = true;
-        document.body.innerHTML = `
-          <div style="
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #0a0e14;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 99999;
-            color: white;
-            font-family: monospace;
-            text-align: center;
-            padding: 20px;
-          ">
-            <div>
-              <h1 style="font-size: 48px; margin-bottom: 20px;">🚫</h1>
-              <h2>Geliştirici Araçları Devre Dışı</h2>
-              <p>Bu siteyi görüntülemek için lütfen geliştirici konsolunu kapatın.</p>
-              <button onclick="location.reload()" style="
-                margin-top: 20px;
-                padding: 10px 30px;
-                background: #06b6d4;
-                border: none;
-                border-radius: 10px;
-                color: white;
-                cursor: pointer;
-                font-size: 16px;
-              ">Sayfayı Yenile</button>
-            </div>
-          </div>
-        `;
-      }
-    } else {
-      devToolsOpen = false;
-    }
-  };
-  setInterval(checkDevTools, 1000);
 };
-
-// ==========================================
-// RATE LIMITING (DDoS koruması)
-// ==========================================
-let lastRequestTime = 0;
-const MIN_REQUEST_INTERVAL = 2000; // 2 saniye
-let requestQueue: (() => void)[] = [];
-let isProcessingQueue = false;
-
-async function rateLimitedFetch(url: string, options: RequestInit): Promise<Response> {
-  return new Promise((resolve, reject) => {
-    const executeRequest = async () => {
-      const now = Date.now();
-      const timeSinceLastRequest = now - lastRequestTime;
-      
-      if (timeSinceLastRequest < MIN_REQUEST_INTERVAL) {
-        await new Promise(r => setTimeout(r, MIN_REQUEST_INTERVAL - timeSinceLastRequest));
-      }
-      
-      lastRequestTime = Date.now();
-      try {
-        const response = await fetch(url, options);
-        resolve(response);
-      } catch (error) {
-        reject(error);
-      } finally {
-        isProcessingQueue = false;
-        if (requestQueue.length > 0) {
-          const next = requestQueue.shift();
-          if (next) {
-            isProcessingQueue = true;
-            next();
-          }
-        }
-      }
-    };
-    
-    if (isProcessingQueue) {
-      requestQueue.push(executeRequest);
-    } else {
-      isProcessingQueue = true;
-      executeRequest();
-    }
-  });
-}
 
 const UPSTASH_URL = import.meta.env.VITE_UPSTASH_URL || 'https://adequate-loon-101577.upstash.io';
 const UPSTASH_TOKEN = import.meta.env.VITE_UPSTASH_TOKEN || 'gQAAAAAAAYzJAAIgcDJhOWJiYWFhM2M2MmE0NThkYTJiMjZjZmM3ZDcxZWMwNA';
@@ -240,13 +145,13 @@ const DiscordIcon = ({ className }: { className?: string }) => (
 
 // Su baloncukları efekti
 const Bubbles = () => {
-  const bubbles = useMemo(() => Array.from({ length: 30 }, (_, i) => ({
+  const bubbles = useMemo(() => Array.from({ length: 25 }, (_, i) => ({
     id: i,
     size: Math.random() * 25 + 5,
     left: Math.random() * 100,
     duration: Math.random() * 10 + 5,
     delay: Math.random() * 8,
-    opacity: Math.random() * 0.2 + 0.05
+    opacity: Math.random() * 0.15 + 0.05
   })), []);
   
   return (
@@ -254,7 +159,7 @@ const Bubbles = () => {
       {bubbles.map(bubble => (
         <div
           key={bubble.id}
-          className="absolute bottom-0 rounded-full bg-gradient-to-t from-cyan-400/20 to-blue-400/10"
+          className="absolute bottom-0 rounded-full bg-gradient-to-t from-cyan-400/15 to-blue-400/5"
           style={{
             width: bubble.size,
             height: bubble.size,
@@ -268,8 +173,8 @@ const Bubbles = () => {
       <style>{`
         @keyframes bubbleFloat {
           0% { transform: translateY(0) scale(0.3); opacity: 0; }
-          20% { opacity: 0.2; }
-          80% { opacity: 0.1; }
+          20% { opacity: 0.15; }
+          80% { opacity: 0.08; }
           100% { transform: translateY(-100vh) scale(1); opacity: 0; }
         }
       `}</style>
@@ -283,7 +188,7 @@ const SkeletonRow = () => (
     <td className="px-6 py-4"><div className="w-10 h-10 bg-white/5 rounded-xl"></div></td>
     <td className="px-6 py-4"><div className="flex items-center gap-4"><div className="w-12 h-12 bg-white/5 rounded-xl"></div><div><div className="w-32 h-4 bg-white/5 rounded mb-2"></div><div className="w-24 h-3 bg-white/5 rounded"></div></div></div></td>
     <td className="px-6 py-4"><div className="flex justify-end gap-1"><div className="w-9 h-9 bg-white/5 rounded-lg"></div><div className="w-9 h-9 bg-white/5 rounded-lg"></div><div className="w-9 h-9 bg-white/5 rounded-lg"></div></div></td>
-  </table>
+  </tr>
 );
 
 export default function App() {
@@ -297,14 +202,13 @@ export default function App() {
   const [currentPageRank, setCurrentPageRank] = useState(1);
   const playersPerPage = 20;
 
-  // F12 korumasını aktif et
   useEffect(() => {
     disableDevTools();
   }, []);
 
   const fetchPlayers = async () => {
     try {
-      const response = await rateLimitedFetch(`${UPSTASH_URL}/get/players`, {
+      const response = await fetch(`${UPSTASH_URL}/get/players`, {
         headers: {
           Authorization: `Bearer ${UPSTASH_TOKEN}`,
           'Content-Type': 'application/json'
@@ -316,9 +220,8 @@ export default function App() {
         players = JSON.parse(data.result);
       }
       setPlayers(players);
-      console.log('✅ Veriler çekildi:', players.length, 'oyuncu');
     } catch (e) {
-      console.log('❌ Bağlantı hatası:', e);
+      console.log('Bağlantı hatası:', e);
       setPlayers([]);
     } finally {
       setLoading(false);
@@ -411,10 +314,6 @@ export default function App() {
     return groups;
   }, [kitPlayers, selectedKit]);
 
-  const recentPlayers = useMemo(() => {
-    return [...players].sort((a, b) => b.tests - a.tests).slice(0, 5);
-  }, [players]);
-
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0a0e14] flex items-center justify-center relative">
@@ -452,12 +351,8 @@ export default function App() {
                 </div>
               </div>
               <nav className="hidden lg:flex items-center gap-1">
-                <button onClick={() => setCurrentPage("home")} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all relative overflow-hidden group ${currentPage === "home" ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30 ring-2 ring-cyan-400/50" : "bg-[#1a1f2e] text-white/60 hover:bg-[#222838] hover:text-white"}`}>
-                  <span className="relative z-10">🏠 Home</span>
-                </button>
-                <button onClick={() => setCurrentPage("rankings")} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all relative overflow-hidden group ${currentPage === "rankings" ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30 ring-2 ring-cyan-400/50" : "bg-[#1a1f2e] text-white/60 hover:bg-[#222838] hover:text-white"}`}>
-                  <span className="relative z-10">🏆 Rankings</span>
-                </button>
+                <button onClick={() => setCurrentPage("home")} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${currentPage === "home" ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30 ring-2 ring-cyan-400/50" : "bg-[#1a1f2e] text-white/60 hover:bg-[#222838] hover:text-white"}`}>🏠 <span>Home</span></button>
+                <button onClick={() => setCurrentPage("rankings")} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${currentPage === "rankings" ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30 ring-2 ring-cyan-400/50" : "bg-[#1a1f2e] text-white/60 hover:bg-[#222838] hover:text-white"}`}>🏆 <span>Rankings</span></button>
               </nav>
             </div>
             <div className="flex items-center gap-3">
@@ -481,10 +376,10 @@ export default function App() {
       <AnimatePresence mode="wait">
         <motion.div
           key={currentPage}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
+          initial={{ opacity: 0, x: currentPage === "home" ? -30 : 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: currentPage === "home" ? 30 : -30 }}
+          transition={{ duration: 0.2, ease: "easeInOut" }}
         >
           {currentPage === "home" && (
             <main className="relative z-10 max-w-[1400px] mx-auto px-4 py-12">
@@ -525,20 +420,8 @@ export default function App() {
                   transition={{ duration: 0.4, delay: 0.15 }}
                   className="flex flex-wrap items-center justify-center gap-4"
                 >
-                  <button 
-                    onClick={() => setCurrentPage("rankings")} 
-                    className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl font-bold text-lg transition-all shadow-lg shadow-cyan-500/30 hover:scale-105"
-                  >
-                    🏆 Sıralamaları Gör
-                  </button>
-                  <a 
-                    href="https://discord.gg/cKFwKcfcWn" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="px-8 py-4 bg-[#5865F2] hover:bg-[#4752c4] rounded-xl font-bold text-lg transition-all flex items-center gap-2 shadow-lg shadow-[#5865F2]/30 hover:scale-105"
-                  >
-                    <DiscordIcon className="w-6 h-6" /> Sunucuya Katıl
-                  </a>
+                  <button onClick={() => setCurrentPage("rankings")} className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-xl font-bold text-lg transition-all shadow-lg shadow-cyan-500/30 hover:scale-105">🏆 Sıralamaları Gör</button>
+                  <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-[#5865F2] hover:bg-[#4752c4] rounded-xl font-bold text-lg transition-all flex items-center gap-2 shadow-lg shadow-[#5865F2]/30 hover:scale-105"><DiscordIcon className="w-6 h-6" /> Sunucuya Katıl</a>
                 </motion.div>
               </div>
 
@@ -551,29 +434,18 @@ export default function App() {
                 <div className="absolute top-0 right-0 w-40 h-40 bg-cyan-500/10 rounded-full blur-2xl"></div>
                 <div className="absolute bottom-0 left-0 w-40 h-40 bg-purple-500/10 rounded-full blur-2xl"></div>
                 <div className="relative">
-                  <h2 className="text-2xl md:text-3xl font-black mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                    Abyssal Ocean: Seviyeni Seç, Gücünü Kanıtla!
-                  </h2>
+                  <h2 className="text-2xl md:text-3xl font-black mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Abyssal Ocean: Seviyeni Seç, Gücünü Kanıtla!</h2>
                   <p className="text-white/70 leading-relaxed max-w-3xl mx-auto">
                     Gelişmekte olan Minecraft tier sunucumuz Abyssal Ocean'da, 8 farklı kit ile kendini test edip 
                     gerçek PvP seviyeni hemen öğrenebilirsin. Üstelik yeteneğine güveniyorsan sunucumuzda Tester olabilir 
                     ya da yönetim kadromuza katılarak yetkili olarak yer alabilirsin. Kitini seç ve bu maceraya ortak ol!
                   </p>
                   <div className="flex flex-wrap items-center justify-center gap-4 mt-6">
-                    <div className="flex items-center gap-2 text-cyan-400">
-                      <span className="text-xl">⚔️</span>
-                      <span className="text-sm">8 Farklı Kit</span>
-                    </div>
+                    <div className="flex items-center gap-2 text-cyan-400"><span className="text-xl">⚔️</span><span className="text-sm">8 Farklı Kit</span></div>
                     <div className="w-1 h-1 bg-white/20 rounded-full"></div>
-                    <div className="flex items-center gap-2 text-cyan-400">
-                      <span className="text-xl">🏆</span>
-                      <span className="text-sm">Tier Sistemi</span>
-                    </div>
+                    <div className="flex items-center gap-2 text-cyan-400"><span className="text-xl">🏆</span><span className="text-sm">Tier Sistemi</span></div>
                     <div className="w-1 h-1 bg-white/20 rounded-full"></div>
-                    <div className="flex items-center gap-2 text-cyan-400">
-                      <span className="text-xl">👑</span>
-                      <span className="text-sm">Tester Olma Fırsatı</span>
-                    </div>
+                    <div className="flex items-center gap-2 text-cyan-400"><span className="text-xl">👑</span><span className="text-sm">Tester Olma Fırsatı</span></div>
                   </div>
                 </div>
               </motion.div>
@@ -585,9 +457,7 @@ export default function App() {
                   transition={{ delay: 0.3 }}
                   className="text-center mb-12"
                 >
-                  <h2 className="text-4xl md:text-5xl font-black mb-4 bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
-                    Test Edebileceğin Kitler
-                  </h2>
+                  <h2 className="text-4xl md:text-5xl font-black mb-4 bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">Test Edebileceğin Kitler</h2>
                   <p className="text-white/50 text-lg">8 farklı kit, kendi tarzını bul!</p>
                 </motion.div>
                 
@@ -603,15 +473,9 @@ export default function App() {
                     >
                       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/0 to-cyan-500/0 group-hover:from-cyan-500/10 group-hover:to-blue-500/10 transition-all duration-300" />
                       <div className="relative">
-                        <div className="mb-4 group-hover:scale-110 transition-transform duration-300 flex justify-center">
-                          {kit.icon}
-                        </div>
-                        <h3 className="text-xl font-bold mb-2 text-center group-hover:text-cyan-400 transition-colors">
-                          {kit.ad}
-                        </h3>
-                        <p className="text-xs text-white/40 text-center leading-relaxed">
-                          {kit.description}
-                        </p>
+                        <div className="mb-4 group-hover:scale-110 transition-transform duration-300 flex justify-center">{kit.icon}</div>
+                        <h3 className="text-xl font-bold mb-2 text-center group-hover:text-cyan-400 transition-colors">{kit.ad}</h3>
+                        <p className="text-xs text-white/40 text-center leading-relaxed">{kit.description}</p>
                       </div>
                     </motion.div>
                   ))}
@@ -628,17 +492,8 @@ export default function App() {
                 <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-500/20 rounded-full blur-[120px] animate-pulse" />
                 <div className="relative">
                   <h2 className="text-4xl md:text-6xl font-black mb-4">Hazır mısın?</h2>
-                  <p className="text-lg text-white/70 mb-8 max-w-2xl mx-auto">
-                    Discord sunucumuza katıl, tier test başvurusu yap ve yeteneğini herkese kanıtla!
-                  </p>
-                  <a 
-                    href="https://discord.gg/cKFwKcfcWn" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="inline-flex items-center gap-3 px-10 py-5 bg-[#5865F2] hover:bg-[#4752c4] rounded-xl font-bold text-xl transition-all shadow-2xl shadow-[#5865F2]/40 hover:scale-105"
-                  >
-                    <DiscordIcon className="w-7 h-7" /> Hemen Katıl
-                  </a>
+                  <p className="text-lg text-white/70 mb-8 max-w-2xl mx-auto">Discord sunucumuza katıl, tier test başvurusu yap ve yeteneğini herkese kanıtla!</p>
+                  <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-10 py-5 bg-[#5865F2] hover:bg-[#4752c4] rounded-xl font-bold text-xl transition-all shadow-2xl shadow-[#5865F2]/40 hover:scale-105"><DiscordIcon className="w-7 h-7" /> Hemen Katıl</a>
                 </div>
               </motion.div>
 
@@ -682,9 +537,7 @@ export default function App() {
                     ))}
                   </div>
                 </div>
-                <div className="text-sm text-white/40">
-                  Toplam {kitPlayers.length} oyuncu
-                </div>
+                <div className="text-sm text-white/40">Toplam {kitPlayers.length} oyuncu</div>
               </div>
 
               <div className="mb-6 overflow-x-auto scrollbar-hide">
@@ -740,66 +593,62 @@ export default function App() {
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-white/[0.03]">
-                            {loading ? (
-                              Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
-                            ) : (
-                              currentPlayers.map((player, idx) => (
-                                <motion.tr
-                                  key={player.id}
-                                  initial={{ opacity: 0, x: -20 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ delay: idx * 0.01 }}
-                                  onClick={() => setSelectedPlayer(player)}
-                                  className="group hover:bg-white/5 cursor-pointer transition-all hover:scale-[1.01]"
-                                >
-                                  <td className="px-6 py-4">
-                                    {player.rank <= 3 ? (
-                                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg ${player.rank === 1 ? "bg-gradient-to-br from-amber-400 to-yellow-600 text-black shadow-lg" : player.rank === 2 ? "bg-gradient-to-br from-slate-300 to-slate-500 text-black shadow-lg" : "bg-gradient-to-br from-orange-600 to-amber-700 text-white shadow-lg"}`}>
-                                        {player.rank}
+                            {currentPlayers.map((player, idx) => (
+                              <motion.tr
+                                key={player.id}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: idx * 0.005 }}
+                                onClick={() => setSelectedPlayer(player)}
+                                className="group hover:bg-white/5 cursor-pointer transition-all hover:scale-[1.01]"
+                              >
+                                <td className="px-6 py-4">
+                                  {player.rank <= 3 ? (
+                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg ${player.rank === 1 ? "bg-gradient-to-br from-amber-400 to-yellow-600 text-black shadow-lg" : player.rank === 2 ? "bg-gradient-to-br from-slate-300 to-slate-500 text-black shadow-lg" : "bg-gradient-to-br from-orange-600 to-amber-700 text-white shadow-lg"}`}>
+                                      {player.rank}
+                                    </div>
+                                  ) : (
+                                    <span className="w-10 text-center text-xl font-bold text-white/30 block group-hover:text-white/60 transition-colors">
+                                      {player.rank}
+                                    </span>
+                                  )}
+                                 </td>
+                                <td className="px-6 py-4">
+                                  <div className="flex items-center gap-4">
+                                    <img src={player.avatar} alt={player.username} className="w-12 h-12 rounded-xl ring-2 ring-white/10 group-hover:ring-cyan-500/50 transition-all" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/64`; }} />
+                                    <div>
+                                      <div className="flex items-center gap-2">
+                                        <h3 className="font-bold text-white group-hover:text-cyan-400 transition-colors">{player.username}</h3>
                                       </div>
-                                    ) : (
-                                      <span className="w-10 text-center text-xl font-bold text-white/30 block group-hover:text-white/60 transition-colors">
-                                        {player.rank}
-                                      </span>
-                                    )}
-                                   </td>
-                                  <td className="px-6 py-4">
-                                    <div className="flex items-center gap-4">
-                                      <img src={player.avatar} alt={player.username} className="w-12 h-12 rounded-xl ring-2 ring-white/10 group-hover:ring-cyan-500/50 transition-all" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/64`; }} />
-                                      <div>
-                                        <div className="flex items-center gap-2">
-                                          <h3 className="font-bold text-white group-hover:text-cyan-400 transition-colors">{player.username}</h3>
-                                        </div>
-                                        <div className="flex items-center gap-2 mt-1">
-                                          <span className={`text-xs font-medium ${player.totalPoints >= 300 ? "text-amber-400" : player.totalPoints >= 200 ? "text-purple-400" : player.totalPoints >= 100 ? "text-cyan-400" : "text-white/50"}`}>
-                                            {getTitle(player.totalPoints)}
+                                      <div className="flex items-center gap-2 mt-1">
+                                        <span className={`text-xs font-medium ${player.totalPoints >= 300 ? "text-amber-400" : player.totalPoints >= 200 ? "text-purple-400" : player.totalPoints >= 100 ? "text-cyan-400" : "text-white/50"}`}>
+                                          {getTitle(player.totalPoints)}
+                                        </span>
+                                        <span className="text-xs text-white/30">•</span>
+                                        <span className="text-xs text-white/50">{player.totalPoints} puan</span>
+                                        <span className="text-xs text-white/30">•</span>
+                                        <span className="text-xs text-white/50">🎮 {player.minecraftNick}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                 </td>
+                                <td className="px-6 py-4">
+                                  <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                                    {Object.entries(KITS).map(([kitKey, kit]) => {
+                                      const tier = player.tiers[kitKey];
+                                      return (
+                                        <div key={kitKey} className="w-9 h-9 rounded-lg bg-[#0f141b] border border-white/10 flex flex-col items-center justify-center hover:border-cyan-500/50 transition-all hover:scale-110 group/tier" title={`${kit.ad}: ${tier || 'Test olmamış'}`}>
+                                          <div className="text-[10px] leading-none flex justify-center">{kit.icon}</div>
+                                          <span className={`text-[9px] font-bold leading-none mt-0.5 ${tier?.startsWith("HT") || tier?.startsWith("Crystal HT") ? "text-amber-400" : tier?.startsWith("LT") || tier?.startsWith("Crystal LT") ? "text-white/60" : "text-white/20"}`}>
+                                            {tier ? tier.replace("Crystal ", "") : "—"}
                                           </span>
-                                          <span className="text-xs text-white/30">•</span>
-                                          <span className="text-xs text-white/50">{player.totalPoints} puan</span>
-                                          <span className="text-xs text-white/30">•</span>
-                                          <span className="text-xs text-white/50">🎮 {player.minecraftNick}</span>
                                         </div>
-                                      </div>
-                                    </div>
-                                   </td>
-                                  <td className="px-6 py-4">
-                                    <div className="flex items-center justify-end gap-1.5 flex-wrap">
-                                      {Object.entries(KITS).map(([kitKey, kit]) => {
-                                        const tier = player.tiers[kitKey];
-                                        return (
-                                          <div key={kitKey} className="w-9 h-9 rounded-lg bg-[#0f141b] border border-white/10 flex flex-col items-center justify-center hover:border-cyan-500/50 transition-all hover:scale-110" title={`${kit.ad}: ${tier || 'Test olmamış'}`}>
-                                            <div className="text-[10px] leading-none flex justify-center">{kit.icon}</div>
-                                            <span className={`text-[9px] font-bold leading-none mt-0.5 ${tier?.startsWith("HT") || tier?.startsWith("Crystal HT") ? "text-amber-400" : tier?.startsWith("LT") || tier?.startsWith("Crystal LT") ? "text-white/60" : "text-white/20"}`}>
-                                              {tier ? tier.replace("Crystal ", "") : "—"}
-                                            </span>
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                   </td>
-                                </motion.tr>
-                              ))
-                            )}
+                                      );
+                                    })}
+                                  </div>
+                                 </td>
+                              </motion.tr>
+                            ))}
                           </tbody>
                         </table>
                       </div>
@@ -812,9 +661,7 @@ export default function App() {
                           >
                             ◀ Önceki
                           </button>
-                          <span className="px-4 py-2 text-sm text-white/60">
-                            Sayfa {currentPageRank} / {totalPages}
-                          </span>
+                          <span className="px-4 py-2 text-sm text-white/60">Sayfa {currentPageRank} / {totalPages}</span>
                           <button
                             onClick={() => setCurrentPageRank(p => Math.min(totalPages, p + 1))}
                             disabled={currentPageRank === totalPages}
