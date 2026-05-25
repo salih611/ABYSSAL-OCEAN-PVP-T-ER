@@ -18,9 +18,7 @@ type KitKey = "overall" | "vanilla" | "sword" | "axe" | "nethpot" | "pot" | "uhc
 type PageType = "home" | "rankings";
 type SortType = "rank" | "points" | "name" | "tests";
 
-// ==========================================
 // F12 KORUMASI
-// ==========================================
 const disableDevTools = () => {
   if (typeof window === 'undefined') return;
   document.addEventListener('keydown', (e) => {
@@ -164,15 +162,15 @@ const DiscordIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-// Su baloncukları efekti
+// Su baloncukları efekti - DAHA BELİRGİN
 const Bubbles = () => {
-  const bubbles = useMemo(() => Array.from({ length: 25 }, (_, i) => ({
+  const bubbles = useMemo(() => Array.from({ length: 35 }, (_, i) => ({
     id: i,
-    size: Math.random() * 25 + 5,
+    size: Math.random() * 35 + 8,
     left: Math.random() * 100,
-    duration: Math.random() * 10 + 5,
-    delay: Math.random() * 8,
-    opacity: Math.random() * 0.15 + 0.05
+    duration: Math.random() * 12 + 6,
+    delay: Math.random() * 10,
+    opacity: Math.random() * 0.35 + 0.15
   })), []);
   
   return (
@@ -180,7 +178,7 @@ const Bubbles = () => {
       {bubbles.map(bubble => (
         <div
           key={bubble.id}
-          className="absolute bottom-0 rounded-full bg-gradient-to-t from-cyan-400/15 to-blue-400/5"
+          className="absolute bottom-0 rounded-full bg-gradient-to-t from-cyan-400/30 to-blue-400/20"
           style={{
             width: bubble.size,
             height: bubble.size,
@@ -188,15 +186,17 @@ const Bubbles = () => {
             animation: `bubbleFloat ${bubble.duration}s linear infinite`,
             animationDelay: `${bubble.delay}s`,
             opacity: bubble.opacity,
+            boxShadow: '0 0 10px rgba(0,255,255,0.3)'
           }}
         />
       ))}
       <style>{`
         @keyframes bubbleFloat {
           0% { transform: translateY(0) scale(0.3); opacity: 0; }
-          20% { opacity: 0.15; }
-          80% { opacity: 0.08; }
-          100% { transform: translateY(-100vh) scale(1); opacity: 0; }
+          15% { opacity: 0.4; }
+          50% { opacity: 0.3; }
+          85% { opacity: 0.15; }
+          100% { transform: translateY(-100vh) scale(1.2); opacity: 0; }
         }
       `}</style>
     </div>
@@ -598,7 +598,7 @@ export default function App() {
                               <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider w-16">#</th>
                               <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Oyuncu</th>
                               <th className="text-right px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Tierler</th>
-                            </tr>
+                            </td>
                           </thead>
                           <tbody className="divide-y divide-white/[0.03]">
                             {currentPlayers.map((player, idx) => (
@@ -627,7 +627,7 @@ export default function App() {
                                     <div>
                                       {/* Minecraft nick BÜYÜK, Discord nick KÜÇÜK */}
                                       <h3 className="font-bold text-white group-hover:text-cyan-400 transition-colors text-lg">{player.minecraftNick}</h3>
-                                      <div className="flex items-center gap-2 mt-1">
+                                      <div className="flex items-center gap-2 mt-1 flex-wrap">
                                         <span className={`text-xs font-medium ${player.totalPoints >= 300 ? "text-amber-400" : player.totalPoints >= 200 ? "text-purple-400" : player.totalPoints >= 100 ? "text-cyan-400" : "text-white/50"}`}>
                                           {getTitle(player.totalPoints)}
                                         </span>
@@ -643,7 +643,6 @@ export default function App() {
                                   <div className="flex items-center justify-end gap-1.5 flex-wrap">
                                     {Object.entries(KITS).map(([kitKey, kit]) => {
                                       const tier = player.tiers[kitKey];
-                                      // Sadece tier adını göster (HT1, LT2 vb.)
                                       const displayTier = tier ? tier.replace("Crystal ", "") : null;
                                       return (
                                         <div 
@@ -750,7 +749,6 @@ export default function App() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Player Modal - GÜNCELLENDİ */}
       {selectedPlayer && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" onClick={() => setSelectedPlayer(null)}>
           <motion.div 
@@ -770,7 +768,6 @@ export default function App() {
                     <img src={selectedPlayer.avatar} alt="" className="relative w-20 h-20 rounded-2xl ring-2 ring-white/20" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/64`; }} />
                   </div>
                   <div>
-                    {/* Minecraft nick BÜYÜK */}
                     <h2 className="text-2xl font-black">{selectedPlayer.minecraftNick}</h2>
                     <div className="flex items-center gap-3 mt-1.5">
                       <span className={`px-3 py-1 rounded-full text-xs font-bold ${selectedPlayer.totalPoints >= 300 ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" : selectedPlayer.totalPoints >= 200 ? "bg-purple-500/20 text-purple-400 border border-purple-500/30" : selectedPlayer.totalPoints >= 100 ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30" : "bg-gray-500/20 text-gray-400 border border-gray-500/30"}`}>
@@ -778,7 +775,6 @@ export default function App() {
                       </span>
                       <span className="text-sm text-white/60">#{selectedPlayer.rank} • {selectedPlayer.totalPoints} puan</span>
                     </div>
-                    {/* Discord nick KÜÇÜK */}
                     <div className="mt-2 text-sm text-white/50">Discord: <span className="text-cyan-400">@{selectedPlayer.username}</span></div>
                   </div>
                 </div>
@@ -828,10 +824,9 @@ export default function App() {
       )}
 
       <style>{`
-        .custom-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scroll::-webkit-scrollbar { width: 0px; height: 0px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: rgb(255 255 255 / 0.1); border-radius: 2px; }
-        .custom-scroll::-webkit-scrollbar-thumb:hover { background: rgb(255 255 255 / 0.2); }
+        .custom-scroll::-webkit-scrollbar-thumb { background: transparent; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
       `}</style>
