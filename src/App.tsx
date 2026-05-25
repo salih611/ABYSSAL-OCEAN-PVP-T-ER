@@ -162,7 +162,7 @@ const DiscordIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-// Su baloncukları efekti - DAHA BELİRGİN
+// Su baloncukları efekti
 const Bubbles = () => {
   const bubbles = useMemo(() => Array.from({ length: 35 }, (_, i) => ({
     id: i,
@@ -598,7 +598,7 @@ export default function App() {
                               <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider w-16">#</th>
                               <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Oyuncu</th>
                               <th className="text-right px-6 py-4 text-xs font-semibold text-white/40 uppercase tracking-wider">Tierler</th>
-                            </td>
+                            </tr>
                           </thead>
                           <tbody className="divide-y divide-white/[0.03]">
                             {currentPlayers.map((player, idx) => (
@@ -625,7 +625,6 @@ export default function App() {
                                   <div className="flex items-center gap-4">
                                     <img src={player.avatar} alt={player.username} className="w-12 h-12 rounded-xl ring-2 ring-white/10 group-hover:ring-cyan-500/50 transition-all" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/64`; }} />
                                     <div>
-                                      {/* Minecraft nick BÜYÜK, Discord nick KÜÇÜK */}
                                       <h3 className="font-bold text-white group-hover:text-cyan-400 transition-colors text-lg">{player.minecraftNick}</h3>
                                       <div className="flex items-center gap-2 mt-1 flex-wrap">
                                         <span className={`text-xs font-medium ${player.totalPoints >= 300 ? "text-amber-400" : player.totalPoints >= 200 ? "text-purple-400" : player.totalPoints >= 100 ? "text-cyan-400" : "text-white/50"}`}>
