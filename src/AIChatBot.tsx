@@ -8,50 +8,33 @@ interface Message {
   timestamp: Date;
 }
 
-// Kalıp sorular - Discord botundaki ile aynı
+// ==========================================
+// DISCORD BOTUNDAKİ AYNI KALIP SORULAR
+// ==========================================
 const kalipSorular = [
   { 
-    anahtar: ['nasıl test olucam', 'nasıl test olurum', 'test nasıl olunur', 'test nasıl', 'nasıl test'], 
-    cevap: 'Test olmak için Discord sunucumuza katılıp #soru-sor kanalına gidip sorunuzu iletebilirsiniz. 🎯' 
+    anahtar: ['nasıl test olucam', 'nasıl test olurum', 'test nasıl olunur'], 
+    cevap: 'Test olmak için Discord sunucumuzdaki #soru-sor kanalına gidip sorunuzu iletebilirsiniz.' 
   },
   { 
-    anahtar: ['cooldown ne kadar', 'cooldown süresi', 'bekleme süresi', 'ne kadar beklemem'], 
-    cevap: '⏰ Cooldown süresi **2 gündür**. Tekrar test olabilmek için 2 gün beklemen gerekir.' 
+    anahtar: ['cooldown ne kadar', 'cooldown süresi', 'bekleme süresi'], 
+    cevap: '2 gün' 
   },
   { 
-    anahtar: ['partnerlik', 'iş birliği', 'reklam'], 
-    cevap: '🤝 Partnerlik için Discord sunucumuzda ticket açarsanız yetkililerimiz ilgilenecektir.' 
+    anahtar: ['partnerlik', 'iş birliği'], 
+    cevap: 'ticket açarsanız yetkililerimiz ilgilenicektirler' 
   },
   { 
-    anahtar: ['sıradayım ne zaman', 'sıra ne zaman gelir', 'sırada bekliyorum'], 
-    cevap: '⏳ Testerlerimiz sırayla ilerliyor, lütfen sıranızı bekleyin. Sıran yaklaştığında DM\'den hatırlatma alacaksın!' 
+    anahtar: ['sıradayım ne zaman', 'sıra ne zaman gelir'], 
+    cevap: 'testerlerimiz sırayla ilerliyor lütfen sıranızı bekleyin' 
   },
   { 
-    anahtar: ['makro', 'auto-clicker', 'autoclicker', 'hile'], 
-    cevap: '🚫 Hile, makro veya auto-clicker tespiti halinde oyuncu sunucudan **kalıcı olarak** uzaklaştırılır.' 
-  },
-  { 
-    anahtar: ['puanlama', 'puan sistemi', 'kaç puan'], 
-    cevap: '📊 **Puanlama Sistemi:**\n• HT1: 60p | LT1: 44p\n• HT2: 28p | LT2: 16p\n• HT3: 10p | LT3: 6p\n• HT4: 4p | LT4: 3p\n• HT5: 2p | LT5: 1p' 
-  },
-  { 
-    anahtar: ['kaç kit', 'hangi kitler', 'kit listesi'], 
-    cevap: '⚔️ Toplam **8 kit** mevcut:\n🌿 Vanilla\n⚔️ Sword\n🪓 Axe\n🌌 NethOP\n🧪 Pot\n🍎 UHC\n🌿 SMP\n🔨 Mace' 
-  },
-  {
-    anahtar: ['discord', 'sunucu link', 'discord link'],
-    cevap: '🎮 Discord sunucumuza katılmak için: https://discord.gg/cKFwKcfcWn'
-  },
-  {
-    anahtar: ['tester nasıl', 'tester olmak', 'tester başvuru'],
-    cevap: '🛡️ Tester olmak için Discord sunucumuzda ticket açıp **Tester Başvurusu** seçeneğini kullanabilirsin.'
-  },
-  {
-    anahtar: ['merhaba', 'selam', 'slm', 'hi', 'hello'],
-    cevap: '👋 Selam! Ben Abyssal Ocean asistanıyım. Sana nasıl yardımcı olabilirim?'
+    anahtar: ['makro', 'auto-clicker', 'autoclicker'], 
+    cevap: 'Tespiti halinde oyuncu sunucudan kalıcı olarak uzaklaştırılır.' 
   }
 ];
 
+// Discord botundaki aynı eşleşme fonksiyonu
 function kalipEslesme(mesaj: string): string | null {
   const kucukMesaj = mesaj.toLowerCase().trim();
   for (const kalip of kalipSorular) {
@@ -62,8 +45,10 @@ function kalipEslesme(mesaj: string): string | null {
   return null;
 }
 
-// OpenRouter AI API
-async function aiyeSor(soru: string): Promise<string> {
+// ==========================================
+// DISCORD BOTUNDAKİ AYNI AI FONKSİYONU
+// ==========================================
+async function internetteAraVeCevapla(soru: string): Promise<string> {
   try {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
@@ -78,7 +63,7 @@ async function aiyeSor(soru: string): Promise<string> {
         messages: [
           {
             role: "system",
-            content: "Sen Abyssal Ocean adlı Minecraft PvP Tierlist sunucusunun yardımcı asistanısın. Yanıtların kısa, net, samimi ve Türkçe olsun. Emojiler kullanabilirsin. Tier sistemi, kitler ve PvP hakkında bilgi verirsin."
+            content: "Sen bir Minecraft PvP Tierlist sunucusunun yardımcı botusun. Yanıtlar kısa, net ve Türkçe olsun."
           },
           {
             role: "user",
@@ -95,8 +80,8 @@ async function aiyeSor(soru: string): Promise<string> {
     }
     return "❌ Şu anda yanıt veremiyorum, lütfen tekrar dene.";
   } catch (error) {
-    console.error("AI hatası:", error);
-    return "❌ Bir hata oluştu. Lütfen daha sonra tekrar dene.";
+    console.error("OpenRouter hatası:", error);
+    return "❌ Şu anda yanıt veremiyorum, lütfen tekrar dene.";
   }
 }
 
@@ -131,6 +116,7 @@ export default function AIChatBot() {
     }
   }, [isOpen]);
 
+  // Discord botundaki AYNI mantık
   const sendMessage = async () => {
     const trimmed = input.trim();
     if (!trimmed || isLoading) return;
@@ -145,30 +131,30 @@ export default function AIChatBot() {
     setInput("");
     setIsLoading(true);
 
-    // Önce kalıp eşleşmesi kontrol et
+    // 1. ÖNCE KALIP SORU KONTROLÜ (Discord botundaki gibi)
     const kalipCevap = kalipEslesme(trimmed);
     
-    setTimeout(async () => {
-      let botCevap: string;
-      if (kalipCevap) {
-        botCevap = kalipCevap;
-      } else {
-        botCevap = await aiyeSor(trimmed);
-      }
+    let botCevap: string;
+    if (kalipCevap) {
+      // Kalıp bulundu, direkt cevap ver
+      botCevap = kalipCevap;
+    } else {
+      // 2. KALIP YOKSA AI'YA SOR (Discord botundaki gibi)
+      botCevap = await internetteAraVeCevapla(trimmed);
+    }
 
-      const botMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "bot",
-        content: botCevap,
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, botMsg]);
-      setIsLoading(false);
+    const botMsg: Message = {
+      id: (Date.now() + 1).toString(),
+      role: "bot",
+      content: botCevap,
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, botMsg]);
+    setIsLoading(false);
 
-      if (!isOpen) {
-        setUnreadCount(prev => prev + 1);
-      }
-    }, 500);
+    if (!isOpen) {
+      setUnreadCount(prev => prev + 1);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -181,8 +167,8 @@ export default function AIChatBot() {
   const hizliSorular = [
     "Nasıl test olurum?",
     "Cooldown ne kadar?",
-    "Puanlama nasıl?",
-    "Discord linki?"
+    "Partnerlik nasıl?",
+    "Makro yasak mı?"
   ];
 
   return (
@@ -314,7 +300,11 @@ export default function AIChatBot() {
                       key={soru}
                       onClick={() => {
                         setInput(soru);
-                        setTimeout(() => sendMessage(), 100);
+                        setTimeout(() => {
+                          const event = new KeyboardEvent('keydown', { key: 'Enter' });
+                          inputRef.current?.dispatchEvent(event);
+                          sendMessage();
+                        }, 50);
                       }}
                       className="text-xs px-3 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 rounded-full text-cyan-400 transition-all hover:scale-105"
                     >
@@ -334,7 +324,7 @@ export default function AIChatBot() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Bir şey sor..."
+                  placeholder="Bir soru sor..."
                   disabled={isLoading}
                   className="flex-1 px-4 py-3 bg-[#1a1f2e] border border-white/10 rounded-xl text-sm text-white placeholder-white/30 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all disabled:opacity-50"
                 />
