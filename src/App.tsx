@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import AIChatBot from "./AIChatBot";
 
@@ -18,13 +18,13 @@ interface Player {
 type KitKey = "overall" | "vanilla" | "sword" | "axe" | "nethpot" | "pot" | "uhc" | "mace" | "smp";
 type PageType = "home" | "rankings";
 type SortType = "rank" | "points" | "name" | "tests";
-type ThemeKey = "ocean" | "dark" | "light" | "sunset" | "forest";
+type ThemeKey = "ocean" | "dark" | "sunset" | "forest";
 type LangKey = "tr" | "en" | "de";
 
 const UPSTASH_URL = 'https://adequate-loon-101577.upstash.io';
 const UPSTASH_TOKEN = 'gQAAAAAAAYzJAAIgcDJhOWJiYWFhM2M2MmE0NThkYTJiMjZjZmM3ZDcxZWMwNA';
 
-// 🎨 TEMA SİSTEMİ
+// 🎨 TEMA SİSTEMİ (Light kaldırıldı)
 const THEMES: Record<ThemeKey, {
   name: string;
   emoji: string;
@@ -37,6 +37,7 @@ const THEMES: Record<ThemeKey, {
   primary: string;
   primaryGradient: string;
   accent: string;
+  ctaGradient: string;
 }> = {
   ocean: {
     name: "Ocean",
@@ -50,6 +51,7 @@ const THEMES: Record<ThemeKey, {
     primary: "#22d3ee",
     primaryGradient: "from-cyan-500 to-blue-500",
     accent: "#3b82f6",
+    ctaGradient: "from-cyan-600/30 via-blue-600/30 to-purple-600/30",
   },
   dark: {
     name: "Midnight",
@@ -63,19 +65,7 @@ const THEMES: Record<ThemeKey, {
     primary: "#a855f7",
     primaryGradient: "from-purple-500 to-pink-500",
     accent: "#ec4899",
-  },
-  light: {
-    name: "Light",
-    emoji: "☀️",
-    bg: "#f5f5f7",
-    cardBg: "#ffffff",
-    headerBg: "#fafafa",
-    text: "#1a1a1a",
-    textMuted: "rgba(0,0,0,0.6)",
-    border: "rgba(0,0,0,0.08)",
-    primary: "#0ea5e9",
-    primaryGradient: "from-blue-500 to-cyan-500",
-    accent: "#0284c7",
+    ctaGradient: "from-purple-600/30 via-pink-600/30 to-rose-600/30",
   },
   sunset: {
     name: "Sunset",
@@ -89,6 +79,7 @@ const THEMES: Record<ThemeKey, {
     primary: "#f97316",
     primaryGradient: "from-orange-500 to-red-500",
     accent: "#dc2626",
+    ctaGradient: "from-orange-600/30 via-red-600/30 to-pink-600/30",
   },
   forest: {
     name: "Forest",
@@ -102,243 +93,125 @@ const THEMES: Record<ThemeKey, {
     primary: "#22c55e",
     primaryGradient: "from-green-500 to-emerald-500",
     accent: "#16a34a",
+    ctaGradient: "from-green-600/30 via-emerald-600/30 to-teal-600/30",
   },
 };
 
-// 🌍 DİL SİSTEMİ
 const LANGUAGES: Record<LangKey, { name: string; flag: string; code: string }> = {
   tr: { name: "Türkçe", flag: "🇹🇷", code: "TR" },
   en: { name: "English", flag: "🇬🇧", code: "EN" },
   de: { name: "Deutsch", flag: "🇩🇪", code: "DE" },
 };
 
-// 📝 ÇEVİRİLER
 const TRANSLATIONS: Record<LangKey, Record<string, string>> = {
   tr: {
-    home: "Ana Sayfa",
-    rankings: "Sıralamalar",
-    discord: "Discord",
-    searchPlayer: "Oyuncu ara...",
-    pvpPlatform: "Türkiye'nin #1 PvP Platformu",
-    chooseLevel: "Seviyeni Seç, Gücünü Kanıtla!",
-    viewRankings: "Sıralamaları Gör",
-    joinServer: "Sunucuya Katıl",
-    kitsTitle: "Test Edebileceğin Kitler",
-    kitsSubtitle: "8 farklı kit, kendi tarzını bul ve ustalaş!",
-    ready: "Hazır mısın?",
-    joinDiscord: "Discord sunucumuza katıl!",
-    joinNow: "Hemen Katıl",
-    region: "Bölge",
-    sortBy: "Sırala",
-    sortRank: "🏆 Sıra",
-    sortPoints: "⭐ Puan",
-    sortName: "📝 İsim",
-    sortTests: "🎯 Test",
-    totalPlayers: "Toplam {count} oyuncu",
-    player: "Oyuncu",
-    tiers: "Tierler",
-    noPlayers: "Bu bölgede henüz oyuncu yok",
-    previous: "◀ Önceki",
-    next: "Sonraki ▶",
-    page: "Sayfa {current}/{total}",
-    points: "puan",
-    allKitTiers: "Tüm Kit Tierleri",
-    totalTests: "Toplam Test",
-    highestTier: "En Yüksek Tier",
-    theme: "Tema",
-    language: "Dil",
-    allRights: "Tüm hakları gizlidir",
-    madeWith: "Türk PvP Topluluğu için 💙 ile yapıldı",
-    pvpTierList: "Minecraft PvP Tier List",
-    seeRankings: "Sıralamaları Gör →",
-    loading: "Yükleniyor...",
-    title_legendary: "🏆 Efsanevi Savaşçı",
-    title_master: "⚡ Usta Savaşçı",
-    title_experienced: "🌟 Tecrübeli Savaşçı",
-    title_expert: "📈 Uzman Savaşçı",
-    title_novice: "🌱 Acemi Savaşçı",
-    title_rookie: "🆕 Çaylak",
+    home: "Ana Sayfa", rankings: "Sıralamalar", discord: "Discord",
+    searchPlayer: "Oyuncu ara...", pvpPlatform: "Türkiye'nin #1 PvP Platformu",
+    chooseLevel: "Seviyeni Seç, Gücünü Kanıtla!", viewRankings: "Sıralamaları Gör",
+    joinServer: "Sunucuya Katıl", kitsTitle: "Test Edebileceğin Kitler",
+    kitsSubtitle: "8 farklı kit, kendi tarzını bul ve ustalaş!", ready: "Hazır mısın?",
+    joinDiscord: "Discord sunucumuza katıl!", joinNow: "Hemen Katıl",
+    region: "Bölge", sortBy: "Sırala", sortRank: "🏆 Sıra", sortPoints: "⭐ Puan",
+    sortName: "📝 İsim", sortTests: "🎯 Test", totalPlayers: "Toplam {count} oyuncu",
+    player: "Oyuncu", tiers: "Tierler", noPlayers: "Bu bölgede henüz oyuncu yok",
+    previous: "◀ Önceki", next: "Sonraki ▶", page: "Sayfa {current}/{total}",
+    points: "puan", allKitTiers: "Tüm Kit Tierleri", totalTests: "Toplam Test",
+    highestTier: "En Yüksek Tier", theme: "Tema", language: "Dil",
+    allRights: "Tüm hakları gizlidir", madeWith: "Türk PvP Topluluğu için 💙 ile yapıldı",
+    pvpTierList: "Minecraft PvP Tier List", seeRankings: "Sıralamaları Gör →",
+    loading: "Yükleniyor...", loadingMore: "Daha fazla yükleniyor...",
+    keyboardHint: "↑↓ ile gezin, Enter ile aç", shareCard: "Kartı Paylaş",
+    downloadCard: "İndir", copyLink: "Linki Kopyala", linkCopied: "Link kopyalandı!",
+    title_legendary: "🏆 Efsanevi Savaşçı", title_master: "⚡ Usta Savaşçı",
+    title_experienced: "🌟 Tecrübeli Savaşçı", title_expert: "📈 Uzman Savaşçı",
+    title_novice: "🌱 Acemi Savaşçı", title_rookie: "🆕 Çaylak",
   },
   en: {
-    home: "Home",
-    rankings: "Rankings",
-    discord: "Discord",
-    searchPlayer: "Search player...",
-    pvpPlatform: "Turkey's #1 PvP Platform",
-    chooseLevel: "Choose Your Level, Prove Your Power!",
-    viewRankings: "View Rankings",
-    joinServer: "Join Server",
-    kitsTitle: "Kits You Can Test",
-    kitsSubtitle: "8 different kits, find your own style!",
-    ready: "Are you ready?",
-    joinDiscord: "Join our Discord server!",
-    joinNow: "Join Now",
-    region: "Region",
-    sortBy: "Sort",
-    sortRank: "🏆 Rank",
-    sortPoints: "⭐ Points",
-    sortName: "📝 Name",
-    sortTests: "🎯 Tests",
-    totalPlayers: "Total {count} players",
-    player: "Player",
-    tiers: "Tiers",
-    noPlayers: "No players in this region yet",
-    previous: "◀ Previous",
-    next: "Next ▶",
-    page: "Page {current}/{total}",
-    points: "points",
-    allKitTiers: "All Kit Tiers",
-    totalTests: "Total Tests",
-    highestTier: "Highest Tier",
-    theme: "Theme",
-    language: "Language",
-    allRights: "All rights reserved",
-    madeWith: "Made with 💙 for Turkish PvP Community",
-    pvpTierList: "Minecraft PvP Tier List",
-    seeRankings: "View Rankings →",
-    loading: "Loading...",
-    title_legendary: "🏆 Legendary Warrior",
-    title_master: "⚡ Master Warrior",
-    title_experienced: "🌟 Experienced Warrior",
-    title_expert: "📈 Expert Warrior",
-    title_novice: "🌱 Novice Warrior",
-    title_rookie: "🆕 Rookie",
+    home: "Home", rankings: "Rankings", discord: "Discord",
+    searchPlayer: "Search player...", pvpPlatform: "Turkey's #1 PvP Platform",
+    chooseLevel: "Choose Your Level, Prove Your Power!", viewRankings: "View Rankings",
+    joinServer: "Join Server", kitsTitle: "Kits You Can Test",
+    kitsSubtitle: "8 different kits, find your own style!", ready: "Are you ready?",
+    joinDiscord: "Join our Discord server!", joinNow: "Join Now",
+    region: "Region", sortBy: "Sort", sortRank: "🏆 Rank", sortPoints: "⭐ Points",
+    sortName: "📝 Name", sortTests: "🎯 Tests", totalPlayers: "Total {count} players",
+    player: "Player", tiers: "Tiers", noPlayers: "No players in this region yet",
+    previous: "◀ Previous", next: "Next ▶", page: "Page {current}/{total}",
+    points: "points", allKitTiers: "All Kit Tiers", totalTests: "Total Tests",
+    highestTier: "Highest Tier", theme: "Theme", language: "Language",
+    allRights: "All rights reserved", madeWith: "Made with 💙 for Turkish PvP Community",
+    pvpTierList: "Minecraft PvP Tier List", seeRankings: "View Rankings →",
+    loading: "Loading...", loadingMore: "Loading more...",
+    keyboardHint: "Use ↑↓ to navigate, Enter to open", shareCard: "Share Card",
+    downloadCard: "Download", copyLink: "Copy Link", linkCopied: "Link copied!",
+    title_legendary: "🏆 Legendary Warrior", title_master: "⚡ Master Warrior",
+    title_experienced: "🌟 Experienced Warrior", title_expert: "📈 Expert Warrior",
+    title_novice: "🌱 Novice Warrior", title_rookie: "🆕 Rookie",
   },
   de: {
-    home: "Startseite",
-    rankings: "Ranglisten",
-    discord: "Discord",
-    searchPlayer: "Spieler suchen...",
-    pvpPlatform: "Die #1 PvP-Plattform der Türkei",
-    chooseLevel: "Wähle dein Level, beweise deine Stärke!",
-    viewRankings: "Ranglisten ansehen",
-    joinServer: "Server beitreten",
-    kitsTitle: "Kits zum Testen",
-    kitsSubtitle: "8 verschiedene Kits, finde deinen Stil!",
-    ready: "Bist du bereit?",
-    joinDiscord: "Tritt unserem Discord bei!",
-    joinNow: "Jetzt beitreten",
-    region: "Region",
-    sortBy: "Sortieren",
-    sortRank: "🏆 Rang",
-    sortPoints: "⭐ Punkte",
-    sortName: "📝 Name",
-    sortTests: "🎯 Tests",
-    totalPlayers: "Insgesamt {count} Spieler",
-    player: "Spieler",
-    tiers: "Stufen",
-    noPlayers: "Noch keine Spieler in dieser Region",
-    previous: "◀ Zurück",
-    next: "Weiter ▶",
-    page: "Seite {current}/{total}",
-    points: "Punkte",
-    allKitTiers: "Alle Kit-Stufen",
-    totalTests: "Gesamttests",
-    highestTier: "Höchste Stufe",
-    theme: "Theme",
-    language: "Sprache",
-    allRights: "Alle Rechte vorbehalten",
-    madeWith: "Mit 💙 für die türkische PvP-Community",
-    pvpTierList: "Minecraft PvP Stufenliste",
-    seeRankings: "Ranglisten ansehen →",
-    loading: "Wird geladen...",
-    title_legendary: "🏆 Legendärer Krieger",
-    title_master: "⚡ Meisterkrieger",
-    title_experienced: "🌟 Erfahrener Krieger",
-    title_expert: "📈 Expertenkrieger",
-    title_novice: "🌱 Anfänger Krieger",
-    title_rookie: "🆕 Neuling",
+    home: "Startseite", rankings: "Ranglisten", discord: "Discord",
+    searchPlayer: "Spieler suchen...", pvpPlatform: "Die #1 PvP-Plattform der Türkei",
+    chooseLevel: "Wähle dein Level, beweise deine Stärke!", viewRankings: "Ranglisten ansehen",
+    joinServer: "Server beitreten", kitsTitle: "Kits zum Testen",
+    kitsSubtitle: "8 verschiedene Kits, finde deinen Stil!", ready: "Bist du bereit?",
+    joinDiscord: "Tritt unserem Discord bei!", joinNow: "Jetzt beitreten",
+    region: "Region", sortBy: "Sortieren", sortRank: "🏆 Rang", sortPoints: "⭐ Punkte",
+    sortName: "📝 Name", sortTests: "🎯 Tests", totalPlayers: "Insgesamt {count} Spieler",
+    player: "Spieler", tiers: "Stufen", noPlayers: "Noch keine Spieler in dieser Region",
+    previous: "◀ Zurück", next: "Weiter ▶", page: "Seite {current}/{total}",
+    points: "Punkte", allKitTiers: "Alle Kit-Stufen", totalTests: "Gesamttests",
+    highestTier: "Höchste Stufe", theme: "Theme", language: "Sprache",
+    allRights: "Alle Rechte vorbehalten", madeWith: "Mit 💙 für die türkische PvP-Community",
+    pvpTierList: "Minecraft PvP Stufenliste", seeRankings: "Ranglisten ansehen →",
+    loading: "Wird geladen...", loadingMore: "Mehr wird geladen...",
+    keyboardHint: "Mit ↑↓ navigieren, Enter zum Öffnen", shareCard: "Karte teilen",
+    downloadCard: "Herunterladen", copyLink: "Link kopieren", linkCopied: "Link kopiert!",
+    title_legendary: "🏆 Legendärer Krieger", title_master: "⚡ Meisterkrieger",
+    title_experienced: "🌟 Erfahrener Krieger", title_expert: "📈 Expertenkrieger",
+    title_novice: "🌱 Anfänger Krieger", title_rookie: "🆕 Neuling",
   },
 };
 
 const KITS: Record<string, { ad: string; icon: JSX.Element; color: string; description: Record<LangKey, string>; detail: Record<LangKey, string> }> = {
   vanilla: { 
-    ad: "Vanilla", 
-    icon: <img src="https://www.tierslist.net/tier_icons/vanilla.svg" width="30" height="30" alt="" className="w-7 h-7" />, 
-    color: "#fbbf24", 
+    ad: "Vanilla", icon: <img src="https://www.tierslist.net/tier_icons/vanilla.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#fbbf24", 
     description: { tr: "Saf Yetenek Savaşı", en: "Pure Skill Battle", de: "Reiner Skill-Kampf" },
-    detail: { 
-      tr: "Hiçbir ekipman yok, sadece yumruklarınla rakibini alt et. Refleks, taktik ve cesaret testi!",
-      en: "No equipment, defeat your opponent with just your fists. Reflex, tactics and courage test!",
-      de: "Keine Ausrüstung, besiege deinen Gegner nur mit deinen Fäusten. Reflex- und Taktiktest!"
-    }
+    detail: { tr: "Hiçbir ekipman yok, sadece yumruklarınla rakibini alt et. Refleks, taktik ve cesaret testi!", en: "No equipment, defeat your opponent with just your fists. Reflex, tactics and courage test!", de: "Keine Ausrüstung, besiege deinen Gegner nur mit deinen Fäusten." }
   },
   sword: { 
-    ad: "Sword", 
-    icon: <img src="https://www.tierslist.net/tier_icons/sword.svg" width="30" height="30" alt="" className="w-7 h-7" />, 
-    color: "#60a5fa", 
+    ad: "Sword", icon: <img src="https://www.tierslist.net/tier_icons/sword.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#60a5fa", 
     description: { tr: "Kılıç Ustalığı", en: "Sword Mastery", de: "Schwertbeherrschung" },
-    detail: { 
-      tr: "Klasik kılıç savaşı! Combo, timing ve crit vuruşların ustalığını sergile.",
-      en: "Classic sword battle! Show your mastery of combos, timing and crit hits.",
-      de: "Klassischer Schwertkampf! Zeige deine Beherrschung von Combos und Crits."
-    }
+    detail: { tr: "Klasik kılıç savaşı! Combo, timing ve crit vuruşların ustalığını sergile.", en: "Classic sword battle! Show your mastery of combos, timing and crit hits.", de: "Klassischer Schwertkampf!" }
   },
   axe: { 
-    ad: "Axe", 
-    icon: <img src="https://www.tierslist.net/tier_icons/axe.svg" width="30" height="30" alt="" className="w-7 h-7" />, 
-    color: "#a78bfa", 
+    ad: "Axe", icon: <img src="https://www.tierslist.net/tier_icons/axe.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#a78bfa", 
     description: { tr: "Ağır Darbe Sanatı", en: "Heavy Strike Art", de: "Schwere Schlagkunst" },
-    detail: { 
-      tr: "Yüksek hasar, kalkan kırma! Stratejik vuruşlarla rakibinin savunmasını çök.",
-      en: "High damage, shield breaking! Crush your opponent's defense with strategic hits.",
-      de: "Hoher Schaden, Schildbruch! Zerstöre die Verteidigung mit strategischen Schlägen."
-    }
+    detail: { tr: "Yüksek hasar, kalkan kırma! Stratejik vuruşlarla rakibinin savunmasını çök.", en: "High damage, shield breaking!", de: "Hoher Schaden, Schildbruch!" }
   },
   nethpot: { 
-    ad: "NethOP", 
-    icon: <img src="https://www.tierslist.net/tier_icons/nethop.svg" width="30" height="30" alt="" className="w-7 h-7" />, 
-    color: "#ec4899", 
+    ad: "NethOP", icon: <img src="https://www.tierslist.net/tier_icons/nethop.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#ec4899", 
     description: { tr: "Netherite Üstünlüğü", en: "Netherite Supremacy", de: "Netherite-Vorherrschaft" },
-    detail: { 
-      tr: "En güçlü zırh ve silahlarla efsanevi savaşlar. Pot kullanımı ve OP gear yönetimi şart!",
-      en: "Legendary battles with the strongest armor and weapons. Pot usage and OP gear management required!",
-      de: "Legendäre Kämpfe mit stärkster Rüstung. Pot-Nutzung und OP-Gear-Management erforderlich!"
-    }
+    detail: { tr: "En güçlü zırh ve silahlarla efsanevi savaşlar. Pot kullanımı ve OP gear yönetimi şart!", en: "Legendary battles with the strongest armor.", de: "Legendäre Kämpfe mit stärkster Rüstung." }
   },
   pot: { 
-    ad: "Pot", 
-    icon: <img src="https://www.tierslist.net/tier_icons/pot.svg" width="30" height="30" alt="" className="w-7 h-7" />, 
-    color: "#f43f5e", 
+    ad: "Pot", icon: <img src="https://www.tierslist.net/tier_icons/pot.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#f43f5e", 
     description: { tr: "Pot PvP Sanatı", en: "Pot PvP Art", de: "Trank-PvP Kunst" },
-    detail: { 
-      tr: "Şifa iksirleri, hız ve güç potions! Hızlı refleks ve pot yönetimi ustalığı.",
-      en: "Healing potions, speed and power potions! Fast reflexes and pot management mastery.",
-      de: "Heiltränke, Geschwindigkeit und Krafttränke! Schnelle Reflexe und Trankbeherrschung."
-    }
+    detail: { tr: "Şifa iksirleri, hız ve güç potions! Hızlı refleks ve pot yönetimi ustalığı.", en: "Healing potions, speed and power potions!", de: "Heiltränke, Geschwindigkeit!" }
   },
   uhc: { 
-    ad: "UHC", 
-    icon: <img src="https://www.tierslist.net/tier_icons/uhc.svg" width="30" height="30" alt="" className="w-7 h-7" />, 
-    color: "#ef4444", 
+    ad: "UHC", icon: <img src="https://www.tierslist.net/tier_icons/uhc.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#ef4444", 
     description: { tr: "Ultra Hardcore", en: "Ultra Hardcore", de: "Ultra Hardcore" },
-    detail: { 
-      tr: "Doğal yenilenme yok! Golden apple ile hayatta kal, her vuruş kritik önem taşır.",
-      en: "No natural regen! Survive with golden apples, every hit is critical.",
-      de: "Keine natürliche Regeneration! Überlebe mit goldenen Äpfeln, jeder Treffer zählt."
-    }
+    detail: { tr: "Doğal yenilenme yok! Golden apple ile hayatta kal, her vuruş kritik önem taşır.", en: "No natural regen! Survive with golden apples.", de: "Keine natürliche Regeneration!" }
   },
   smp: { 
-    ad: "SMP", 
-    icon: <img src="https://www.tierslist.net/tier_icons/smp.svg" width="30" height="30" alt="" className="w-7 h-7" />, 
-    color: "#22c55e", 
+    ad: "SMP", icon: <img src="https://www.tierslist.net/tier_icons/smp.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#22c55e", 
     description: { tr: "Survival Multiplayer", en: "Survival Multiplayer", de: "Survival Multiplayer" },
-    detail: { 
-      tr: "Gerçek survival deneyimi! Crystal, totem, elytra - tüm modern SMP araçlarıyla savaş.",
-      en: "Real survival experience! Fight with crystal, totem, elytra and all modern SMP tools.",
-      de: "Echtes Survival-Erlebnis! Kämpfe mit Kristall, Totem, Elytra und allen modernen SMP-Tools."
-    }
+    detail: { tr: "Gerçek survival deneyimi! Crystal, totem, elytra - tüm modern SMP araçlarıyla savaş.", en: "Real survival experience!", de: "Echtes Survival-Erlebnis!" }
   },
   mace: { 
-    ad: "Mace", 
-    icon: <img src="https://www.tierslist.net/tier_icons/mace.svg" width="30" height="30" alt="" className="w-7 h-7" />, 
-    color: "#eab308", 
+    ad: "Mace", icon: <img src="https://www.tierslist.net/tier_icons/mace.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#eab308", 
     description: { tr: "Çekiç Gücü", en: "Mace Power", de: "Streitkolben-Macht" },
-    detail: { 
-      tr: "1.21'in yeni efsanevi silahı! Yükseklikten saldır, ağır hasar ver, alanı kontrol et.",
-      en: "The legendary new weapon of 1.21! Attack from heights, deal heavy damage, control the area.",
-      de: "Die legendäre neue Waffe von 1.21! Greife von oben an und kontrolliere das Feld."
-    }
+    detail: { tr: "1.21'in yeni efsanevi silahı! Yükseklikten saldır, ağır hasar ver, alanı kontrol et.", en: "The legendary new weapon of 1.21!", de: "Die legendäre neue Waffe von 1.21!" }
   },
 };
 
@@ -442,19 +315,203 @@ const Bubbles = () => {
   );
 };
 
+// 🎨 LOADING SKELETON
+const SkeletonRow = ({ theme }: { theme: typeof THEMES[ThemeKey] }) => (
+  <tr style={{ borderTop: `1px solid ${theme.border}` }}>
+    <td className="px-6 py-4">
+      <div className="w-10 h-10 rounded-xl skeleton-pulse" style={{ background: theme.cardBg }}></div>
+    </td>
+    <td className="px-6 py-4">
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 rounded-xl skeleton-pulse" style={{ background: theme.cardBg }}></div>
+        <div className="flex-1 space-y-2">
+          <div className="h-5 w-32 rounded skeleton-pulse" style={{ background: theme.cardBg }}></div>
+          <div className="flex gap-2">
+            <div className="h-4 w-20 rounded skeleton-pulse" style={{ background: theme.cardBg }}></div>
+            <div className="h-4 w-16 rounded skeleton-pulse" style={{ background: theme.cardBg }}></div>
+          </div>
+        </div>
+      </div>
+    </td>
+    <td className="px-6 py-4">
+      <div className="w-12 h-7 rounded-lg mx-auto skeleton-pulse" style={{ background: theme.cardBg }}></div>
+    </td>
+    <td className="px-6 py-4">
+      <div className="flex justify-end gap-2">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="w-14 h-14 rounded-xl skeleton-pulse" style={{ background: theme.cardBg }}></div>
+        ))}
+      </div>
+    </td>
+  </tr>
+);
+
+// 🎴 SHARE CARD MODAL
+const ShareCardModal = ({ player, theme, t, onClose }: { 
+  player: Player; 
+  theme: typeof THEMES[ThemeKey]; 
+  t: (key: string) => string;
+  onClose: () => void;
+}) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [copied, setCopied] = useState(false);
+
+  const downloadCard = async () => {
+    if (!cardRef.current) return;
+    try {
+      // html2canvas alternative - use native screenshot via canvas
+      const card = cardRef.current;
+      const html = card.outerHTML;
+      const blob = new Blob([`<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{margin:0;padding:20px;background:#0a0e14;font-family:system-ui;}</style></head><body>${html}</body></html>`], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${player.minecraftNick || player.username}-card.html`;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const copyLink = () => {
+    const url = `${window.location.origin}?player=${player.id}`;
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md" onClick={onClose}>
+      <motion.div 
+        initial={{ scale: 0.9, opacity: 0 }} 
+        animate={{ scale: 1, opacity: 1 }}
+        className="relative w-full max-w-md"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* ŞIK PROFIL KARTI */}
+        <div ref={cardRef} className="rounded-3xl overflow-hidden shadow-2xl" style={{
+          background: `linear-gradient(135deg, ${theme.cardBg}, ${theme.bg})`,
+          border: `2px solid ${theme.primary}`,
+        }}>
+          {/* Header gradient */}
+          <div className={`h-32 bg-gradient-to-br ${theme.primaryGradient} relative overflow-hidden`}>
+            <div className="absolute inset-0 opacity-30" style={{
+              backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 50%, white 1px, transparent 1px)',
+              backgroundSize: '30px 30px',
+            }}></div>
+          </div>
+          
+          {/* Avatar */}
+          <div className="px-6 -mt-16 relative">
+            <img 
+              src={player.avatar} 
+              alt="" 
+              className="w-32 h-32 rounded-2xl ring-4 shadow-2xl mx-auto"
+              style={{ boxShadow: `0 0 0 4px ${theme.bg}, 0 20px 60px ${theme.primary}40` }}
+              onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/128`; }} 
+            />
+          </div>
+
+          {/* Info */}
+          <div className="px-6 pt-4 pb-6 text-center">
+            <h2 className="text-3xl font-black mb-2" style={{ color: theme.text }}>
+              {player.minecraftNick || player.username}
+            </h2>
+            <p className="text-sm mb-4" style={{ color: theme.textMuted }}>
+              {getTitle(player.totalPoints, t)}
+            </p>
+            
+            <div className="flex justify-center gap-2 mb-4 flex-wrap">
+              <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-black bg-gradient-to-r ${REGIONS[player.region]?.color} text-white`}>
+                {REGIONS[player.region]?.code}
+              </span>
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-black text-white" style={{ background: theme.primary }}>
+                #{player.rank}
+              </span>
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-black" style={{ background: `${theme.primary}20`, color: theme.primary, border: `1px solid ${theme.primary}40` }}>
+                {player.totalPoints} {t("points")}
+              </span>
+            </div>
+
+            {/* Top 3 Tiers */}
+            <div className="grid grid-cols-4 gap-2 mb-4">
+              {Object.entries(KITS).slice(0, 8).map(([kitKey, kit]) => {
+                const tier = cleanTier(player.tiers[kitKey]);
+                return (
+                  <div key={kitKey} className="rounded-lg p-2" style={{ background: theme.headerBg, border: `1px solid ${theme.border}` }}>
+                    <div className="w-6 h-6 mx-auto flex items-center justify-center">{kit.icon}</div>
+                    {tier ? (
+                      <span className={`block text-[9px] font-black mt-1 ${tier.startsWith("HT") ? "text-amber-400" : "text-cyan-400"}`}>{tier}</span>
+                    ) : (
+                      <span className="block text-[9px] font-bold mt-1" style={{ color: theme.textMuted, opacity: 0.4 }}>—</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="pt-4 text-[10px] uppercase tracking-widest font-bold" style={{ color: theme.textMuted, borderTop: `1px solid ${theme.border}` }}>
+              ⚔️ ABYSSAL OCEAN TIER LIST ⚔️
+            </div>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-2 mt-4">
+          <button 
+            onClick={downloadCard}
+            className={`flex-1 py-3 rounded-xl font-bold bg-gradient-to-r ${theme.primaryGradient} text-white transition-all hover:scale-105 shadow-lg flex items-center justify-center gap-2`}
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+            {t("downloadCard")}
+          </button>
+          <button 
+            onClick={copyLink}
+            className="flex-1 py-3 rounded-xl font-bold transition-all hover:scale-105 shadow-lg flex items-center justify-center gap-2"
+            style={{ background: theme.cardBg, color: theme.text, border: `1px solid ${theme.border}` }}
+          >
+            {copied ? (
+              <>
+                <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                {t("linkCopied")}
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                {t("copyLink")}
+              </>
+            )}
+          </button>
+        </div>
+
+        <button onClick={onClose} className="absolute -top-2 -right-2 w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg hover:scale-110 transition-all">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      </motion.div>
+    </div>
+  );
+};
+
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageType>("home");
   const [selectedKit, setSelectedKit] = useState<KitKey>("overall");
   const [searchQuery, setSearchQuery] = useState("");
   const [players, setPlayers] = useState<Player[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+  const [shareCardPlayer, setShareCardPlayer] = useState<Player | null>(null);
   const [loading, setLoading] = useState(true);
   const [sortType, setSortType] = useState<SortType>("rank");
-  const [currentPageRank, setCurrentPageRank] = useState(1);
   const [selectedRegion, setSelectedRegion] = useState<string>("TR");
-  const playersPerPage = 20;
+  
+  // 🔄 INFINITE SCROLL
+  const [displayCount, setDisplayCount] = useState(20);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  // 🎨 TEMA & DİL STATE
+  // ⌨️ KEYBOARD NAVIGATION
+  const [focusedIndex, setFocusedIndex] = useState<number>(-1);
+
   const [theme, setTheme] = useState<ThemeKey>(() => {
     const saved = localStorage.getItem("theme");
     return (saved as ThemeKey) || "ocean";
@@ -466,12 +523,10 @@ export default function App() {
   const [themeMenuOpen, setThemeMenuOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
 
-  // Tema/dil kaydet
   useEffect(() => { localStorage.setItem("theme", theme); }, [theme]);
   useEffect(() => { localStorage.setItem("language", language); }, [language]);
 
-  // Çeviri fonksiyonu
-  const t = (key: string, params?: Record<string, string | number>): string => {
+  const t = useCallback((key: string, params?: Record<string, string | number>): string => {
     let text = TRANSLATIONS[language][key] || TRANSLATIONS.tr[key] || key;
     if (params) {
       Object.entries(params).forEach(([k, v]) => {
@@ -479,10 +534,9 @@ export default function App() {
       });
     }
     return text;
-  };
+  }, [language]);
 
   const currentTheme = THEMES[theme];
-  const isLight = theme === "light";
 
   const fetchPlayers = async () => {
     try {
@@ -542,10 +596,59 @@ export default function App() {
     return [...filteredPlayers].filter(p => p.tiers[selectedKit]).sort((a, b) => getTierPoints(b.tiers[selectedKit]) - getTierPoints(a.tiers[selectedKit]));
   }, [filteredPlayers, selectedKit]);
 
-  const totalPages = Math.ceil(kitPlayers.length / playersPerPage);
-  const currentPlayers = kitPlayers.slice((currentPageRank - 1) * playersPerPage, currentPageRank * playersPerPage);
+  // 🔄 INFINITE SCROLL - sadece görünen oyuncular
+  const visiblePlayers = useMemo(() => {
+    return kitPlayers.slice(0, displayCount);
+  }, [kitPlayers, displayCount]);
 
-  useEffect(() => { setCurrentPageRank(1); }, [sortType, selectedKit, searchQuery, selectedRegion]);
+  useEffect(() => { setDisplayCount(20); setFocusedIndex(-1); }, [sortType, selectedKit, searchQuery, selectedRegion]);
+
+  // 🔄 INFINITE SCROLL OBSERVER
+  useEffect(() => {
+    if (!loadMoreRef.current || selectedKit !== "overall") return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && displayCount < kitPlayers.length) {
+          setLoadingMore(true);
+          setTimeout(() => {
+            setDisplayCount(prev => Math.min(prev + 20, kitPlayers.length));
+            setLoadingMore(false);
+          }, 500);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [displayCount, kitPlayers.length, selectedKit]);
+
+  // ⌨️ KEYBOARD NAVIGATION
+  useEffect(() => {
+    if (currentPage !== "rankings" || selectedKit !== "overall") return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (selectedPlayer || shareCardPlayer) return;
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setFocusedIndex(prev => Math.min(prev + 1, visiblePlayers.length - 1));
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setFocusedIndex(prev => Math.max(prev - 1, 0));
+      } else if (e.key === "Enter" && focusedIndex >= 0) {
+        e.preventDefault();
+        setSelectedPlayer(visiblePlayers[focusedIndex]);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [currentPage, selectedKit, visiblePlayers, focusedIndex, selectedPlayer, shareCardPlayer]);
+
+  // Scroll to focused row
+  useEffect(() => {
+    if (focusedIndex >= 0) {
+      const el = document.getElementById(`player-row-${focusedIndex}`);
+      el?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [focusedIndex]);
 
   const playersByTier = useMemo(() => {
     if (selectedKit === "overall") return null;
@@ -586,7 +689,6 @@ export default function App() {
     <div 
       className="min-h-screen w-full relative overflow-x-hidden transition-colors duration-500" 
       style={{ background: currentTheme.bg, color: currentTheme.text }}
-      data-theme={theme}
     >
       <Bubbles />
       
@@ -634,7 +736,6 @@ export default function App() {
               />
             )}
 
-            {/* 🌍 DİL SEÇİCİ */}
             <div className="relative">
               <button
                 onClick={() => { setLangMenuOpen(!langMenuOpen); setThemeMenuOpen(false); }}
@@ -675,7 +776,6 @@ export default function App() {
               </AnimatePresence>
             </div>
 
-            {/* 🎨 TEMA SEÇİCİ */}
             <div className="relative">
               <button
                 onClick={() => { setThemeMenuOpen(!themeMenuOpen); setLangMenuOpen(false); }}
@@ -730,7 +830,6 @@ export default function App() {
         </div>
       </header>
 
-      {/* Click outside to close menus */}
       {(themeMenuOpen || langMenuOpen) && (
         <div 
           className="fixed inset-0 z-40" 
@@ -738,14 +837,22 @@ export default function App() {
         />
       )}
 
+      {/* 🎬 GELİŞTİRİLMİŞ SAYFA GEÇİŞLERİ */}
       <AnimatePresence mode="wait">
-        <motion.div key={currentPage} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
+        <motion.div 
+          key={currentPage} 
+          initial={{ opacity: 0, y: 30, scale: 0.98 }} 
+          animate={{ opacity: 1, y: 0, scale: 1 }} 
+          exit={{ opacity: 0, y: -30, scale: 0.98 }} 
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        >
           
           {currentPage === "home" && (
             <main className="relative z-10 max-w-[1600px] mx-auto px-4 py-12">
               <div className="text-center mb-20">
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} 
+                  transition={{ delay: 0.1 }}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-6"
                   style={{ background: `${currentTheme.primary}15`, border: `1px solid ${currentTheme.primary}30`, color: currentTheme.primary }}
                 >
@@ -753,23 +860,36 @@ export default function App() {
                   {t("pvpPlatform")}
                 </motion.div>
                 
-                <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-5xl md:text-8xl font-black mb-6 leading-tight">
+                <motion.h1 
+                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-5xl md:text-8xl font-black mb-6 leading-tight"
+                >
                   <span className="inline-block animated-gradient-text">ABYSSAL OCEAN</span>
                   <br />
                   <span className="inline-block">
                     {"TIER LIST".split("").map((char, i) => (
-                      <span key={i} className="inline-block tier-letter" style={{ animationDelay: `${i * 0.1}s`, color: isLight ? "#1a1a1a" : "white" }}>
+                      <span key={i} className="inline-block tier-letter" style={{ animationDelay: `${i * 0.1}s`, color: "white" }}>
                         {char === " " ? "\u00A0" : char}
                       </span>
                     ))}
                   </span>
                 </motion.h1>
                 
-                <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-lg md:text-xl max-w-2xl mx-auto mb-10" style={{ color: currentTheme.textMuted }}>
+                <motion.p 
+                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} 
+                  transition={{ delay: 0.3 }}
+                  className="text-lg md:text-xl max-w-2xl mx-auto mb-10" 
+                  style={{ color: currentTheme.textMuted }}
+                >
                   {t("chooseLevel")}
                 </motion.p>
                 
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-wrap items-center justify-center gap-4">
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="flex flex-wrap items-center justify-center gap-4"
+                >
                   <button onClick={() => setCurrentPage("rankings")} className={`px-8 py-4 bg-gradient-to-r ${currentTheme.primaryGradient} rounded-xl font-bold text-lg transition-all shadow-lg hover:scale-105 text-white`}>🏆 {t("viewRankings")}</button>
                   <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-[#5865F2] rounded-xl font-bold text-lg transition-all flex items-center gap-2 shadow-lg hover:scale-105 text-white"><DiscordIcon className="w-6 h-6" /> {t("joinServer")}</a>
                 </motion.div>
@@ -824,10 +944,20 @@ export default function App() {
                 </div>
               </div>
 
-              <div className={`relative bg-gradient-to-br ${currentTheme.primaryGradient} rounded-3xl p-10 md:p-14 text-center text-white`} style={{ opacity: 0.95 }}>
-                <h2 className="text-4xl md:text-6xl font-black mb-4">{t("ready")}</h2>
-                <p className="text-lg mb-8 text-white/90">{t("joinDiscord")}</p>
-                <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-10 py-5 bg-[#5865F2] rounded-xl font-bold text-xl transition-all shadow-2xl hover:scale-105"><DiscordIcon className="w-7 h-7" /> {t("joinNow")}</a>
+              {/* 🎨 YUMUŞATILMIŞ "HAZIR MISIN" BÖLÜMÜ */}
+              <div 
+                className={`relative rounded-3xl p-10 md:p-14 text-center overflow-hidden bg-gradient-to-br ${currentTheme.ctaGradient}`}
+                style={{ border: `1px solid ${currentTheme.border}` }}
+              >
+                <div className="absolute inset-0 opacity-30" style={{
+                  backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 1px, transparent 1px), radial-gradient(circle at 80% 30%, rgba(255,255,255,0.1) 1px, transparent 1px)',
+                  backgroundSize: '50px 50px',
+                }}></div>
+                <div className="relative z-10">
+                  <h2 className="text-4xl md:text-6xl font-black mb-4" style={{ color: currentTheme.text }}>{t("ready")}</h2>
+                  <p className="text-lg mb-8" style={{ color: currentTheme.textMuted }}>{t("joinDiscord")}</p>
+                  <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 px-10 py-5 bg-[#5865F2] rounded-xl font-bold text-xl transition-all shadow-2xl hover:scale-105 text-white"><DiscordIcon className="w-7 h-7" /> {t("joinNow")}</a>
+                </div>
               </div>
             </main>
           )}
@@ -835,6 +965,7 @@ export default function App() {
           {currentPage === "rankings" && (
             <main className="relative z-10 max-w-[1600px] mx-auto px-4 py-6">
               
+              {/* 🌍 BÖLGE FİLTRESİ - ROZETLER KALDIRILDI */}
               <div className="flex items-center justify-end gap-2 mb-6 overflow-x-auto scrollbar-hide">
                 <span className="text-sm whitespace-nowrap flex items-center gap-1.5" style={{ color: currentTheme.textMuted }}>
                   <span className="text-base">🌐</span> {t("region")}:
@@ -843,17 +974,14 @@ export default function App() {
                   <button
                     key={key}
                     onClick={() => setSelectedRegion(key)}
-                    className={`group relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all hover:scale-105 ${
+                    className={`group relative flex items-center px-5 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all hover:scale-105 ${
                       selectedRegion === key
                         ? `bg-gradient-to-r ${currentTheme.primaryGradient} text-white shadow-lg`
                         : ""
                     }`}
                     style={selectedRegion !== key ? { background: currentTheme.cardBg, color: currentTheme.textMuted, border: `1px solid ${currentTheme.border}` } : {}}
                   >
-                    <span className={`text-[10px] font-black px-1.5 py-0.5 rounded ${selectedRegion === key ? "bg-white/20 text-white" : "bg-white/10"}`}>
-                      {r.code}
-                    </span>
-                    <span>{r.name[language]}</span>
+                    {r.name[language]}
                   </button>
                 ))}
               </div>
@@ -877,7 +1005,13 @@ export default function App() {
                     </button>
                   ))}
                 </div>
-                <div className="text-sm" style={{ color: currentTheme.textMuted }}>{t("totalPlayers", { count: kitPlayers.length })}</div>
+                <div className="flex items-center gap-3">
+                  <span className="hidden md:flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg" style={{ background: currentTheme.cardBg, color: currentTheme.textMuted, border: `1px solid ${currentTheme.border}` }}>
+                    <kbd className="px-1.5 py-0.5 rounded text-[10px] font-bold" style={{ background: currentTheme.headerBg }}>↑↓</kbd>
+                    <kbd className="px-1.5 py-0.5 rounded text-[10px] font-bold" style={{ background: currentTheme.headerBg }}>Enter</kbd>
+                  </span>
+                  <div className="text-sm" style={{ color: currentTheme.textMuted }}>{t("totalPlayers", { count: kitPlayers.length })}</div>
+                </div>
               </div>
 
               <div className="mb-6 overflow-x-auto">
@@ -903,10 +1037,22 @@ export default function App() {
 
               {selectedKit === "overall" ? (
                 <div className="backdrop-blur-sm rounded-2xl overflow-hidden" style={{ background: `${currentTheme.cardBg}e6`, border: `1px solid ${currentTheme.border}` }}>
-                  {currentPlayers.length === 0 ? (
-                    <div className="py-20 text-center">
-                      <div className="text-6xl mb-4 opacity-20">🏆</div>
-                      <h3 className="text-xl font-bold" style={{ color: currentTheme.textMuted }}>{t("noPlayers")}</h3>
+                  {kitPlayers.length === 0 ? (
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr style={{ borderBottom: `1px solid ${currentTheme.border}`, background: `${currentTheme.headerBg}80` }}>
+                            <th className="text-left px-6 py-4 text-xs font-semibold uppercase w-16" style={{ color: currentTheme.textMuted }}>#</th>
+                            <th className="text-left px-6 py-4 text-xs font-semibold uppercase" style={{ color: currentTheme.textMuted }}>{t("player")}</th>
+                            <th className="text-center px-6 py-4 text-xs font-semibold uppercase" style={{ color: currentTheme.textMuted }}>{t("region")}</th>
+                            <th className="text-right px-6 py-4 text-xs font-semibold uppercase" style={{ color: currentTheme.textMuted }}>{t("tiers")}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {/* 💀 SKELETON LOADING */}
+                          {Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} theme={currentTheme} />)}
+                        </tbody>
+                      </table>
                     </div>
                   ) : (
                     <>
@@ -921,17 +1067,22 @@ export default function App() {
                             </tr>
                           </thead>
                           <tbody>
-                            {currentPlayers.map((player, idx) => {
-                              const displayRank = sortType === "rank" ? player.rank : (currentPageRank - 1) * playersPerPage + idx + 1;
+                            {visiblePlayers.map((player, idx) => {
+                              const displayRank = sortType === "rank" ? player.rank : idx + 1;
+                              const isFocused = focusedIndex === idx;
                               return (
                                 <motion.tr 
-                                  key={player.id} 
+                                  key={player.id}
+                                  id={`player-row-${idx}`}
                                   initial={{ opacity: 0, x: -20 }}
                                   animate={{ opacity: 1, x: 0 }}
-                                  transition={{ delay: idx * 0.03 }}
+                                  transition={{ delay: Math.min(idx * 0.02, 0.5) }}
                                   onClick={() => setSelectedPlayer(player)} 
-                                  className="group cursor-pointer transition-all hover:bg-white/5"
-                                  style={{ borderTop: `1px solid ${currentTheme.border}` }}
+                                  className={`group cursor-pointer transition-all hover:bg-white/5 ${isFocused ? 'bg-white/10' : ''}`}
+                                  style={{ 
+                                    borderTop: `1px solid ${currentTheme.border}`,
+                                    boxShadow: isFocused ? `inset 4px 0 0 ${currentTheme.primary}` : 'none'
+                                  }}
                                 >
                                   <td className="px-6 py-4">
                                     {displayRank <= 3 ? (
@@ -998,11 +1149,23 @@ export default function App() {
                           </tbody>
                         </table>
                       </div>
-                      {totalPages > 1 && (
-                        <div className="flex items-center justify-center gap-2 py-4" style={{ borderTop: `1px solid ${currentTheme.border}` }}>
-                          <button onClick={() => setCurrentPageRank(p => Math.max(1, p - 1))} disabled={currentPageRank === 1} className="px-4 py-2 rounded-lg disabled:opacity-30" style={{ background: currentTheme.cardBg, color: currentTheme.textMuted }}>{t("previous")}</button>
-                          <span className="px-4 py-2 text-sm">{t("page", { current: currentPageRank, total: totalPages })}</span>
-                          <button onClick={() => setCurrentPageRank(p => Math.min(totalPages, p + 1))} disabled={currentPageRank === totalPages} className="px-4 py-2 rounded-lg disabled:opacity-30" style={{ background: currentTheme.cardBg, color: currentTheme.textMuted }}>{t("next")}</button>
+                      
+                      {/* 🔄 INFINITE SCROLL TRIGGER */}
+                      {displayCount < kitPlayers.length && (
+                        <div ref={loadMoreRef} className="py-6 text-center" style={{ borderTop: `1px solid ${currentTheme.border}` }}>
+                          {loadingMore ? (
+                            <div className="flex items-center justify-center gap-3">
+                              <div className="w-5 h-5 rounded-full border-2 border-r-transparent animate-spin" style={{ borderColor: currentTheme.primary, borderRightColor: 'transparent' }}></div>
+                              <span className="text-sm" style={{ color: currentTheme.textMuted }}>{t("loadingMore")}</span>
+                            </div>
+                          ) : (
+                            <button 
+                              onClick={() => setDisplayCount(prev => Math.min(prev + 20, kitPlayers.length))}
+                              className={`px-6 py-2 rounded-xl text-sm font-bold bg-gradient-to-r ${currentTheme.primaryGradient} text-white hover:scale-105 transition-all`}
+                            >
+                              + {Math.min(20, kitPlayers.length - displayCount)} {t("player")}
+                            </button>
+                          )}
                         </div>
                       )}
                     </>
@@ -1014,7 +1177,14 @@ export default function App() {
                     const tierPlayers = playersByTier?.[tierNum] || [];
                     const emojis: Record<number, string> = { 1: "👑", 2: "🥈", 3: "🥉", 4: "🔥", 5: "🌱" };
                     return (
-                      <div key={tierNum} className="rounded-2xl overflow-hidden" style={{ background: `${currentTheme.cardBg}e6`, border: `1px solid ${currentTheme.border}` }}>
+                      <motion.div 
+                        key={tierNum}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: tierNum * 0.1 }}
+                        className="rounded-2xl overflow-hidden" 
+                        style={{ background: `${currentTheme.cardBg}e6`, border: `1px solid ${currentTheme.border}` }}
+                      >
                         <div className={`px-4 py-3 ${tierNum === 1 ? "bg-gradient-to-r from-amber-500/20 to-yellow-600/20" : tierNum === 2 ? "bg-gradient-to-r from-slate-500/20 to-slate-600/20" : tierNum === 3 ? "bg-gradient-to-r from-orange-600/20 to-amber-700/20" : tierNum === 4 ? "bg-gradient-to-r from-red-500/20 to-orange-600/20" : "bg-gradient-to-r from-green-500/20 to-emerald-600/20"}`} style={{ borderBottom: `1px solid ${currentTheme.border}` }}>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2"><span className="text-xl">{emojis[tierNum]}</span><h3 className="font-bold">Tier {tierNum}</h3></div>
@@ -1045,7 +1215,7 @@ export default function App() {
                             </div>
                           )}
                         </div>
-                      </div>
+                      </motion.div>
                     );
                   })}
                 </div>
@@ -1055,7 +1225,8 @@ export default function App() {
         </motion.div>
       </AnimatePresence>
 
-      {selectedPlayer && (
+      {/* PLAYER MODAL */}
+      {selectedPlayer && !shareCardPlayer && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" onClick={() => setSelectedPlayer(null)}>
           <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="relative w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden" style={{ background: `linear-gradient(135deg, ${currentTheme.cardBg}, ${currentTheme.bg})`, border: `1px solid ${currentTheme.border}` }} onClick={e => e.stopPropagation()}>
             <div className="flex items-start justify-between p-6" style={{ borderBottom: `1px solid ${currentTheme.border}` }}>
@@ -1074,9 +1245,20 @@ export default function App() {
                   <div className="mt-1 text-sm" style={{ color: currentTheme.textMuted }}>Discord: <span style={{ color: currentTheme.primary }}>@{selectedPlayer.username}</span></div>
                 </div>
               </div>
-              <button onClick={() => setSelectedPlayer(null)} className="p-2 hover:bg-white/10 rounded-xl transition-all">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-              </button>
+              <div className="flex items-center gap-2">
+                {/* 🎴 SHARE BUTTON */}
+                <button 
+                  onClick={() => setShareCardPlayer(selectedPlayer)} 
+                  className="p-2 rounded-xl transition-all hover:scale-110" 
+                  style={{ background: currentTheme.primary, color: 'white' }}
+                  title={t("shareCard")}
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+                </button>
+                <button onClick={() => setSelectedPlayer(null)} className="p-2 hover:bg-white/10 rounded-xl transition-all">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
             </div>
             <div className="p-6">
               <h3 className="text-sm font-semibold uppercase mb-4" style={{ color: currentTheme.textMuted }}>{t("allKitTiers")}</h3>
@@ -1117,6 +1299,16 @@ export default function App() {
         </div>
       )}
 
+      {/* 🎴 SHARE CARD MODAL */}
+      {shareCardPlayer && (
+        <ShareCardModal 
+          player={shareCardPlayer} 
+          theme={currentTheme} 
+          t={t}
+          onClose={() => setShareCardPlayer(null)} 
+        />
+      )}
+
       <footer className="relative z-10 mt-20 backdrop-blur-sm" style={{ borderTop: `1px solid ${currentTheme.border}`, background: `${currentTheme.headerBg}80` }}>
         <div className="max-w-[1600px] mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -1146,6 +1338,7 @@ export default function App() {
       <style>{`
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
+        
         @keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
         .animated-gradient-text {
           background: linear-gradient(90deg, #22d3ee 0%, #3b82f6 25%, #a855f7 50%, #ec4899 75%, #22d3ee 100%);
@@ -1156,6 +1349,7 @@ export default function App() {
           animation: gradientShift 4s ease-in-out infinite;
           filter: drop-shadow(0 0 30px rgba(34, 211, 238, 0.4));
         }
+        
         @keyframes letterDrop {
           0% { transform: translateY(-30px) rotate(-10deg); opacity: 0; }
           50% { transform: translateY(5px) rotate(2deg); opacity: 1; }
@@ -1189,6 +1383,38 @@ export default function App() {
         .player-info-row > *:hover {
           transform: translateY(-2px) scale(1.05);
           transition: transform 0.2s ease;
+        }
+        
+        /* 💀 SKELETON LOADER */
+        @keyframes skeletonShimmer {
+          0% { opacity: 0.3; }
+          50% { opacity: 0.7; }
+          100% { opacity: 0.3; }
+        }
+        .skeleton-pulse {
+          position: relative;
+          overflow: hidden;
+          animation: skeletonShimmer 1.5s ease-in-out infinite;
+        }
+        .skeleton-pulse::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+          animation: skeletonSlide 1.5s infinite;
+        }
+        @keyframes skeletonSlide {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        
+        kbd {
+          font-family: ui-monospace, monospace;
+          font-size: 10px;
+          border: 1px solid rgba(255,255,255,0.1);
         }
       `}</style>
 
