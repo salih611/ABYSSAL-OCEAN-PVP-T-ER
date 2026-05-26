@@ -48,6 +48,13 @@ const TIER_COLORS: Record<string, string> = {
 
 const KIT_ORDER: KitKey[] = ["overall", "vanilla", "sword", "axe", "nethpot", "pot", "uhc", "mace", "smp"];
 
+// 🆕 BÖLGELER - YENİ EKLENDİ
+const REGIONS: Record<string, { flag: string; name: string }> = {
+  TR: { flag: "🇹🇷", name: "Türkiye" },
+  EU: { flag: "🇪🇺", name: "Avrupa" },
+  NA: { flag: "🇺🇸", name: "Amerika" },
+};
+
 const cleanTier = (tier: string | undefined | null): string | null => {
   if (!tier) return null;
   let cleaned = String(tier).replace(/Crystal\s+/gi, "").trim();
@@ -136,6 +143,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [sortType, setSortType] = useState<SortType>("rank");
   const [currentPageRank, setCurrentPageRank] = useState(1);
+  const [selectedRegion, setSelectedRegion] = useState<string>("TR"); // 🆕 YENİ
   const playersPerPage = 20;
 
   const fetchPlayers = async () => {
@@ -172,10 +180,13 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  const trPlayers = useMemo(() => players.filter(p => p.region === "TR"), [players]);
+  // 🆕 BÖLGE FİLTRESİ - Eskiden sadece TR'ydi, şimdi seçili bölge
+  const regionPlayers = useMemo(() => {
+    return players.filter(p => p.region === selectedRegion);
+  }, [players, selectedRegion]);
 
   const filteredPlayers = useMemo(() => {
-    let filtered = [...trPlayers];
+    let filtered = [...regionPlayers];
     if (searchQuery) {
       filtered = filtered.filter(p =>
         p.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -187,7 +198,7 @@ export default function App() {
     else if (sortType === "tests") filtered.sort((a, b) => (b.tests || 0) - (a.tests || 0));
     else filtered.sort((a, b) => a.rank - b.rank);
     return filtered;
-  }, [trPlayers, searchQuery, sortType]);
+  }, [regionPlayers, searchQuery, sortType]);
 
   const kitPlayers = useMemo(() => {
     if (selectedKit === "overall") return filteredPlayers;
@@ -197,7 +208,7 @@ export default function App() {
   const totalPages = Math.ceil(kitPlayers.length / playersPerPage);
   const currentPlayers = kitPlayers.slice((currentPageRank - 1) * playersPerPage, currentPageRank * playersPerPage);
 
-  useEffect(() => { setCurrentPageRank(1); }, [sortType, selectedKit, searchQuery]);
+  useEffect(() => { setCurrentPageRank(1); }, [sortType, selectedKit, searchQuery, selectedRegion]);
 
   const playersByTier = useMemo(() => {
     if (selectedKit === "overall") return null;
@@ -326,6 +337,22 @@ export default function App() {
 
           {currentPage === "rankings" && (
             <main className="relative z-10 max-w-[1600px] mx-auto px-4 py-6">
+              
+              {/* 🆕 BÖLGE FİLTRESİ - YENİ EKLENDİ */}
+              <div className="flex items-center gap-2 mb-4 overflow-x-auto scrollbar-hide">
+                <span className="text-sm text-white/50 whitespace-nowrap">🌍 Bölge:</span>
+                {Object.entries(REGIONS).map(([key, r]) => (
+                  <button key={key} onClick={() => setSelectedRegion(key)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all hover:scale-105 ${
+                      selectedRegion === key 
+                        ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg ring-2 ring-cyan-400/50" 
+                        : "bg-[#1a1f2e] text-white/60 hover:bg-[#222838]"
+                    }`}>
+                    {r.flag} {r.name}
+                  </button>
+                ))}
+              </div>
+
               <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                 <div className="flex items-center gap-2 overflow-x-auto">
                   <span className="text-sm text-white/50">Sırala:</span>
@@ -357,7 +384,7 @@ export default function App() {
                   {currentPlayers.length === 0 ? (
                     <div className="py-20 text-center">
                       <div className="text-6xl mb-4 opacity-20">🏆</div>
-                      <h3 className="text-xl font-bold text-white/30">Henüz Oyuncu Yok</h3>
+                      <h3 className="text-xl font-bold text-white/30">Bu bölgede henüz oyuncu yok</h3>
                     </div>
                   ) : (
                     <>
@@ -391,6 +418,8 @@ export default function App() {
                                           <span className={`text-xs font-medium ${player.totalPoints >= 200 ? "text-purple-400" : player.totalPoints >= 100 ? "text-cyan-400" : "text-white/50"}`}>{getTitle(player.totalPoints)}</span>
                                           <span className="text-xs text-white/30">•</span>
                                           <span className="text-xs font-bold text-cyan-400">{player.totalPoints} puan</span>
+                                          <span className="text-xs text-white/30">•</span>
+                                          <span className="text-xs">{REGIONS[player.region]?.flag}</span>
                                         </div>
                                       </div>
                                     </div>
@@ -484,7 +513,7 @@ export default function App() {
                 <img src={selectedPlayer.avatar} alt="" className="w-20 h-20 rounded-2xl ring-2 ring-white/20" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/64`; }} />
                 <div>
                   <h2 className="text-2xl font-black">{selectedPlayer.minecraftNick || selectedPlayer.username}</h2>
-                  <div className="text-sm text-white/60 mt-1">#{selectedPlayer.rank} • <span className="text-cyan-400 font-bold">{selectedPlayer.totalPoints} puan</span></div>
+                  <div className="text-sm text-white/60 mt-1">{REGIONS[selectedPlayer.region]?.flag} #{selectedPlayer.rank} • <span className="text-cyan-400 font-bold">{selectedPlayer.totalPoints} puan</span></div>
                   <div className="mt-1 text-sm text-white/50">Discord: <span className="text-cyan-400">@{selectedPlayer.username}</span></div>
                 </div>
               </div>
@@ -532,6 +561,8 @@ export default function App() {
       )}
 
       <style>{`
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
         @keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
         .animated-gradient-text {
           background: linear-gradient(90deg, #22d3ee 0%, #3b82f6 25%, #a855f7 50%, #ec4899 75%, #22d3ee 100%);
