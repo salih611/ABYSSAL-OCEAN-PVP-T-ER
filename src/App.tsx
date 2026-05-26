@@ -177,13 +177,17 @@ const DiscordIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+// ==========================================
+// SU BALONCUKLARI - GÜZEL VE BELİRGİN
+// ==========================================
 const Bubbles = () => {
-  const bubbles = useMemo(() => Array.from({ length: 20 }, (_, i) => ({
+  const bubbles = useMemo(() => Array.from({ length: 35 }, (_, i) => ({
     id: i,
-    size: Math.random() * 20 + 4,
+    size: Math.random() * 30 + 8,
     left: Math.random() * 100,
-    duration: Math.random() * 15 + 12,
-    delay: Math.random() * 20,
+    duration: Math.random() * 12 + 10,
+    delay: Math.random() * 15,
+    drift: (Math.random() - 0.5) * 80,
   })), []);
   
   return (
@@ -196,19 +200,35 @@ const Bubbles = () => {
             width: bubble.size,
             height: bubble.size,
             left: `${bubble.left}%`,
-            background: 'radial-gradient(circle at 30% 30%, rgba(165, 243, 252, 0.08), rgba(34, 211, 238, 0.03))',
-            border: '1px solid rgba(165, 243, 252, 0.05)',
-            animation: `bubbleFloat ${bubble.duration}s linear infinite`,
+            background: 'radial-gradient(circle at 30% 30%, rgba(165, 243, 252, 0.4), rgba(34, 211, 238, 0.15) 60%, rgba(8, 145, 178, 0.05) 100%)',
+            border: '1.5px solid rgba(165, 243, 252, 0.3)',
+            boxShadow: 'inset 0 0 10px rgba(255, 255, 255, 0.2), 0 0 20px rgba(34, 211, 238, 0.15)',
+            animation: `bubbleFloat ${bubble.duration}s ease-in infinite`,
             animationDelay: `${bubble.delay}s`,
-          }}
+            '--drift': `${bubble.drift}px`,
+          } as React.CSSProperties}
         />
       ))}
       <style>{`
         @keyframes bubbleFloat {
-          0% { transform: translateY(0) scale(0.5); opacity: 0; }
-          15% { opacity: 1; }
-          85% { opacity: 1; }
-          100% { transform: translateY(-110vh) scale(1); opacity: 0; }
+          0% { 
+            transform: translate(0, 0) scale(0.3); 
+            opacity: 0; 
+          }
+          10% { 
+            opacity: 0.9; 
+          }
+          50% {
+            transform: translate(calc(var(--drift) * 0.5), -50vh) scale(0.85);
+            opacity: 0.7;
+          }
+          90% { 
+            opacity: 0.5; 
+          }
+          100% { 
+            transform: translate(var(--drift), -110vh) scale(1); 
+            opacity: 0; 
+          }
         }
       `}</style>
     </div>
@@ -436,15 +456,30 @@ export default function App() {
                   Türkiye'nin #1 PvP Platformu
                 </motion.div>
                 
+                {/* ========================================== */}
+                {/* ANİMASYONLU BAŞLIK - YENİ */}
+                {/* ========================================== */}
                 <motion.h1
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.05 }}
                   className="text-5xl md:text-8xl font-black mb-6 leading-tight"
                 >
-                  <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 bg-clip-text text-transparent">ABYSSAL OCEAN</span>
+                  <span className="inline-block animated-gradient-text">
+                    ABYSSAL OCEAN
+                  </span>
                   <br />
-                  <span className="text-white">TIER LIST</span>
+                  <span className="inline-block tier-list-text">
+                    {"TIER LIST".split("").map((char, i) => (
+                      <span
+                        key={i}
+                        className="inline-block tier-letter"
+                        style={{ animationDelay: `${i * 0.1}s` }}
+                      >
+                        {char === " " ? "\u00A0" : char}
+                      </span>
+                    ))}
+                  </span>
                 </motion.h1>
                 
                 <motion.p
@@ -862,6 +897,9 @@ export default function App() {
         </div>
       )}
 
+      {/* ========================================== */}
+      {/* GÜNCELLENMİŞ STYLE BLOĞU - ANİMASYONLAR */}
+      {/* ========================================== */}
       <style>{`
         .custom-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
@@ -869,6 +907,89 @@ export default function App() {
         .custom-scroll::-webkit-scrollbar-thumb:hover { background: rgb(255 255 255 / 0.2); }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+        /* ANIMASYONLU GRADIENT BAŞLIK - ABYSSAL OCEAN */
+        @keyframes gradientShift {
+          0%, 100% { 
+            background-position: 0% 50%;
+          }
+          50% { 
+            background-position: 100% 50%;
+          }
+        }
+
+        .animated-gradient-text {
+          background: linear-gradient(
+            90deg,
+            #22d3ee 0%,
+            #3b82f6 25%,
+            #a855f7 50%,
+            #ec4899 75%,
+            #22d3ee 100%
+          );
+          background-size: 200% auto;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          animation: gradientShift 4s ease-in-out infinite;
+          filter: drop-shadow(0 0 30px rgba(34, 211, 238, 0.4));
+        }
+
+        /* TIER LIST HARF ANİMASYONU - HER HARF DÜŞER */
+        @keyframes letterDrop {
+          0% {
+            transform: translateY(-30px) rotate(-10deg);
+            opacity: 0;
+          }
+          50% {
+            transform: translateY(5px) rotate(2deg);
+            opacity: 1;
+          }
+          70% {
+            transform: translateY(-2px) rotate(-1deg);
+          }
+          100% {
+            transform: translateY(0) rotate(0);
+            opacity: 1;
+          }
+        }
+
+        /* TIER LIST HARFLER PARLAR */
+        @keyframes letterGlow {
+          0%, 100% {
+            text-shadow: 
+              0 0 10px rgba(34, 211, 238, 0.5),
+              0 0 20px rgba(34, 211, 238, 0.3),
+              0 0 30px rgba(34, 211, 238, 0.2);
+          }
+          50% {
+            text-shadow: 
+              0 0 20px rgba(168, 85, 247, 0.7),
+              0 0 30px rgba(168, 85, 247, 0.5),
+              0 0 40px rgba(168, 85, 247, 0.3);
+          }
+        }
+
+        .tier-letter {
+          color: white;
+          animation: 
+            letterDrop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) backwards,
+            letterGlow 3s ease-in-out infinite;
+          transition: all 0.3s ease;
+        }
+
+        .tier-letter:hover {
+          transform: translateY(-10px) scale(1.2);
+          color: #22d3ee;
+          text-shadow: 
+            0 0 20px #22d3ee,
+            0 0 40px #22d3ee,
+            0 0 60px #22d3ee;
+        }
+
+        .tier-list-text {
+          display: inline-block;
+        }
       `}</style>
 
       {/* AI Chat Bot - Sağ alt köşede */}
