@@ -48,11 +48,11 @@ const TIER_COLORS: Record<string, string> = {
 
 const KIT_ORDER: KitKey[] = ["overall", "vanilla", "sword", "axe", "nethpot", "pot", "uhc", "mace", "smp"];
 
-// 🆕 BÖLGELER - YENİ EKLENDİ
-const REGIONS: Record<string, { flag: string; name: string }> = {
-  TR: { flag: "🇹🇷", name: "Türkiye" },
-  EU: { flag: "🇪🇺", name: "Avrupa" },
-  NA: { flag: "🇺🇸", name: "Amerika" },
+// 🆕 MODERN BÖLGELER - Renkli kodlar ile
+const REGIONS: Record<string, { code: string; name: string; color: string }> = {
+  TR: { code: "TR", name: "Türkiye", color: "from-red-500 to-red-600" },
+  EU: { code: "EU", name: "Avrupa", color: "from-blue-500 to-blue-600" },
+  NA: { code: "US", name: "Amerika", color: "from-green-500 to-green-600" },
 };
 
 const cleanTier = (tier: string | undefined | null): string | null => {
@@ -143,7 +143,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [sortType, setSortType] = useState<SortType>("rank");
   const [currentPageRank, setCurrentPageRank] = useState(1);
-  const [selectedRegion, setSelectedRegion] = useState<string>("TR"); // 🆕 YENİ
+  const [selectedRegion, setSelectedRegion] = useState<string>("TR");
   const playersPerPage = 20;
 
   const fetchPlayers = async () => {
@@ -180,7 +180,6 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // 🆕 BÖLGE FİLTRESİ - Eskiden sadece TR'ydi, şimdi seçili bölge
   const regionPlayers = useMemo(() => {
     return players.filter(p => p.region === selectedRegion);
   }, [players, selectedRegion]);
@@ -338,17 +337,31 @@ export default function App() {
           {currentPage === "rankings" && (
             <main className="relative z-10 max-w-[1600px] mx-auto px-4 py-6">
               
-              {/* 🆕 BÖLGE FİLTRESİ - YENİ EKLENDİ */}
-              <div className="flex items-center gap-2 mb-4 overflow-x-auto scrollbar-hide">
-                <span className="text-sm text-white/50 whitespace-nowrap">🌍 Bölge:</span>
+              {/* 🌍 MODERN BÖLGE FİLTRESİ */}
+              <div className="flex items-center gap-2 mb-6 overflow-x-auto scrollbar-hide">
+                <span className="text-sm text-white/50 whitespace-nowrap flex items-center gap-1.5">
+                  <span className="text-base">🌐</span> Bölge:
+                </span>
                 {Object.entries(REGIONS).map(([key, r]) => (
-                  <button key={key} onClick={() => setSelectedRegion(key)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all hover:scale-105 ${
-                      selectedRegion === key 
-                        ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg ring-2 ring-cyan-400/50" 
-                        : "bg-[#1a1f2e] text-white/60 hover:bg-[#222838]"
-                    }`}>
-                    {r.flag} {r.name}
+                  <button
+                    key={key}
+                    onClick={() => setSelectedRegion(key)}
+                    className={`group relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all hover:scale-105 ${
+                      selectedRegion === key
+                        ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/30"
+                        : "bg-[#1a1f2e] text-white/70 hover:bg-[#222838] border border-white/5"
+                    }`}
+                  >
+                    <span
+                      className={`text-[10px] font-black px-1.5 py-0.5 rounded ${
+                        selectedRegion === key
+                          ? "bg-white/20 text-white"
+                          : "bg-white/10 text-white/60"
+                      }`}
+                    >
+                      {r.code}
+                    </span>
+                    <span>{r.name}</span>
                   </button>
                 ))}
               </div>
@@ -393,8 +406,9 @@ export default function App() {
                           <thead>
                             <tr className="border-b border-white/5 bg-[#0f141b]/50">
                               <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase w-16">#</th>
-                              <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase">Oyuncu</th>
-                              <th className="text-right px-6 py-4 text-xs font-semibold text-white/40 uppercase">Tierler</th>
+                              <th className="text-left px-6 py-4 text-xs font-semibold text-white/40 uppercase">Player</th>
+                              <th className="text-center px-6 py-4 text-xs font-semibold text-white/40 uppercase">Region</th>
+                              <th className="text-right px-6 py-4 text-xs font-semibold text-white/40 uppercase">Tiers</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-white/[0.03]">
@@ -418,10 +432,19 @@ export default function App() {
                                           <span className={`text-xs font-medium ${player.totalPoints >= 200 ? "text-purple-400" : player.totalPoints >= 100 ? "text-cyan-400" : "text-white/50"}`}>{getTitle(player.totalPoints)}</span>
                                           <span className="text-xs text-white/30">•</span>
                                           <span className="text-xs font-bold text-cyan-400">{player.totalPoints} puan</span>
-                                          <span className="text-xs text-white/30">•</span>
-                                          <span className="text-xs">{REGIONS[player.region]?.flag}</span>
                                         </div>
                                       </div>
+                                    </div>
+                                  </td>
+                                  <td className="px-6 py-4">
+                                    <div className="flex justify-center">
+                                      <span
+                                        className={`inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-xs font-black bg-gradient-to-br ${
+                                          REGIONS[player.region]?.color || "from-gray-500 to-gray-600"
+                                        } text-white shadow-lg min-w-[44px]`}
+                                      >
+                                        {REGIONS[player.region]?.code || player.region}
+                                      </span>
                                     </div>
                                   </td>
                                   <td className="px-6 py-4">
@@ -513,7 +536,18 @@ export default function App() {
                 <img src={selectedPlayer.avatar} alt="" className="w-20 h-20 rounded-2xl ring-2 ring-white/20" onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/64`; }} />
                 <div>
                   <h2 className="text-2xl font-black">{selectedPlayer.minecraftNick || selectedPlayer.username}</h2>
-                  <div className="text-sm text-white/60 mt-1">{REGIONS[selectedPlayer.region]?.flag} #{selectedPlayer.rank} • <span className="text-cyan-400 font-bold">{selectedPlayer.totalPoints} puan</span></div>
+                  <div className="text-sm text-white/60 mt-1 flex items-center gap-2 flex-wrap">
+                    <span
+                      className={`inline-flex items-center justify-center px-2 py-0.5 rounded text-[10px] font-black bg-gradient-to-br ${
+                        REGIONS[selectedPlayer.region]?.color || "from-gray-500 to-gray-600"
+                      } text-white shadow`}
+                    >
+                      {REGIONS[selectedPlayer.region]?.code}
+                    </span>
+                    <span>#{selectedPlayer.rank}</span>
+                    <span>•</span>
+                    <span className="text-cyan-400 font-bold">{selectedPlayer.totalPoints} puan</span>
+                  </div>
                   <div className="mt-1 text-sm text-white/50">Discord: <span className="text-cyan-400">@{selectedPlayer.username}</span></div>
                 </div>
               </div>
