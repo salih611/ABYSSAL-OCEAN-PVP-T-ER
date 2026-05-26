@@ -88,6 +88,23 @@ const TRANSLATIONS: Record<LangKey, Record<string, string>> = {
     pvpTierList: "Minecraft PvP Tier List", seeRankings: "Sıralamaları Gör →",
     loading: "Yükleniyor...", loadingMore: "Daha fazla yükleniyor...",
     shareCard: "Kartı Paylaş", downloadCard: "İndir", copyLink: "Linki Kopyala", linkCopied: "Link kopyalandı!",
+    intro_subtitle: "Seviyeni Seç, Gücünü Kanıtla!",
+    intro_p1_a: "Gelişmekte olan",
+    intro_p1_b: "Minecraft tier sunucumuz",
+    intro_p1_c: "'da,",
+    intro_p1_d: "8 farklı kit",
+    intro_p1_e: "ile kendini test edip",
+    intro_p1_f: "gerçek PvP seviyeni",
+    intro_p1_g: "hemen öğrenebilirsin.",
+    intro_p2_a: "Üstelik yeteneğine güveniyorsan sunucumuzda",
+    intro_p2_b: "Tester",
+    intro_p2_c: "olabilir ya da yönetim kadromuza katılarak",
+    intro_p2_d: "yetkili",
+    intro_p2_e: "olarak yer alabilirsin.",
+    intro_cta: "Kitini seç ve bu maceraya ortak ol!",
+    stat_kit: "Kit",
+    stat_tier: "Tier",
+    stat_region: "Bölge",
     title_legendary: "🏆 Efsanevi Savaşçı", title_master: "⚡ Usta Savaşçı",
     title_experienced: "🌟 Tecrübeli Savaşçı", title_expert: "📈 Uzman Savaşçı",
     title_novice: "🌱 Acemi Savaşçı", title_rookie: "🆕 Çaylak",
@@ -109,6 +126,23 @@ const TRANSLATIONS: Record<LangKey, Record<string, string>> = {
     pvpTierList: "Minecraft PvP Tier List", seeRankings: "View Rankings →",
     loading: "Loading...", loadingMore: "Loading more...",
     shareCard: "Share Card", downloadCard: "Download", copyLink: "Copy Link", linkCopied: "Link copied!",
+    intro_subtitle: "Choose Your Level, Prove Your Power!",
+    intro_p1_a: "On our developing",
+    intro_p1_b: "Minecraft tier server",
+    intro_p1_c: ",",
+    intro_p1_d: "8 different kits",
+    intro_p1_e: "let you test yourself and discover your",
+    intro_p1_f: "true PvP level",
+    intro_p1_g: "instantly.",
+    intro_p2_a: "If you trust your skills, you can become a",
+    intro_p2_b: "Tester",
+    intro_p2_c: "on our server, or join our management team as a",
+    intro_p2_d: "staff member",
+    intro_p2_e: ".",
+    intro_cta: "Choose your kit and join this adventure!",
+    stat_kit: "Kit",
+    stat_tier: "Tier",
+    stat_region: "Region",
     title_legendary: "🏆 Legendary Warrior", title_master: "⚡ Master Warrior",
     title_experienced: "🌟 Experienced Warrior", title_expert: "📈 Expert Warrior",
     title_novice: "🌱 Novice Warrior", title_rookie: "🆕 Rookie",
@@ -130,6 +164,23 @@ const TRANSLATIONS: Record<LangKey, Record<string, string>> = {
     pvpTierList: "Minecraft PvP Stufenliste", seeRankings: "Ranglisten ansehen →",
     loading: "Wird geladen...", loadingMore: "Mehr wird geladen...",
     shareCard: "Karte teilen", downloadCard: "Herunterladen", copyLink: "Link kopieren", linkCopied: "Link kopiert!",
+    intro_subtitle: "Wähle dein Level, beweise deine Stärke!",
+    intro_p1_a: "Auf unserem aufstrebenden",
+    intro_p1_b: "Minecraft-Tier-Server",
+    intro_p1_c: "kannst du dich mit",
+    intro_p1_d: "8 verschiedenen Kits",
+    intro_p1_e: "testen und dein",
+    intro_p1_f: "echtes PvP-Level",
+    intro_p1_g: "sofort herausfinden.",
+    intro_p2_a: "Wenn du deinen Fähigkeiten vertraust, kannst du auf unserem Server",
+    intro_p2_b: "Tester",
+    intro_p2_c: "werden oder unserem Management-Team als",
+    intro_p2_d: "Mitarbeiter",
+    intro_p2_e: "beitreten.",
+    intro_cta: "Wähle dein Kit und sei Teil dieses Abenteuers!",
+    stat_kit: "Kit",
+    stat_tier: "Stufe",
+    stat_region: "Region",
     title_legendary: "🏆 Legendärer Krieger", title_master: "⚡ Meisterkrieger",
     title_experienced: "🌟 Erfahrener Krieger", title_expert: "📈 Expertenkrieger",
     title_novice: "🌱 Anfänger Krieger", title_rookie: "🆕 Neuling",
@@ -407,7 +458,6 @@ const ShareCardModal = ({ player, theme, t, onClose }: {
   );
 };
 
-// 🛡️ GÜVENLİK KORUMASI
 const useSecurityProtection = () => {
   useEffect(() => {
     const handleContextMenu = (e: MouseEvent) => { e.preventDefault(); return false; };
@@ -479,7 +529,6 @@ const useSecurityProtection = () => {
   }, []);
 };
 
-// 🚦 RATE LIMITING
 const useRateLimit = () => {
   useEffect(() => {
     const requestCounts = new Map<string, { count: number; timestamp: number }>();
@@ -700,12 +749,10 @@ export default function App() {
       style={{ background: currentTheme.bg, color: currentTheme.text }}>
       <Bubbles />
       
-      {/* 📱 HEADER - MOBILE & DESKTOP */}
       <header className="relative z-50 sticky top-0 backdrop-blur-xl border-b transition-colors duration-500"
         style={{ background: `${currentTheme.headerBg}cc`, borderColor: currentTheme.border }}>
         <div className="max-w-[1600px] mx-auto px-3 md:px-4 py-3 flex items-center justify-between gap-2 md:gap-4">
           
-          {/* LOGO */}
           <div className="flex items-center gap-2 md:gap-3 cursor-pointer flex-shrink-0" onClick={() => setCurrentPage("home")}>
             <img src="/logo.png" alt="" className="h-9 w-9 md:h-12 md:w-12 rounded-xl object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
             <div>
@@ -716,7 +763,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* DESKTOP NAV */}
           <nav className="hidden lg:flex items-center gap-1">
             <button onClick={() => setCurrentPage("home")} 
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${currentPage === "home" ? `bg-gradient-to-r ${currentTheme.primaryGradient} text-white shadow-lg` : ""}`}
@@ -730,7 +776,6 @@ export default function App() {
             </button>
           </nav>
 
-          {/* DESKTOP ACTIONS */}
           <div className="hidden md:flex items-center gap-2">
             {currentPage === "rankings" && (
               <input type="text" placeholder={t("searchPlayer")} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} 
@@ -803,7 +848,6 @@ export default function App() {
             </a>
           </div>
 
-          {/* 📱 MOBILE HAMBURGER BUTTON */}
           <div className="flex md:hidden items-center gap-2">
             {currentPage === "rankings" && (
               <button onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
@@ -826,7 +870,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* 📱 MOBILE SEARCH */}
         <AnimatePresence>
           {mobileSearchOpen && currentPage === "rankings" && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="md:hidden px-3 pb-3 overflow-hidden">
@@ -837,7 +880,6 @@ export default function App() {
           )}
         </AnimatePresence>
 
-        {/* 📱 MOBILE MENU */}
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
@@ -854,7 +896,6 @@ export default function App() {
                   🏆 {t("rankings")}
                 </button>
                 
-                {/* Lang & Theme Mobile */}
                 <div className="grid grid-cols-2 gap-2 pt-2 border-t" style={{ borderColor: currentTheme.border }}>
                   <div>
                     <div className="text-[10px] uppercase font-bold mb-1 px-1" style={{ color: currentTheme.textMuted }}>{t("language")}</div>
@@ -904,7 +945,6 @@ export default function App() {
           {currentPage === "home" && (
             <main className="relative z-10 max-w-[1600px] mx-auto px-3 md:px-4 py-6 md:py-12">
               <div className="text-center mb-12 md:mb-20">
-                {/* 🎬 BADGE - ANIMATED */}
                 <motion.div initial={{ opacity: 0, y: 20, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ delay: 0.1, type: "spring", stiffness: 200 }} whileHover={{ scale: 1.05 }}
                   className="hero-badge inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-semibold mb-4 md:mb-6 cursor-default"
                   style={{ background: `${currentTheme.primary}15`, border: `1px solid ${currentTheme.primary}30`, color: currentTheme.primary }}>
@@ -925,7 +965,6 @@ export default function App() {
                   </span>
                 </motion.h1>
                 
-                {/* 🎬 SUBTITLE - WORD ANIMATED */}
                 <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
                   className="text-base md:text-xl max-w-2xl mx-auto mb-6 md:mb-10 hero-subtitle px-4" style={{ color: currentTheme.textMuted }}>
                   {t("chooseLevel").split(" ").map((word, i) => (
@@ -946,7 +985,6 @@ export default function App() {
                 </motion.div>
               </div>
 
-              {/* 🌊 ABYSSAL OCEAN TANITIM METNİ */}
               <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.6 }}
                 className="max-w-4xl mx-auto mb-12 md:mb-20 relative">
                 <div className="relative rounded-2xl md:rounded-3xl p-6 md:p-12 overflow-hidden backdrop-blur-sm"
@@ -962,29 +1000,29 @@ export default function App() {
                       <div className="h-px flex-1 max-w-[40px] md:max-w-[60px]" style={{ background: `linear-gradient(to left, transparent, ${currentTheme.primary})` }}></div>
                     </div>
                     <p className="text-center text-base md:text-xl font-bold mb-4 md:mb-6" style={{ color: currentTheme.primary }}>
-                      Seviyeni Seç, Gücünü Kanıtla!
+                      {t("intro_subtitle")}
                     </p>
                     <p className="text-center text-sm md:text-lg leading-relaxed mb-4 md:mb-6" style={{ color: currentTheme.textMuted }}>
-                      Gelişmekte olan <span className="font-bold" style={{ color: currentTheme.text }}>Minecraft tier sunucumuz</span> <span className={`font-bold bg-gradient-to-r ${currentTheme.primaryGradient} bg-clip-text text-transparent`}>Abyssal Ocean</span>'da, <span className="font-bold" style={{ color: currentTheme.text }}>8 farklı kit</span> ile kendini test edip <span className="font-bold" style={{ color: currentTheme.text }}>gerçek PvP seviyeni</span> hemen öğrenebilirsin.
+                      {t("intro_p1_a")} <span className="font-bold" style={{ color: currentTheme.text }}>{t("intro_p1_b")}</span> <span className={`font-bold bg-gradient-to-r ${currentTheme.primaryGradient} bg-clip-text text-transparent`}>Abyssal Ocean</span>{t("intro_p1_c")} <span className="font-bold" style={{ color: currentTheme.text }}>{t("intro_p1_d")}</span> {t("intro_p1_e")} <span className="font-bold" style={{ color: currentTheme.text }}>{t("intro_p1_f")}</span> {t("intro_p1_g")}
                     </p>
                     <p className="text-center text-sm md:text-lg leading-relaxed mb-6 md:mb-8" style={{ color: currentTheme.textMuted }}>
-                      Üstelik yeteneğine güveniyorsan sunucumuzda <span className="font-bold text-amber-400">Tester</span> olabilir ya da yönetim kadromuza katılarak <span className="font-bold text-purple-400">yetkili</span> olarak yer alabilirsin.
+                      {t("intro_p2_a")} <span className="font-bold text-amber-400">{t("intro_p2_b")}</span> {t("intro_p2_c")} <span className="font-bold text-purple-400">{t("intro_p2_d")}</span> {t("intro_p2_e")}
                     </p>
                     <p className="text-center text-base md:text-xl font-black" style={{ color: currentTheme.text }}>
-                      ⚔️ Kitini seç ve bu maceraya ortak ol! ⚔️
+                      ⚔️ {t("intro_cta")} ⚔️
                     </p>
                     <div className="grid grid-cols-3 gap-2 md:gap-4 mt-6 md:mt-8 pt-6 md:pt-8" style={{ borderTop: `1px solid ${currentTheme.border}` }}>
                       <div className="text-center">
                         <div className={`text-2xl md:text-4xl font-black bg-gradient-to-r ${currentTheme.primaryGradient} bg-clip-text text-transparent`}>8</div>
-                        <div className="text-[10px] md:text-xs uppercase tracking-wider mt-1" style={{ color: currentTheme.textMuted }}>Kit</div>
+                        <div className="text-[10px] md:text-xs uppercase tracking-wider mt-1" style={{ color: currentTheme.textMuted }}>{t("stat_kit")}</div>
                       </div>
                       <div className="text-center">
                         <div className={`text-2xl md:text-4xl font-black bg-gradient-to-r ${currentTheme.primaryGradient} bg-clip-text text-transparent`}>10</div>
-                        <div className="text-[10px] md:text-xs uppercase tracking-wider mt-1" style={{ color: currentTheme.textMuted }}>Tier</div>
+                        <div className="text-[10px] md:text-xs uppercase tracking-wider mt-1" style={{ color: currentTheme.textMuted }}>{t("stat_tier")}</div>
                       </div>
                       <div className="text-center">
                         <div className={`text-2xl md:text-4xl font-black bg-gradient-to-r ${currentTheme.primaryGradient} bg-clip-text text-transparent`}>3</div>
-                        <div className="text-[10px] md:text-xs uppercase tracking-wider mt-1" style={{ color: currentTheme.textMuted }}>Bölge</div>
+                        <div className="text-[10px] md:text-xs uppercase tracking-wider mt-1" style={{ color: currentTheme.textMuted }}>{t("stat_region")}</div>
                       </div>
                     </div>
                   </div>
@@ -1049,7 +1087,6 @@ export default function App() {
           {currentPage === "rankings" && (
             <main className="relative z-10 max-w-[1600px] mx-auto px-2 md:px-4 py-4 md:py-6">
               
-              {/* 🌍 BÖLGE FİLTRESİ */}
               <div className="flex items-center justify-center md:justify-end gap-2 mb-4 md:mb-6 overflow-x-auto scrollbar-hide">
                 {Object.entries(REGIONS).map(([key, r]) => (
                   <button key={key} onClick={() => setSelectedRegion(key)}
@@ -1154,7 +1191,6 @@ export default function App() {
                                             <DiscordIcon className="w-2.5 h-2.5 md:w-3 md:h-3" />
                                             @{player.username}
                                           </span>
-                                          {/* MOBILE: REGION badge inline */}
                                           <span className={`md:hidden inline-flex items-center justify-center px-1.5 py-0.5 rounded text-[9px] font-black bg-gradient-to-br ${REGIONS[player.region]?.color || "from-gray-500 to-gray-600"} text-white`}>
                                             {REGIONS[player.region]?.code}
                                           </span>
@@ -1260,7 +1296,6 @@ export default function App() {
         </motion.div>
       </AnimatePresence>
 
-      {/* PLAYER MODAL */}
       {selectedPlayer && !shareCardPlayer && (
         <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-4 bg-black/80 backdrop-blur-md" onClick={() => setSelectedPlayer(null)}>
           <motion.div 
@@ -1335,7 +1370,6 @@ export default function App() {
 
       {shareCardPlayer && (<ShareCardModal player={shareCardPlayer} theme={currentTheme} t={t} onClose={() => setShareCardPlayer(null)} />)}
 
-      {/* 📜 FOOTER */}
       <footer className="relative z-10 mt-12 md:mt-20 backdrop-blur-sm" style={{ borderTop: `1px solid ${currentTheme.border}`, background: `${currentTheme.headerBg}80` }}>
         <div className="max-w-[1600px] mx-auto px-4 py-6 md:py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
@@ -1431,7 +1465,6 @@ export default function App() {
           animation: skeletonShimmer 1.5s ease-in-out infinite;
         }
         
-        /* 🎬 HERO BADGE ANIMASYONU */
         @keyframes badgeFloat {
           0%, 100% { transform: translateY(0); }
           50% { transform: translateY(-3px); }
@@ -1453,7 +1486,6 @@ export default function App() {
           font-weight: 800;
         }
         
-        /* 🎬 SUBTITLE WORD ANIMASYONU */
         @keyframes wordFadeIn {
           0% { opacity: 0; transform: translateY(20px) scale(0.8); filter: blur(10px); }
           100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
@@ -1469,7 +1501,6 @@ export default function App() {
           cursor: default;
         }
         
-        /* 🚫 GÖRSEL KORUMA */
         img {
           -webkit-user-drag: none;
           -khtml-user-drag: none;
@@ -1479,16 +1510,13 @@ export default function App() {
           -webkit-touch-callout: none;
         }
         
-        /* 📱 MOBILE OPTIMIZATIONS */
         @media (max-width: 768px) {
           body { overflow-x: hidden; }
           .animated-gradient-text { filter: drop-shadow(0 0 15px rgba(34, 211, 238, 0.4)); }
         }
         
-        /* Smooth scrolling */
         html { scroll-behavior: smooth; }
         
-        /* Better tap targets on mobile */
         @media (max-width: 768px) {
           button, a { -webkit-tap-highlight-color: transparent; }
         }
