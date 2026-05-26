@@ -24,7 +24,6 @@ type LangKey = "tr" | "en" | "de";
 const UPSTASH_URL = 'https://adequate-loon-101577.upstash.io';
 const UPSTASH_TOKEN = 'gQAAAAAAAYzJAAIgcDJhOWJiYWFhM2M2MmE0NThkYTJiMjZjZmM3ZDcxZWMwNA';
 
-// 🎨 TEMA SİSTEMİ (Light kaldırıldı)
 const THEMES: Record<ThemeKey, {
   name: string;
   emoji: string;
@@ -120,8 +119,7 @@ const TRANSLATIONS: Record<LangKey, Record<string, string>> = {
     allRights: "Tüm hakları gizlidir", madeWith: "Türk PvP Topluluğu için 💙 ile yapıldı",
     pvpTierList: "Minecraft PvP Tier List", seeRankings: "Sıralamaları Gör →",
     loading: "Yükleniyor...", loadingMore: "Daha fazla yükleniyor...",
-    keyboardHint: "↑↓ ile gezin, Enter ile aç", shareCard: "Kartı Paylaş",
-    downloadCard: "İndir", copyLink: "Linki Kopyala", linkCopied: "Link kopyalandı!",
+    shareCard: "Kartı Paylaş", downloadCard: "İndir", copyLink: "Linki Kopyala", linkCopied: "Link kopyalandı!",
     title_legendary: "🏆 Efsanevi Savaşçı", title_master: "⚡ Usta Savaşçı",
     title_experienced: "🌟 Tecrübeli Savaşçı", title_expert: "📈 Uzman Savaşçı",
     title_novice: "🌱 Acemi Savaşçı", title_rookie: "🆕 Çaylak",
@@ -142,8 +140,7 @@ const TRANSLATIONS: Record<LangKey, Record<string, string>> = {
     allRights: "All rights reserved", madeWith: "Made with 💙 for Turkish PvP Community",
     pvpTierList: "Minecraft PvP Tier List", seeRankings: "View Rankings →",
     loading: "Loading...", loadingMore: "Loading more...",
-    keyboardHint: "Use ↑↓ to navigate, Enter to open", shareCard: "Share Card",
-    downloadCard: "Download", copyLink: "Copy Link", linkCopied: "Link copied!",
+    shareCard: "Share Card", downloadCard: "Download", copyLink: "Copy Link", linkCopied: "Link copied!",
     title_legendary: "🏆 Legendary Warrior", title_master: "⚡ Master Warrior",
     title_experienced: "🌟 Experienced Warrior", title_expert: "📈 Expert Warrior",
     title_novice: "🌱 Novice Warrior", title_rookie: "🆕 Rookie",
@@ -164,8 +161,7 @@ const TRANSLATIONS: Record<LangKey, Record<string, string>> = {
     allRights: "Alle Rechte vorbehalten", madeWith: "Mit 💙 für die türkische PvP-Community",
     pvpTierList: "Minecraft PvP Stufenliste", seeRankings: "Ranglisten ansehen →",
     loading: "Wird geladen...", loadingMore: "Mehr wird geladen...",
-    keyboardHint: "Mit ↑↓ navigieren, Enter zum Öffnen", shareCard: "Karte teilen",
-    downloadCard: "Herunterladen", copyLink: "Link kopieren", linkCopied: "Link kopiert!",
+    shareCard: "Karte teilen", downloadCard: "Herunterladen", copyLink: "Link kopieren", linkCopied: "Link kopiert!",
     title_legendary: "🏆 Legendärer Krieger", title_master: "⚡ Meisterkrieger",
     title_experienced: "🌟 Erfahrener Krieger", title_expert: "📈 Expertenkrieger",
     title_novice: "🌱 Anfänger Krieger", title_rookie: "🆕 Neuling",
@@ -315,7 +311,6 @@ const Bubbles = () => {
   );
 };
 
-// 🎨 LOADING SKELETON
 const SkeletonRow = ({ theme }: { theme: typeof THEMES[ThemeKey] }) => (
   <tr style={{ borderTop: `1px solid ${theme.border}` }}>
     <td className="px-6 py-4">
@@ -346,7 +341,6 @@ const SkeletonRow = ({ theme }: { theme: typeof THEMES[ThemeKey] }) => (
   </tr>
 );
 
-// 🎴 SHARE CARD MODAL
 const ShareCardModal = ({ player, theme, t, onClose }: { 
   player: Player; 
   theme: typeof THEMES[ThemeKey]; 
@@ -359,7 +353,6 @@ const ShareCardModal = ({ player, theme, t, onClose }: {
   const downloadCard = async () => {
     if (!cardRef.current) return;
     try {
-      // html2canvas alternative - use native screenshot via canvas
       const card = cardRef.current;
       const html = card.outerHTML;
       const blob = new Blob([`<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{margin:0;padding:20px;background:#0a0e14;font-family:system-ui;}</style></head><body>${html}</body></html>`], { type: 'text/html' });
@@ -389,12 +382,10 @@ const ShareCardModal = ({ player, theme, t, onClose }: {
         className="relative w-full max-w-md"
         onClick={e => e.stopPropagation()}
       >
-        {/* ŞIK PROFIL KARTI */}
         <div ref={cardRef} className="rounded-3xl overflow-hidden shadow-2xl" style={{
           background: `linear-gradient(135deg, ${theme.cardBg}, ${theme.bg})`,
           border: `2px solid ${theme.primary}`,
         }}>
-          {/* Header gradient */}
           <div className={`h-32 bg-gradient-to-br ${theme.primaryGradient} relative overflow-hidden`}>
             <div className="absolute inset-0 opacity-30" style={{
               backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 50%, white 1px, transparent 1px)',
@@ -402,7 +393,6 @@ const ShareCardModal = ({ player, theme, t, onClose }: {
             }}></div>
           </div>
           
-          {/* Avatar */}
           <div className="px-6 -mt-16 relative">
             <img 
               src={player.avatar} 
@@ -413,7 +403,6 @@ const ShareCardModal = ({ player, theme, t, onClose }: {
             />
           </div>
 
-          {/* Info */}
           <div className="px-6 pt-4 pb-6 text-center">
             <h2 className="text-3xl font-black mb-2" style={{ color: theme.text }}>
               {player.minecraftNick || player.username}
@@ -434,7 +423,6 @@ const ShareCardModal = ({ player, theme, t, onClose }: {
               </span>
             </div>
 
-            {/* Top 3 Tiers */}
             <div className="grid grid-cols-4 gap-2 mb-4">
               {Object.entries(KITS).slice(0, 8).map(([kitKey, kit]) => {
                 const tier = cleanTier(player.tiers[kitKey]);
@@ -457,7 +445,6 @@ const ShareCardModal = ({ player, theme, t, onClose }: {
           </div>
         </div>
 
-        {/* Actions */}
         <div className="flex gap-2 mt-4">
           <button 
             onClick={downloadCard}
@@ -504,12 +491,10 @@ export default function App() {
   const [sortType, setSortType] = useState<SortType>("rank");
   const [selectedRegion, setSelectedRegion] = useState<string>("TR");
   
-  // 🔄 INFINITE SCROLL
   const [displayCount, setDisplayCount] = useState(20);
   const [loadingMore, setLoadingMore] = useState(false);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  // ⌨️ KEYBOARD NAVIGATION
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
 
   const [theme, setTheme] = useState<ThemeKey>(() => {
@@ -596,14 +581,12 @@ export default function App() {
     return [...filteredPlayers].filter(p => p.tiers[selectedKit]).sort((a, b) => getTierPoints(b.tiers[selectedKit]) - getTierPoints(a.tiers[selectedKit]));
   }, [filteredPlayers, selectedKit]);
 
-  // 🔄 INFINITE SCROLL - sadece görünen oyuncular
   const visiblePlayers = useMemo(() => {
     return kitPlayers.slice(0, displayCount);
   }, [kitPlayers, displayCount]);
 
   useEffect(() => { setDisplayCount(20); setFocusedIndex(-1); }, [sortType, selectedKit, searchQuery, selectedRegion]);
 
-  // 🔄 INFINITE SCROLL OBSERVER
   useEffect(() => {
     if (!loadMoreRef.current || selectedKit !== "overall") return;
     const observer = new IntersectionObserver(
@@ -622,7 +605,6 @@ export default function App() {
     return () => observer.disconnect();
   }, [displayCount, kitPlayers.length, selectedKit]);
 
-  // ⌨️ KEYBOARD NAVIGATION
   useEffect(() => {
     if (currentPage !== "rankings" || selectedKit !== "overall") return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -642,7 +624,6 @@ export default function App() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [currentPage, selectedKit, visiblePlayers, focusedIndex, selectedPlayer, shareCardPlayer]);
 
-  // Scroll to focused row
   useEffect(() => {
     if (focusedIndex >= 0) {
       const el = document.getElementById(`player-row-${focusedIndex}`);
@@ -837,7 +818,6 @@ export default function App() {
         />
       )}
 
-      {/* 🎬 GELİŞTİRİLMİŞ SAYFA GEÇİŞLERİ */}
       <AnimatePresence mode="wait">
         <motion.div 
           key={currentPage} 
@@ -890,10 +870,75 @@ export default function App() {
                   transition={{ delay: 0.4 }}
                   className="flex flex-wrap items-center justify-center gap-4"
                 >
-                  <button onClick={() => setCurrentPage("rankings")} className={`px-8 py-4 bg-gradient-to-r ${currentTheme.primaryGradient} rounded-xl font-bold text-lg transition-all shadow-lg hover:scale-105 text-white`}>🏆 {t("viewRankings")}</button>
                   <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-[#5865F2] rounded-xl font-bold text-lg transition-all flex items-center gap-2 shadow-lg hover:scale-105 text-white"><DiscordIcon className="w-6 h-6" /> {t("joinServer")}</a>
                 </motion.div>
               </div>
+
+              {/* 🌊 ABYSSAL OCEAN TANITIM METNİ */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+                className="max-w-4xl mx-auto mb-20 relative"
+              >
+                <div 
+                  className="relative rounded-3xl p-8 md:p-12 overflow-hidden backdrop-blur-sm"
+                  style={{ 
+                    background: `linear-gradient(135deg, ${currentTheme.cardBg}cc, ${currentTheme.bg}cc)`,
+                    border: `1px solid ${currentTheme.primary}30`,
+                  }}
+                >
+                  <div 
+                    className="absolute -top-20 -left-20 w-60 h-60 rounded-full opacity-20 blur-3xl"
+                    style={{ background: currentTheme.primary }}
+                  ></div>
+                  <div 
+                    className="absolute -bottom-20 -right-20 w-60 h-60 rounded-full opacity-20 blur-3xl"
+                    style={{ background: currentTheme.accent }}
+                  ></div>
+
+                  <div className="relative z-10">
+                    <div className="flex items-center justify-center gap-3 mb-6">
+                      <div className="h-px flex-1 max-w-[60px]" style={{ background: `linear-gradient(to right, transparent, ${currentTheme.primary})` }}></div>
+                      <h3 className={`text-2xl md:text-3xl font-black bg-gradient-to-r ${currentTheme.primaryGradient} bg-clip-text text-transparent flex items-center gap-2`}>
+                        🌊 Abyssal Ocean
+                      </h3>
+                      <div className="h-px flex-1 max-w-[60px]" style={{ background: `linear-gradient(to left, transparent, ${currentTheme.primary})` }}></div>
+                    </div>
+
+                    <p className="text-center text-lg md:text-xl font-bold mb-6" style={{ color: currentTheme.primary }}>
+                      Seviyeni Seç, Gücünü Kanıtla!
+                    </p>
+
+                    <p className="text-center text-base md:text-lg leading-relaxed mb-6" style={{ color: currentTheme.textMuted }}>
+                      Gelişmekte olan <span className="font-bold" style={{ color: currentTheme.text }}>Minecraft tier sunucumuz</span> <span className={`font-bold bg-gradient-to-r ${currentTheme.primaryGradient} bg-clip-text text-transparent`}>Abyssal Ocean</span>'da, <span className="font-bold" style={{ color: currentTheme.text }}>8 farklı kit</span> ile kendini test edip <span className="font-bold" style={{ color: currentTheme.text }}>gerçek PvP seviyeni</span> hemen öğrenebilirsin.
+                    </p>
+                    
+                    <p className="text-center text-base md:text-lg leading-relaxed mb-8" style={{ color: currentTheme.textMuted }}>
+                      Üstelik yeteneğine güveniyorsan sunucumuzda <span className="font-bold text-amber-400">Tester</span> olabilir ya da yönetim kadromuza katılarak <span className="font-bold text-purple-400">yetkili</span> olarak yer alabilirsin.
+                    </p>
+
+                    <p className="text-center text-lg md:text-xl font-black" style={{ color: currentTheme.text }}>
+                      ⚔️ Kitini seç ve bu maceraya ortak ol! ⚔️
+                    </p>
+
+                    <div className="grid grid-cols-3 gap-4 mt-8 pt-8" style={{ borderTop: `1px solid ${currentTheme.border}` }}>
+                      <div className="text-center">
+                        <div className={`text-3xl md:text-4xl font-black bg-gradient-to-r ${currentTheme.primaryGradient} bg-clip-text text-transparent`}>8</div>
+                        <div className="text-xs uppercase tracking-wider mt-1" style={{ color: currentTheme.textMuted }}>Kit</div>
+                      </div>
+                      <div className="text-center">
+                        <div className={`text-3xl md:text-4xl font-black bg-gradient-to-r ${currentTheme.primaryGradient} bg-clip-text text-transparent`}>10</div>
+                        <div className="text-xs uppercase tracking-wider mt-1" style={{ color: currentTheme.textMuted }}>Tier Seviyesi</div>
+                      </div>
+                      <div className="text-center">
+                        <div className={`text-3xl md:text-4xl font-black bg-gradient-to-r ${currentTheme.primaryGradient} bg-clip-text text-transparent`}>3</div>
+                        <div className="text-xs uppercase tracking-wider mt-1" style={{ color: currentTheme.textMuted }}>Bölge</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
 
               <div className="mb-20">
                 <div className="text-center mb-12">
@@ -944,7 +989,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 🎨 YUMUŞATILMIŞ "HAZIR MISIN" BÖLÜMÜ */}
               <div 
                 className={`relative rounded-3xl p-10 md:p-14 text-center overflow-hidden bg-gradient-to-br ${currentTheme.ctaGradient}`}
                 style={{ border: `1px solid ${currentTheme.border}` }}
@@ -965,11 +1009,8 @@ export default function App() {
           {currentPage === "rankings" && (
             <main className="relative z-10 max-w-[1600px] mx-auto px-4 py-6">
               
-              {/* 🌍 BÖLGE FİLTRESİ - ROZETLER KALDIRILDI */}
+              {/* 🌍 BÖLGE FİLTRESİ - Yazı kaldırıldı */}
               <div className="flex items-center justify-end gap-2 mb-6 overflow-x-auto scrollbar-hide">
-                <span className="text-sm whitespace-nowrap flex items-center gap-1.5" style={{ color: currentTheme.textMuted }}>
-                  <span className="text-base">🌐</span> {t("region")}:
-                </span>
                 {Object.entries(REGIONS).map(([key, r]) => (
                   <button
                     key={key}
@@ -1005,13 +1046,8 @@ export default function App() {
                     </button>
                   ))}
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="hidden md:flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg" style={{ background: currentTheme.cardBg, color: currentTheme.textMuted, border: `1px solid ${currentTheme.border}` }}>
-                    <kbd className="px-1.5 py-0.5 rounded text-[10px] font-bold" style={{ background: currentTheme.headerBg }}>↑↓</kbd>
-                    <kbd className="px-1.5 py-0.5 rounded text-[10px] font-bold" style={{ background: currentTheme.headerBg }}>Enter</kbd>
-                  </span>
-                  <div className="text-sm" style={{ color: currentTheme.textMuted }}>{t("totalPlayers", { count: kitPlayers.length })}</div>
-                </div>
+                {/* ⌨️ Klavye ipucu kaldırıldı */}
+                <div className="text-sm" style={{ color: currentTheme.textMuted }}>{t("totalPlayers", { count: kitPlayers.length })}</div>
               </div>
 
               <div className="mb-6 overflow-x-auto">
@@ -1049,7 +1085,6 @@ export default function App() {
                           </tr>
                         </thead>
                         <tbody>
-                          {/* 💀 SKELETON LOADING */}
                           {Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} theme={currentTheme} />)}
                         </tbody>
                       </table>
@@ -1150,7 +1185,6 @@ export default function App() {
                         </table>
                       </div>
                       
-                      {/* 🔄 INFINITE SCROLL TRIGGER */}
                       {displayCount < kitPlayers.length && (
                         <div ref={loadMoreRef} className="py-6 text-center" style={{ borderTop: `1px solid ${currentTheme.border}` }}>
                           {loadingMore ? (
@@ -1225,7 +1259,6 @@ export default function App() {
         </motion.div>
       </AnimatePresence>
 
-      {/* PLAYER MODAL */}
       {selectedPlayer && !shareCardPlayer && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" onClick={() => setSelectedPlayer(null)}>
           <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="relative w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden" style={{ background: `linear-gradient(135deg, ${currentTheme.cardBg}, ${currentTheme.bg})`, border: `1px solid ${currentTheme.border}` }} onClick={e => e.stopPropagation()}>
@@ -1246,7 +1279,6 @@ export default function App() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {/* 🎴 SHARE BUTTON */}
                 <button 
                   onClick={() => setShareCardPlayer(selectedPlayer)} 
                   className="p-2 rounded-xl transition-all hover:scale-110" 
@@ -1299,7 +1331,6 @@ export default function App() {
         </div>
       )}
 
-      {/* 🎴 SHARE CARD MODAL */}
       {shareCardPlayer && (
         <ShareCardModal 
           player={shareCardPlayer} 
@@ -1385,7 +1416,6 @@ export default function App() {
           transition: transform 0.2s ease;
         }
         
-        /* 💀 SKELETON LOADER */
         @keyframes skeletonShimmer {
           0% { opacity: 0.3; }
           50% { opacity: 0.7; }
@@ -1409,12 +1439,6 @@ export default function App() {
         @keyframes skeletonSlide {
           0% { transform: translateX(-100%); }
           100% { transform: translateX(100%); }
-        }
-        
-        kbd {
-          font-family: ui-monospace, monospace;
-          font-size: 10px;
-          border: 1px solid rgba(255,255,255,0.1);
         }
       `}</style>
 
