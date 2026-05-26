@@ -8,9 +8,6 @@ interface Message {
   timestamp: Date;
 }
 
-// ==========================================
-// KALIP SORULAR - 20 KURAL + EK
-// ==========================================
 const kalipSorular = [
   { anahtar: ['nasıl test olucam', 'nasıl test olurum', 'test nasıl olunur', 'nasıl test'], cevap: 'Test olmak için Discord sunucumuzdaki #soru-sor kanalına gidip sorunuzu iletebilirsiniz. 🎯' },
   { anahtar: ['cooldown ne kadar', 'cooldown süresi', 'bekleme süresi', 'cooldown'], cevap: '⏰ 2 gün' },
@@ -55,11 +52,7 @@ function kalipEslesme(mesaj: string): string | null {
   return null;
 }
 
-// ==========================================
-// AI FONKSİYONU - ÇOKLU API DENEMESİ
-// ==========================================
 async function aiyeSor(soru: string): Promise<string> {
-  // 1. Önce OpenRouter dene (proxy ile)
   try {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
@@ -72,10 +65,7 @@ async function aiyeSor(soru: string): Promise<string> {
       body: JSON.stringify({
         model: "google/gemini-2.0-flash-001",
         messages: [
-          { 
-            role: "system", 
-            content: "Sen Abyssal Ocean adlı Minecraft PvP Tierlist sunucusunun yardımcı asistanısın. Türkçe, kısa ve net yanıt ver. Tüm soruları cevapla (sadece minecraft değil, herhangi bir konu olabilir). Emoji kullanabilirsin." 
-          },
+          { role: "system", content: "Sen Abyssal Ocean adlı Minecraft PvP Tierlist sunucusunun yardımcı asistanısın. Türkçe, kısa ve net yanıt ver. Tüm soruları cevapla. Emoji kullanabilirsin." },
           { role: "user", content: soru }
         ],
         max_tokens: 500,
@@ -89,32 +79,23 @@ async function aiyeSor(soru: string): Promise<string> {
         return data.choices[0].message.content;
       }
     }
-    
-    console.log("OpenRouter status:", response.status);
-    const errorData = await response.text();
-    console.log("OpenRouter error:", errorData);
   } catch (error) {
     console.error("OpenRouter hatası:", error);
   }
 
-  // 2. OpenRouter başarısız olursa - Pollinations.ai (ücretsiz, CORS açık)
   try {
-    const promptText = `Sen Abyssal Ocean Minecraft PvP Tierlist asistanısın. Soruyu Türkçe, kısa ve net cevapla. Soru: ${soru}`;
+    const promptText = `Sen Abyssal Ocean Minecraft PvP Tierlist asistanısın. Soruyu Türkçe cevapla. Soru: ${soru}`;
     const encodedPrompt = encodeURIComponent(promptText);
     const response = await fetch(`https://text.pollinations.ai/${encodedPrompt}`);
-    
     if (response.ok) {
       const text = await response.text();
-      if (text && text.length > 0) {
-        return text.trim();
-      }
+      if (text && text.length > 0) return text.trim();
     }
   } catch (error) {
     console.error("Pollinations hatası:", error);
   }
 
-  // 3. Hiçbiri çalışmazsa basit yanıt ver
-  return "🤔 Bu soru hakkında bilgim yok. Daha detaylı yardım için **Discord sunucumuza** katılabilirsin: https://discord.gg/cKFwKcfcWn";
+  return "🤔 Bu soru hakkında bilgim yok. Discord sunucumuza katılabilirsin: https://discord.gg/cKFwKcfcWn";
 }
 
 export default function AIChatBot() {
@@ -123,7 +104,7 @@ export default function AIChatBot() {
     {
       id: "welcome",
       role: "bot",
-      content: "👋 Selam! Ben **Abyssal Ocean** asistanıyım. Tier sistem, kurallar, kitler veya herhangi bir konuda sorun varsa bana yazabilirsin! 🌊",
+      content: "👋 Selam! Ben **Abyssal Ocean** asistanıyım. Sana nasıl yardımcı olabilirim? 🌊",
       timestamp: new Date()
     }
   ]);
@@ -133,12 +114,8 @@ export default function AIChatBot() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   useEffect(() => {
@@ -163,7 +140,6 @@ export default function AIChatBot() {
     setIsLoading(true);
 
     const kalipCevap = kalipEslesme(trimmed);
-    
     let botCevap: string;
     if (kalipCevap) {
       await new Promise(resolve => setTimeout(resolve, 400));
@@ -180,10 +156,7 @@ export default function AIChatBot() {
     };
     setMessages(prev => [...prev, botMsg]);
     setIsLoading(false);
-
-    if (!isOpen) {
-      setUnreadCount(prev => prev + 1);
-    }
+    if (!isOpen) setUnreadCount(prev => prev + 1);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -193,12 +166,7 @@ export default function AIChatBot() {
     }
   };
 
-  const hizliSorular = [
-    "Cooldown ne kadar?",
-    "Makro yasak mı?",
-    "Re-test nedir?",
-    "Puanlama nasıl?"
-  ];
+  const hizliSorular = ["Cooldown ne kadar?", "Makro yasak mı?", "Re-test nedir?", "Puanlama nasıl?"];
 
   return (
     <>
@@ -207,7 +175,7 @@ export default function AIChatBot() {
         animate={{ scale: 1, rotate: 0 }}
         transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.5 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-[200] w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 shadow-2xl shadow-cyan-500/50 flex items-center justify-center hover:scale-110 transition-transform group"
+        className="fixed bottom-6 right-6 z-[200] w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 shadow-2xl shadow-cyan-500/50 flex items-center justify-center hover:scale-110 transition-transform"
       >
         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 animate-ping opacity-20" />
         <div className="relative">
@@ -240,26 +208,22 @@ export default function AIChatBot() {
             className="fixed bottom-24 right-6 z-[199] w-[calc(100vw-3rem)] sm:w-[400px] h-[600px] max-h-[calc(100vh-8rem)] bg-gradient-to-br from-[#0f141b] to-[#0a0e14] rounded-3xl border border-white/10 shadow-2xl flex flex-col overflow-hidden"
           >
             <div className="relative p-4 border-b border-white/10 bg-gradient-to-r from-cyan-600/20 to-blue-600/20">
-              <div className="absolute top-0 right-0 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl" />
-              <div className="relative flex items-center gap-3">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full blur-md opacity-60" />
-                  <div className="relative w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-2xl">
-                    🤖
-                  </div>
+              <div className="flex items-center gap-3">
+                <div className="relative w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-2xl">
+                  🤖
                   <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-[#0f141b] animate-pulse" />
                 </div>
                 <div className="flex-1">
                   <h3 className="font-bold text-white">Abyssal AI</h3>
                   <p className="text-xs text-cyan-400 flex items-center gap-1">
                     <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                    Çevrimiçi • Sana yardım edebilir
+                    Çevrimiçi
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {messages.map((msg) => (
                 <motion.div
                   key={msg.id}
@@ -268,21 +232,11 @@ export default function AIChatBot() {
                   className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div className={`flex items-start gap-2 max-w-[85%] ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
-                    <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm ${
-                      msg.role === "user"
-                        ? "bg-gradient-to-br from-purple-500 to-pink-500"
-                        : "bg-gradient-to-br from-cyan-500 to-blue-600"
-                    }`}>
+                    <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm ${msg.role === "user" ? "bg-gradient-to-br from-purple-500 to-pink-500" : "bg-gradient-to-br from-cyan-500 to-blue-600"}`}>
                       {msg.role === "user" ? "👤" : "🤖"}
                     </div>
-                    <div className={`relative px-4 py-2.5 rounded-2xl ${
-                      msg.role === "user"
-                        ? "bg-gradient-to-br from-cyan-500 to-blue-600 text-white rounded-tr-sm"
-                        : "bg-[#1a1f2e] text-white/90 rounded-tl-sm border border-white/5"
-                    }`}>
-                      <div className="text-sm leading-relaxed whitespace-pre-wrap break-words">
-                        {msg.content}
-                      </div>
+                    <div className={`px-4 py-2.5 rounded-2xl ${msg.role === "user" ? "bg-gradient-to-br from-cyan-500 to-blue-600 text-white rounded-tr-sm" : "bg-[#1a1f2e] text-white/90 rounded-tl-sm border border-white/5"}`}>
+                      <div className="text-sm leading-relaxed whitespace-pre-wrap break-words">{msg.content}</div>
                       <div className={`text-[10px] mt-1 ${msg.role === "user" ? "text-white/70" : "text-white/40"}`}>
                         {msg.timestamp.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}
                       </div>
@@ -292,22 +246,19 @@ export default function AIChatBot() {
               ))}
 
               {isLoading && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
+                <div className="flex justify-start">
                   <div className="flex items-start gap-2">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-sm">
-                      🤖
-                    </div>
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-sm">🤖</div>
                     <div className="bg-[#1a1f2e] border border-white/5 rounded-2xl rounded-tl-sm px-4 py-3">
                       <div className="flex gap-1">
-                        <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                        <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" />
                         <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
                         <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               )}
-
               <div ref={messagesEndRef} />
             </div>
 
@@ -316,11 +267,7 @@ export default function AIChatBot() {
                 <p className="text-xs text-white/40 mb-2">💡 Hızlı sorular:</p>
                 <div className="flex flex-wrap gap-2">
                   {hizliSorular.map((soru) => (
-                    <button
-                      key={soru}
-                      onClick={() => sendMessage(soru)}
-                      className="text-xs px-3 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 rounded-full text-cyan-400 transition-all hover:scale-105"
-                    >
+                    <button key={soru} onClick={() => sendMessage(soru)} className="text-xs px-3 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 rounded-full text-cyan-400 transition-all hover:scale-105">
                       {soru}
                     </button>
                   ))}
@@ -338,21 +285,19 @@ export default function AIChatBot() {
                   onKeyDown={handleKeyDown}
                   placeholder="Bir soru sor..."
                   disabled={isLoading}
-                  className="flex-1 px-4 py-3 bg-[#1a1f2e] border border-white/10 rounded-xl text-sm text-white placeholder-white/30 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all disabled:opacity-50"
+                  className="flex-1 px-4 py-3 bg-[#1a1f2e] border border-white/10 rounded-xl text-sm text-white placeholder-white/30 focus:outline-none focus:border-cyan-500/50 disabled:opacity-50"
                 />
                 <button
                   onClick={() => sendMessage()}
                   disabled={!input.trim() || isLoading}
-                  className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center hover:scale-105 transition-all shadow-lg shadow-cyan-500/30 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center hover:scale-105 transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                   </svg>
                 </button>
               </div>
-              <p className="text-[10px] text-white/30 text-center mt-2">
-                ⚡ Powered by Abyssal Ocean AI
-              </p>
+              <p className="text-[10px] text-white/30 text-center mt-2">⚡ Powered by Abyssal Ocean AI</p>
             </div>
           </motion.div>
         )}
