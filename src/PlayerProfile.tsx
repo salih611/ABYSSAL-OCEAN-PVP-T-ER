@@ -272,7 +272,7 @@ export default function PlayerProfile() {
               </div>
             </div>
 
-            {/* Paylaş Butonları */}
+            {/* Paylaş Butonları. */}
             <div className="flex flex-wrap gap-3">
               <button onClick={sharePlayer} className="flex-1 px-4 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl font-bold hover:scale-105 transition-all shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2">
                 📤 <span>Profili Paylaş</span>
