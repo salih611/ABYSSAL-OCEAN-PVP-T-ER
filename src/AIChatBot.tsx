@@ -9,28 +9,169 @@ interface Message {
 }
 
 // ==========================================
-// DISCORD BOTUNDAKİ AYNI KALIP SORULAR
+// KALIP SORULAR - 20 SORU + DİSCORD BOT SORULARI
 // ==========================================
 const kalipSorular = [
+  // ===== DISCORD BOT KALIPLARI =====
   { 
-    anahtar: ['nasıl test olucam', 'nasıl test olurum', 'test nasıl olunur'], 
-    cevap: 'Test olmak için Discord sunucumuzdaki #soru-sor kanalına gidip sorunuzu iletebilirsiniz.' 
+    anahtar: ['nasıl test olucam', 'nasıl test olurum', 'test nasıl olunur', 'nasıl test'], 
+    cevap: 'Test olmak için Discord sunucumuzdaki #soru-sor kanalına gidip sorunuzu iletebilirsiniz. 🎯' 
   },
   { 
-    anahtar: ['cooldown ne kadar', 'cooldown süresi', 'bekleme süresi'], 
-    cevap: '2 gün' 
+    anahtar: ['cooldown ne kadar', 'cooldown süresi', 'bekleme süresi', 'cooldown'], 
+    cevap: '⏰ 2 gün' 
   },
   { 
-    anahtar: ['partnerlik', 'iş birliği'], 
-    cevap: 'ticket açarsanız yetkililerimiz ilgilenicektirler' 
+    anahtar: ['partnerlik', 'iş birliği', 'partner'], 
+    cevap: '🤝 Ticket açarsanız yetkililerimiz ilgilenecektir.' 
   },
   { 
-    anahtar: ['sıradayım ne zaman', 'sıra ne zaman gelir'], 
-    cevap: 'testerlerimiz sırayla ilerliyor lütfen sıranızı bekleyin' 
+    anahtar: ['sıradayım ne zaman', 'sıra ne zaman gelir', 'sırada bekliyorum'], 
+    cevap: '⏳ Testerlerimiz sırayla ilerliyor, lütfen sıranızı bekleyin.' 
   },
+  
+  // ===== 20 KURAL SORUSU =====
+  
+  // 1. Makro / Auto-Clicker
   { 
-    anahtar: ['makro', 'auto-clicker', 'autoclicker'], 
-    cevap: 'Tespiti halinde oyuncu sunucudan kalıcı olarak uzaklaştırılır.' 
+    anahtar: ['makro', 'auto-clicker', 'autoclicker', 'auto clicker', 'oto clicker', 'otomatik tıklama'], 
+    cevap: '🚫 **Makro/Auto-Clicker Cezası:**\nTespiti halinde oyuncu sunucudan **kalıcı olarak uzaklaştırılır** ve tüm tier kayıtları silinir.' 
+  },
+  
+  // 2. Clean
+  { 
+    anahtar: ['clean', 'arkadan vurmak', 'savaştan çıkan', 'az canlı vurmak'], 
+    cevap: '⚔️ **Clean Kuralı:**\nHayır, resmi turnuva ve tier maçlarında **yasaktır**; FFA (Free For All) alanlarında **serbesttir**.' 
+  },
+  
+  // 3. Hakaret / Mute
+  { 
+    anahtar: ['hakaret', 'küfür', 'mute', 'sövme', 'argo'], 
+    cevap: '🤐 **Hakaret Cezası:**\nİlk ihlalde **geçici mute**, tekrarı halinde tier maçlarından **men edilme** cezası verilir.' 
+  },
+  
+  // 4. Cross-Teaming
+  { 
+    anahtar: ['cross-teaming', 'cross teaming', 'crossteam', 'birleşmek', 'takım kurmak', 'beraber saldırmak'], 
+    cevap: '🚫 **Cross-Teaming:**\nEvet, takım modları dışındaki tüm bireysel tier maçlarında **tamamen yasaktır**.' 
+  },
+  
+  // 5. SS Süresi
+  { 
+    anahtar: ['ss süresi', 'screen share süre', 'ekran kontrolü süre', 'ss kaç dakika', 'ss ne kadar'], 
+    cevap: '⏱️ **SS Çağrı Süresi:**\nÇağrı yapıldığı andan itibaren oyuncunun sese gelmesi ve ekran açması için **maksimum 3 dakikası** vardır.' 
+  },
+  
+  // 6. SS Reddi
+  { 
+    anahtar: ['ss reddetmek', 'ss reddi', 'ss kabul etmemek', 'alt f4', 'ekran açmamak', 'ss kaçmak'], 
+    cevap: '🚨 **SS Reddi:**\nDoğrudan **hile kullanımı (Anında Ban)** olarak değerlendirilir ve sunucudan yasaklanır.' 
+  },
+  
+  // 7. Combat Log
+  { 
+    anahtar: ['combat log', 'combatlog', 'maçtan çıkmak', 'kasıtlı çıkış', 'oyundan çıkmak'], 
+    cevap: '⚠️ **Combat Log Cezası:**\nO maç direkt **hükmen mağlubiyet** sayılır ve oyuncuya **geçici süreyle maç banı** atılır.' 
+  },
+  
+  // 8. Hileye Yataklık
+  { 
+    anahtar: ['hileli arkadaş', 'hile saklamak', 'hileliyi almak', 'yataklık', 'hile koruma'], 
+    cevap: '🚫 **Hileye Yataklık:**\nEvet, hileye yataklık etmek de hile kullanımıyla aynı cezai yaptırımı **(ban)** gerektirir.' 
+  },
+  
+  // 9. Regedit / Hit Değiştirici
+  { 
+    anahtar: ['regedit', 'hit değiştirici', 'ağ programı', 'paket düzenleyici', 'wireshark', 'hit reg'], 
+    cevap: '🚫 **Regedit / Hit Değiştirici:**\nHayır, oyun dosyalarına veya internet paketlerine müdahale eden **tüm haksız avantaj sağlayan yazılımlar yasaktır**.' 
+  },
+  
+  // 10. Ban Evading / Alt Account
+  { 
+    anahtar: ['alt hesap', 'yan hesap', 'ban evading', 'banevading', 'bandan kaçmak', 'ikinci hesap'], 
+    cevap: '🚫 **Ban Evading:**\nTespit edilen **tüm yan hesaplar ve ana hesap** sunucudan kalıcı olarak uzaklaştırılır.' 
+  },
+  
+  // 11. Tier Up Şartı
+  { 
+    anahtar: ['tier up', 'tier atlama', 'tier yükseltme', 'tier nasıl atlanır', 'win rate'], 
+    cevap: '📈 **Tier Up Şartı:**\nKendi tierindeki oyunculara karşı **yüksek bir kazanma oranına (Win Rate)** sahip olmak.' 
+  },
+  
+  // 12. Tier Test Nedir
+  { 
+    anahtar: ['tier test nedir', 'tier test ne', 'test maçı nedir', 'tester kim'], 
+    cevap: '🧪 **Tier Test:**\nOyuncunun mekanik seviyesini resmi olarak ölçen ve sadece yetkili **"Tester" kadrosu gözetiminde** yapılan maçtır.' 
+  },
+  
+  // 13. Tier İtiraz
+  { 
+    anahtar: ['tier itiraz', 'sonuca itiraz', 'pov', 'itiraz etmek', 'ekran kaydı'], 
+    cevap: '📹 **Tier İtiraz:**\nKendi aldığı **kesintisiz ekran kaydını (POV)** destek talebi açarak kanıt olarak sunmalıdır.' 
+  },
+  
+  // 14. Re-Test
+  { 
+    anahtar: ['re-test', 'retest', 're test', 'yeniden test', 'tekrar test'], 
+    cevap: '🔄 **Re-Test Şartları:**\nİlk testte kanıtlanabilir bir **lag/bağlantı sorunu** yaşandıysa veya **itiraz videosu haklı bulunduysa** verilir.' 
+  },
+  
+  // 15. Tier Down
+  { 
+    anahtar: ['tier down', 'tier düşmek', 'tier düşüşü', 'inaktif', 'sürekli kaybediyorum'], 
+    cevap: '📉 **Tier Down:**\nBelirli bir süre aktif olmayan veya sürekli yenilen oyuncular **"Tier Down" (Tier düşüşü)** yaşar.' 
+  },
+  
+  // 16. Günde Kaç Test
+  { 
+    anahtar: ['günde kaç test', 'günlük test', 'kaç kere test', 'günde kaç kez'], 
+    cevap: '📅 **Günlük Test Hakkı:**\nYoğunluğu önlemek adına her oyuncunun günde **en fazla 1 kez** resmi test talep etme hakkı vardır.' 
+  },
+  
+  // 17. Tester Haksızlığı
+  { 
+    anahtar: ['tester haksız', 'tester taraflı', 'tester adaletsiz', 'haksız puanlama'], 
+    cevap: '⚖️ **Haksız Tester:**\nYetkisi **kalıcı olarak alınır**, kara listeye eklenir ve etkilenen maçlar iptal edilerek **yeniden yapılır**.' 
+  },
+  
+  // 18. Elo Boosting
+  { 
+    anahtar: ['elo boost', 'boost', 'hesap kastırmak', 'boosting', 'kasma'], 
+    cevap: '🚫 **Elo Boosting:**\nKesinlikle yasaktır; tespit edildiğinde **hesap sahibinin tieri sıfırlanır**.' 
+  },
+  
+  // 19. Sıralama Yeri
+  { 
+    anahtar: ['sıralama nerede', 'tier list nerede', 'rankings', 'sıralama nasıl', 'tier listesi'], 
+    cevap: '🏆 **Sıralama:**\nÖzel bir **#tier-list veya #rankings** kanalında, oyunculara verilen özel Discord rolleriyle gösterilir. Ayrıca bu sitenin **Rankings** sayfasından da görebilirsin!' 
+  },
+  
+  // 20. Pause / Lag
+  { 
+    anahtar: ['pause', 'duraklatma', 'lag bahanesi', 'maç durdurmak', 'ping yüksek'], 
+    cevap: '⏸️ **Pause/Lag:**\nResmi maçlarda pause/duraklatma talebi **kabul edilmez**. Maç başlamadan önce bağlantı sorunlarınızı çözmelisiniz.' 
+  },
+  
+  // ===== EK YARDIMCI KALIPLAR =====
+  {
+    anahtar: ['puanlama', 'puan sistemi', 'kaç puan', 'puan nasıl'],
+    cevap: '📊 **Puanlama Sistemi:**\n• HT1: 60p | LT1: 44p\n• HT2: 28p | LT2: 16p\n• HT3: 10p | LT3: 6p\n• HT4: 4p | LT4: 3p\n• HT5: 2p | LT5: 1p'
+  },
+  {
+    anahtar: ['kaç kit', 'hangi kitler', 'kit listesi', 'kitler neler'],
+    cevap: '⚔️ **8 Kit Mevcut:**\n🌿 Vanilla | ⚔️ Sword | 🪓 Axe | 🌌 NethOP\n🧪 Pot | 🍎 UHC | 🌿 SMP | 🔨 Mace'
+  },
+  {
+    anahtar: ['discord', 'sunucu link', 'discord link', 'sunucuya katıl'],
+    cevap: '🎮 **Discord:** https://discord.gg/cKFwKcfcWn'
+  },
+  {
+    anahtar: ['tester nasıl olunur', 'tester olmak', 'tester başvuru'],
+    cevap: '🛡️ **Tester Başvurusu:**\nDiscord sunucumuzda ticket açıp **Tester Başvurusu** seçeneğini kullanabilirsin.'
+  },
+  {
+    anahtar: ['merhaba', 'selam', 'slm', 'sa', 'selamün aleyküm'],
+    cevap: '👋 Selam! Ben **Abyssal Ocean** asistanıyım. Sana nasıl yardımcı olabilirim?'
   }
 ];
 
@@ -46,7 +187,7 @@ function kalipEslesme(mesaj: string): string | null {
 }
 
 // ==========================================
-// DISCORD BOTUNDAKİ AYNI AI FONKSİYONU
+// OPENROUTER AI (KALIP YOKSA AI'YA SOR)
 // ==========================================
 async function internetteAraVeCevapla(soru: string): Promise<string> {
   try {
@@ -91,7 +232,7 @@ export default function AIChatBot() {
     {
       id: "welcome",
       role: "bot",
-      content: "👋 Selam! Ben **Abyssal Ocean** asistanıyım. Tier sistem, kitler, kurallar veya başka bir konuda sorun varsa bana yazabilirsin! 🌊",
+      content: "👋 Selam! Ben **Abyssal Ocean** asistanıyım. Tier sistem, kurallar, kitler veya başka herhangi bir konuda sorun varsa bana yazabilirsin! 🌊",
       timestamp: new Date()
     }
   ]);
@@ -116,9 +257,9 @@ export default function AIChatBot() {
     }
   }, [isOpen]);
 
-  // Discord botundaki AYNI mantık
-  const sendMessage = async () => {
-    const trimmed = input.trim();
+  // Discord botundaki AYNI MANTIK: Önce kalıp → sonra AI
+  const sendMessage = async (customInput?: string) => {
+    const trimmed = (customInput || input).trim();
     if (!trimmed || isLoading) return;
 
     const userMsg: Message = {
@@ -131,15 +272,16 @@ export default function AIChatBot() {
     setInput("");
     setIsLoading(true);
 
-    // 1. ÖNCE KALIP SORU KONTROLÜ (Discord botundaki gibi)
+    // 1. ÖNCE KALIP SORU KONTROLÜ
     const kalipCevap = kalipEslesme(trimmed);
     
     let botCevap: string;
     if (kalipCevap) {
-      // Kalıp bulundu, direkt cevap ver
+      // Kalıp bulundu, direkt cevap ver (ufak bir gecikme ile doğal göster)
+      await new Promise(resolve => setTimeout(resolve, 400));
       botCevap = kalipCevap;
     } else {
-      // 2. KALIP YOKSA AI'YA SOR (Discord botundaki gibi)
+      // 2. KALIP YOKSA AI'YA SOR
       botCevap = await internetteAraVeCevapla(trimmed);
     }
 
@@ -165,10 +307,10 @@ export default function AIChatBot() {
   };
 
   const hizliSorular = [
-    "Nasıl test olurum?",
     "Cooldown ne kadar?",
-    "Partnerlik nasıl?",
-    "Makro yasak mı?"
+    "Makro yasak mı?",
+    "Re-test nedir?",
+    "Cross-teaming yasak mı?"
   ];
 
   return (
@@ -298,14 +440,7 @@ export default function AIChatBot() {
                   {hizliSorular.map((soru) => (
                     <button
                       key={soru}
-                      onClick={() => {
-                        setInput(soru);
-                        setTimeout(() => {
-                          const event = new KeyboardEvent('keydown', { key: 'Enter' });
-                          inputRef.current?.dispatchEvent(event);
-                          sendMessage();
-                        }, 50);
-                      }}
+                      onClick={() => sendMessage(soru)}
                       className="text-xs px-3 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 rounded-full text-cyan-400 transition-all hover:scale-105"
                     >
                       {soru}
@@ -329,7 +464,7 @@ export default function AIChatBot() {
                   className="flex-1 px-4 py-3 bg-[#1a1f2e] border border-white/10 rounded-xl text-sm text-white placeholder-white/30 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all disabled:opacity-50"
                 />
                 <button
-                  onClick={sendMessage}
+                  onClick={() => sendMessage()}
                   disabled={!input.trim() || isLoading}
                   className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center hover:scale-105 transition-all shadow-lg shadow-cyan-500/30 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
