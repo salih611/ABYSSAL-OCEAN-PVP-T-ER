@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import AIChatBot from "./AIChatBot";
 
 interface Player {
   id: string;
@@ -640,7 +641,6 @@ export default function App() {
                           </thead>
                           <tbody className="divide-y divide-white/[0.03]">
                             {currentPlayers.map((player, idx) => {
-                              // Görüntülenecek sıra
                               const displayRank = sortType === "rank" 
                                 ? player.rank 
                                 : (currentPageRank - 1) * playersPerPage + idx + 1;
@@ -880,6 +880,9 @@ export default function App() {
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
       `}</style>
+
+      {/* AI Chat Bot - Sağ alt köşede */}
+      <AIChatBot />
     </div>
   );
 }
