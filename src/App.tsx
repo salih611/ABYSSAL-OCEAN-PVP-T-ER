@@ -114,7 +114,6 @@ const TIER_COLORS: Record<string, string> = {
 
 const KIT_ORDER: KitKey[] = ["overall", "vanilla", "sword", "axe", "nethpot", "pot", "uhc", "mace", "smp"];
 
-// Tier metnini temizle - sadece HT1/LT3 gibi kısaltma kalsın
 const cleanTier = (tier: string | undefined | null): string | null => {
   if (!tier) return null;
   let cleaned = String(tier).replace(/Crystal\s+/gi, "").trim();
@@ -126,14 +125,12 @@ const cleanTier = (tier: string | undefined | null): string | null => {
   return null;
 };
 
-// Bir tier'ın puanını hesapla
 const getTierPoints = (tier: string | undefined | null): number => {
   const cleaned = cleanTier(tier);
   if (!cleaned) return 0;
   return TIER_POINTS[cleaned] || 0;
 };
 
-// Oyuncunun toplam puanını tierlerinden hesapla
 const calculateTotalPoints = (tiers: Record<string, string>): number => {
   if (!tiers) return 0;
   let total = 0;
@@ -180,7 +177,6 @@ const DiscordIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-// Su baloncukları - ÇOK İNCE, SAYDAM
 const Bubbles = () => {
   const bubbles = useMemo(() => Array.from({ length: 20 }, (_, i) => ({
     id: i,
@@ -247,7 +243,6 @@ export default function App() {
       if (data.result) {
         rawPlayers = JSON.parse(data.result);
         
-        // Puanları otomatik hesapla
         rawPlayers = rawPlayers.map(p => ({
           ...p,
           tiers: p.tiers || {},
@@ -255,10 +250,8 @@ export default function App() {
           totalPoints: calculateTotalPoints(p.tiers || {})
         }));
         
-        // Puana göre sırala (TR oyuncular için ayrı rank verilecek)
         rawPlayers.sort((a, b) => b.totalPoints - a.totalPoints);
         
-        // TR oyunculara kendi sıralamasını ver
         let trRank = 0;
         rawPlayers = rawPlayers.map(p => {
           if (p.region === "TR") {
@@ -296,7 +289,6 @@ export default function App() {
       );
     }
     
-    // Sıralama
     if (sortType === "points") {
       filtered.sort((a, b) => b.totalPoints - a.totalPoints);
     } else if (sortType === "name") {
@@ -304,7 +296,6 @@ export default function App() {
     } else if (sortType === "tests") {
       filtered.sort((a, b) => (b.tests || 0) - (a.tests || 0));
     } else {
-      // rank
       filtered.sort((a, b) => a.rank - b.rank);
     }
     
@@ -328,7 +319,6 @@ export default function App() {
     currentPageRank * playersPerPage
   );
 
-  // Sıralama veya kit değişince sayfa 1'e dön
   useEffect(() => {
     setCurrentPageRank(1);
   }, [sortType, selectedKit, searchQuery]);
