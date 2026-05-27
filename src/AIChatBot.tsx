@@ -58,7 +58,7 @@ async function aiyeSor(soru: string): Promise<string> {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer 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",
+        "Authorization": "Bearer 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",
         "HTTP-Referer": "https://abyssal-ocean.vercel.app",
         "X-Title": "Abyssal Ocean Tier List"
       },
