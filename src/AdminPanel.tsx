@@ -6,7 +6,7 @@ const UPSTASH_URL = 'https://adequate-loon-101577.upstash.io';
 const UPSTASH_TOKEN = 'gQAAAAAAAYzJAAIgcDJhOWJiYWFhM2M2MmE0NThkYTJiMjZjZmM3ZDcxZWMwNA';
 
 // 🔐 ADMİN ŞİFRESİ - DEĞİŞTİR!
-const ADMIN_PASSWORD = "abyssal2025";
+const ADMIN_PASSWORD = "yunun123";
 
 const KITS = ["vanilla", "sword", "axe", "nethpot", "pot", "uhc", "smp", "mace"];
 const TIERS = ["HT1", "LT1", "HT2", "LT2", "HT3", "LT3", "HT4", "LT4", "HT5", "LT5"];
