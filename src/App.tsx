@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import html2canvas from "html2canvas";
 import AIChatBot from "./AIChatBot";
 
 interface Player {
@@ -351,32 +352,63 @@ const SkeletonRow = ({ theme }: { theme: typeof THEMES[ThemeKey] }) => (
   </tr>
 );
 
+// 🔥 GÜNCELLENDİ: PNG İNDİRME + LİNK KOPYALA (DİREKT PROFİL AÇAR)
 const ShareCardModal = ({ player, theme, t, onClose }: { 
   player: Player; theme: typeof THEMES[ThemeKey]; t: (key: string) => string; onClose: () => void;
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
+  // 🔥 GERÇEK PNG İNDİRME (1. fotodaki gibi)
   const downloadCard = async () => {
     if (!cardRef.current) return;
+    setDownloading(true);
     try {
-      const card = cardRef.current;
-      const html = card.outerHTML;
-      const blob = new Blob([`<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{margin:0;padding:20px;background:#0a0e14;font-family:system-ui;}</style></head><body>${html}</body></html>`], { type: 'text/html' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${player.minecraftNick || player.username}-card.html`;
-      link.click();
-      URL.revokeObjectURL(url);
-    } catch (e) { console.error(e); }
+      const canvas = await html2canvas(cardRef.current, {
+        backgroundColor: null,
+        scale: 3,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+      });
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          setDownloading(false);
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${player.minecraftNick || player.username}-abyssal-ocean.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        setDownloading(false);
+      }, 'image/png', 1.0);
+    } catch (e) { 
+      console.error('İndirme hatası:', e); 
+      setDownloading(false);
+      alert('İndirme başarısız! Tekrar deneyin.');
+    }
   };
 
   const copyLink = () => {
     const url = `${window.location.origin}?player=${player.id}`;
-    navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {
+      const textarea = document.createElement('textarea');
+      textarea.value = url;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
   };
 
   return (
@@ -396,7 +428,7 @@ const ShareCardModal = ({ player, theme, t, onClose }: {
             }}></div>
           </div>
           <div className="px-6 -mt-16 relative">
-            <img src={player.avatar} alt="" className="w-32 h-32 rounded-2xl ring-4 shadow-2xl mx-auto"
+            <img src={player.avatar} alt="" crossOrigin="anonymous" className="w-32 h-32 rounded-2xl ring-4 shadow-2xl mx-auto"
               style={{ boxShadow: `0 0 0 4px ${theme.bg}, 0 20px 60px ${theme.primary}40` }}
               onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/128`; }} />
           </div>
@@ -437,9 +469,18 @@ const ShareCardModal = ({ player, theme, t, onClose }: {
           </div>
         </div>
         <div className="flex gap-2 mt-4">
-          <button onClick={downloadCard} className={`flex-1 py-3 rounded-xl font-bold bg-gradient-to-r ${theme.primaryGradient} text-white transition-all hover:scale-105 shadow-lg flex items-center justify-center gap-2 text-sm md:text-base`}>
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-            {t("downloadCard")}
+          <button onClick={downloadCard} disabled={downloading} className={`flex-1 py-3 rounded-xl font-bold bg-gradient-to-r ${theme.primaryGradient} text-white transition-all hover:scale-105 shadow-lg flex items-center justify-center gap-2 text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed`}>
+            {downloading ? (
+              <>
+                <div className="w-5 h-5 rounded-full border-2 border-white border-r-transparent animate-spin"></div>
+                İndiriliyor...
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                {t("downloadCard")}
+              </>
+            )}
           </button>
           <button onClick={copyLink} className="flex-1 py-3 rounded-xl font-bold transition-all hover:scale-105 shadow-lg flex items-center justify-center gap-2 text-sm md:text-base"
             style={{ background: theme.cardBg, color: theme.text, border: `1px solid ${theme.border}` }}>
@@ -646,6 +687,20 @@ export default function App() {
     const interval = setInterval(fetchPlayers, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  // 🔥 YENİ EKLENDİ: URL'den ?player=ID okuyup direkt profili açar
+  useEffect(() => {
+    if (players.length === 0) return;
+    const urlParams = new URLSearchParams(window.location.search);
+    const playerId = urlParams.get('player');
+    if (playerId) {
+      const foundPlayer = players.find(p => p.id === playerId || p.discordId === playerId);
+      if (foundPlayer) {
+        setCurrentPage("rankings");
+        setSelectedPlayer(foundPlayer);
+      }
+    }
+  }, [players]);
 
   const regionPlayers = useMemo(() => players.filter(p => p.region === selectedRegion), [players, selectedRegion]);
 
