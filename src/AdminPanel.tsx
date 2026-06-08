@@ -269,9 +269,6 @@ export default function AdminPanel() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0f1c] via-[#0c1222] to-[#0f1629] text-white">
-      {/* Arka plan deseni */}
-      <div className="fixed inset-0 opacity-5 pointer-events-none bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M30 0 L60 30 L30 60 L0 30 Z" fill="none" stroke="%23ffffff" stroke-width="0.5"/%3E%3C/svg%3E')]"></div>
-
       {/* HEADER - glassmorphism */}
       <header className="sticky top-0 z-40 bg-[#0a0f1c]/80 backdrop-blur-xl border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -649,7 +646,7 @@ export default function AdminPanel() {
                                   </svg>
                                 </button>
                               </div>
-                             </td>
+                            </td>
                           </motion.tr>
                         ))}
                         {filtered.length === 0 && (
@@ -660,7 +657,7 @@ export default function AdminPanel() {
                           </tr>
                         )}
                       </tbody>
-                     </table>
+                    </table>
                   </div>
                 </div>
               )}
