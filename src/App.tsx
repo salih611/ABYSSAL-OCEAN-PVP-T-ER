@@ -189,45 +189,45 @@ const TRANSLATIONS: Record<LangKey, Record<string, string>> = {
 };
 
 const KITS: Record<string, { ad: string; icon: JSX.Element; color: string; description: Record<LangKey, string>; detail: Record<LangKey, string> }> = {
-  vanilla: { 
-    ad: "Vanilla", icon: <img src="https://www.tierslist.net/tier_icons/vanilla.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#fbbf24", 
+  vanilla: {
+    ad: "Vanilla", icon: <img src="https://www.tierslist.net/tier_icons/vanilla.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#fbbf24",
     description: { tr: "Saf Yetenek Savaşı", en: "Pure Skill Battle", de: "Reiner Skill-Kampf" },
-    detail: { tr: "Hiçbir ekipman yok, sadece yumruklarınla rakibini alt et. Refleks, taktik ve cesaret testi!", en: "No equipment, defeat your opponent with just your fists. Reflex, tactics and courage test!", de: "Keine Ausrüstung, besiege deinen Gegner nur mit deinen Fäusten." }
+    detail: { tr: "Hiçbir ekipman yok, sadece yumruklarınla rakibini alt et.", en: "No equipment, defeat your opponent with just your fists.", de: "Keine Ausrüstung, besiege deinen Gegner nur mit deinen Fäusten." }
   },
-  sword: { 
-    ad: "Sword", icon: <img src="https://www.tierslist.net/tier_icons/sword.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#60a5fa", 
+  sword: {
+    ad: "Sword", icon: <img src="https://www.tierslist.net/tier_icons/sword.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#60a5fa",
     description: { tr: "Kılıç Ustalığı", en: "Sword Mastery", de: "Schwertbeherrschung" },
     detail: { tr: "Klasik kılıç savaşı! Combo, timing ve crit vuruşların ustalığını sergile.", en: "Classic sword battle! Show your mastery of combos, timing and crit hits.", de: "Klassischer Schwertkampf!" }
   },
-  axe: { 
-    ad: "Axe", icon: <img src="https://www.tierslist.net/tier_icons/axe.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#a78bfa", 
+  axe: {
+    ad: "Axe", icon: <img src="https://www.tierslist.net/tier_icons/axe.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#a78bfa",
     description: { tr: "Ağır Darbe Sanatı", en: "Heavy Strike Art", de: "Schwere Schlagkunst" },
     detail: { tr: "Yüksek hasar, kalkan kırma! Stratejik vuruşlarla rakibinin savunmasını çök.", en: "High damage, shield breaking!", de: "Hoher Schaden, Schildbruch!" }
   },
-  nethpot: { 
-    ad: "NethOP", icon: <img src="https://www.tierslist.net/tier_icons/nethop.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#ec4899", 
+  nethpot: {
+    ad: "NethOP", icon: <img src="https://www.tierslist.net/tier_icons/nethop.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#ec4899",
     description: { tr: "Netherite Üstünlüğü", en: "Netherite Supremacy", de: "Netherite-Vorherrschaft" },
-    detail: { tr: "En güçlü zırh ve silahlarla efsanevi savaşlar. Pot kullanımı ve OP gear yönetimi şart!", en: "Legendary battles with the strongest armor.", de: "Legendäre Kämpfe mit stärkster Rüstung." }
+    detail: { tr: "En güçlü zırh ve silahlarla efsanevi savaşlar.", en: "Legendary battles with the strongest armor.", de: "Legendäre Kämpfe mit stärkster Rüstung." }
   },
-  pot: { 
-    ad: "Pot", icon: <img src="https://www.tierslist.net/tier_icons/pot.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#f43f5e", 
+  pot: {
+    ad: "Pot", icon: <img src="https://www.tierslist.net/tier_icons/pot.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#f43f5e",
     description: { tr: "Pot PvP Sanatı", en: "Pot PvP Art", de: "Trank-PvP Kunst" },
     detail: { tr: "Şifa iksirleri, hız ve güç potions! Hızlı refleks ve pot yönetimi ustalığı.", en: "Healing potions, speed and power potions!", de: "Heiltränke, Geschwindigkeit!" }
   },
-  uhc: { 
-    ad: "UHC", icon: <img src="https://www.tierslist.net/tier_icons/uhc.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#ef4444", 
+  uhc: {
+    ad: "UHC", icon: <img src="https://www.tierslist.net/tier_icons/uhc.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#ef4444",
     description: { tr: "Ultra Hardcore", en: "Ultra Hardcore", de: "Ultra Hardcore" },
-    detail: { tr: "Doğal yenilenme yok! Golden apple ile hayatta kal, her vuruş kritik önem taşır.", en: "No natural regen! Survive with golden apples.", de: "Keine natürliche Regeneration!" }
+    detail: { tr: "Doğal yenilenme yok! Golden apple ile hayatta kal.", en: "No natural regen! Survive with golden apples.", de: "Keine natürliche Regeneration!" }
   },
-  smp: { 
-    ad: "SMP", icon: <img src="https://www.tierslist.net/tier_icons/smp.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#22c55e", 
+  smp: {
+    ad: "SMP", icon: <img src="https://www.tierslist.net/tier_icons/smp.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#22c55e",
     description: { tr: "Survival Multiplayer", en: "Survival Multiplayer", de: "Survival Multiplayer" },
-    detail: { tr: "Gerçek survival deneyimi! Crystal, totem, elytra - tüm modern SMP araçlarıyla savaş.", en: "Real survival experience!", de: "Echtes Survival-Erlebnis!" }
+    detail: { tr: "Gerçek survival deneyimi! Crystal, totem, elytra ile savaş.", en: "Real survival experience!", de: "Echtes Survival-Erlebnis!" }
   },
-  mace: { 
-    ad: "Mace", icon: <img src="https://www.tierslist.net/tier_icons/mace.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#eab308", 
+  mace: {
+    ad: "Mace", icon: <img src="https://www.tierslist.net/tier_icons/mace.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#eab308",
     description: { tr: "Çekiç Gücü", en: "Mace Power", de: "Streitkolben-Macht" },
-    detail: { tr: "1.21'in yeni efsanevi silahı! Yükseklikten saldır, ağır hasar ver, alanı kontrol et.", en: "The legendary new weapon of 1.21!", de: "Die legendäre neue Waffe von 1.21!" }
+    detail: { tr: "1.21'in yeni efsanevi silahı! Yükseklikten saldır.", en: "The legendary new weapon of 1.21!", de: "Die legendäre neue Waffe von 1.21!" }
   },
 };
 
@@ -296,7 +296,7 @@ const getHighestTier = (tiers: Record<string, string>): string => {
 
 const DiscordIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 127.14 96.36" fill="currentColor">
-    <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/>
+    <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z" />
   </svg>
 );
 
@@ -305,7 +305,7 @@ const Bubbles = () => {
     id: i, size: Math.random() * 25 + 6, left: Math.random() * 100,
     duration: Math.random() * 12 + 10, delay: Math.random() * 15,
   })), []);
-  
+
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
       {bubbles.map(bubble => (
@@ -352,7 +352,7 @@ const SkeletonRow = ({ theme }: { theme: typeof THEMES[ThemeKey] }) => (
   </tr>
 );
 
-const ShareCardModal = ({ player, theme, t, onClose }: { 
+const ShareCardModal = ({ player, theme, t, onClose }: {
   player: Player; theme: typeof THEMES[ThemeKey]; t: (key: string) => string; onClose: () => void;
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -364,17 +364,10 @@ const ShareCardModal = ({ player, theme, t, onClose }: {
     setDownloading(true);
     try {
       const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: null,
-        scale: 3,
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
+        backgroundColor: null, scale: 3, useCORS: true, allowTaint: true, logging: false,
       });
       canvas.toBlob((blob) => {
-        if (!blob) {
-          setDownloading(false);
-          return;
-        }
+        if (!blob) { setDownloading(false); return; }
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
@@ -385,8 +378,8 @@ const ShareCardModal = ({ player, theme, t, onClose }: {
         URL.revokeObjectURL(url);
         setDownloading(false);
       }, 'image/png', 1.0);
-    } catch (e) { 
-      console.error('İndirme hatası:', e); 
+    } catch (e) {
+      console.error('İndirme hatası:', e);
       setDownloading(false);
       alert('İndirme başarısız! Tekrar deneyin.');
     }
@@ -411,7 +404,7 @@ const ShareCardModal = ({ player, theme, t, onClose }: {
 
   return (
     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md" onClick={onClose}>
-      <motion.div 
+      <motion.div
         initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
         className="relative w-full max-w-md" onClick={e => e.stopPropagation()}
       >
@@ -431,9 +424,7 @@ const ShareCardModal = ({ player, theme, t, onClose }: {
               onError={(e) => { (e.target as HTMLImageElement).src = `https://mc-heads.net/avatar/Steve/128`; }} />
           </div>
           <div className="px-6 pt-4 pb-6 text-center">
-            <h2 className="text-3xl font-black mb-2" style={{ color: theme.text }}>
-              {player.minecraftNick || player.username}
-            </h2>
+            <h2 className="text-3xl font-black mb-2" style={{ color: theme.text }}>{player.minecraftNick || player.username}</h2>
             <p className="text-sm mb-4" style={{ color: theme.textMuted }}>{getTitle(player.totalPoints, t)}</p>
             <div className="flex justify-center gap-2 mb-4 flex-wrap">
               <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-black bg-gradient-to-r ${REGIONS[player.region]?.color} text-white`}>
@@ -467,20 +458,16 @@ const ShareCardModal = ({ player, theme, t, onClose }: {
           </div>
         </div>
         <div className="flex gap-2 mt-4">
-          <button onClick={downloadCard} disabled={downloading} className={`flex-1 py-3 rounded-xl font-bold bg-gradient-to-r ${theme.primaryGradient} text-white transition-all hover:scale-105 shadow-lg flex items-center justify-center gap-2 text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed`}>
+          <button onClick={downloadCard} disabled={downloading}
+            className={`flex-1 py-3 rounded-xl font-bold bg-gradient-to-r ${theme.primaryGradient} text-white transition-all hover:scale-105 shadow-lg flex items-center justify-center gap-2 text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed`}>
             {downloading ? (
-              <>
-                <div className="w-5 h-5 rounded-full border-2 border-white border-r-transparent animate-spin"></div>
-                İndiriliyor...
-              </>
+              <><div className="w-5 h-5 rounded-full border-2 border-white border-r-transparent animate-spin"></div>İndiriliyor...</>
             ) : (
-              <>
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                {t("downloadCard")}
-              </>
+              <><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>{t("downloadCard")}</>
             )}
           </button>
-          <button onClick={copyLink} className="flex-1 py-3 rounded-xl font-bold transition-all hover:scale-105 shadow-lg flex items-center justify-center gap-2 text-sm md:text-base"
+          <button onClick={copyLink}
+            className="flex-1 py-3 rounded-xl font-bold transition-all hover:scale-105 shadow-lg flex items-center justify-center gap-2 text-sm md:text-base"
             style={{ background: theme.cardBg, color: theme.text, border: `1px solid ${theme.border}` }}>
             {copied ? (
               <><svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>{t("linkCopied")}</>
@@ -538,7 +525,7 @@ const useSecurityProtection = () => {
           if (!warned) {
             warned = true;
             console.clear();
-            console.log("%c🛑 DUR!", "color: red; font-size: 60px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);");
+            console.log("%c🛑 DUR!", "color: red; font-size: 60px; font-weight: bold;");
             console.log("%c⚠️ Bu bir geliştirici alanıdır!", "color: orange; font-size: 24px; font-weight: bold;");
             console.log("%cBuraya yapıştırdığın herhangi bir kod hesabını ele geçirebilir!", "color: red; font-size: 16px;");
             console.log("%c🌊 Abyssal Ocean Tier List - © 2025", "color: cyan; font-size: 14px;");
@@ -732,7 +719,6 @@ export default function App() {
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
-      
       if (scrollTop + windowHeight >= documentHeight - 500) {
         if (!loadingMore) {
           setLoadingMore(true);
@@ -803,14 +789,14 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen w-full relative overflow-x-hidden transition-colors duration-500" 
+    <div className="min-h-screen w-full relative overflow-x-hidden transition-colors duration-500"
       style={{ background: currentTheme.bg, color: currentTheme.text }}>
       <Bubbles />
-      
+
       <header className="relative z-50 sticky top-0 backdrop-blur-xl border-b transition-colors duration-500"
         style={{ background: `${currentTheme.headerBg}cc`, borderColor: currentTheme.border }}>
         <div className="max-w-[1600px] mx-auto px-3 md:px-4 py-3 flex items-center justify-between gap-2 md:gap-4">
-          
+
           <div className="flex items-center gap-2 md:gap-3 cursor-pointer flex-shrink-0" onClick={() => setCurrentPage("home")}>
             <img src="/logo.png" alt="" className="h-9 w-9 md:h-12 md:w-12 rounded-xl object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
             <div>
@@ -822,12 +808,12 @@ export default function App() {
           </div>
 
           <nav className="hidden lg:flex items-center gap-1">
-            <button onClick={() => setCurrentPage("home")} 
+            <button onClick={() => setCurrentPage("home")}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${currentPage === "home" ? `bg-gradient-to-r ${currentTheme.primaryGradient} text-white shadow-lg` : ""}`}
               style={currentPage !== "home" ? { background: currentTheme.cardBg, color: currentTheme.textMuted } : {}}>
               🏠 {t("home")}
             </button>
-            <button onClick={() => setCurrentPage("rankings")} 
+            <button onClick={() => setCurrentPage("rankings")}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${currentPage === "rankings" ? `bg-gradient-to-r ${currentTheme.primaryGradient} text-white shadow-lg` : ""}`}
               style={currentPage !== "rankings" ? { background: currentTheme.cardBg, color: currentTheme.textMuted } : {}}>
               🏆 {t("rankings")}
@@ -836,7 +822,7 @@ export default function App() {
 
           <div className="hidden md:flex items-center gap-2">
             {currentPage === "rankings" && (
-              <input type="text" placeholder={t("searchPlayer")} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} 
+              <input type="text" placeholder={t("searchPlayer")} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-[180px] lg:w-[220px] px-4 py-2 rounded-xl text-sm focus:outline-none transition-all"
                 style={{ background: currentTheme.cardBg, border: `1px solid ${currentTheme.border}`, color: currentTheme.text }} />
             )}
@@ -900,7 +886,8 @@ export default function App() {
                 )}
               </AnimatePresence>
             </div>
-            <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2.5 bg-[#5865F2] hover:bg-[#4752c4] rounded-xl text-sm font-medium transition-all text-white">
+            <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#5865F2] hover:bg-[#4752c4] rounded-xl text-sm font-medium transition-all text-white">
               <DiscordIcon className="w-5 h-5" />
               <span className="hidden sm:inline">{t("discord")}</span>
             </a>
@@ -909,13 +896,13 @@ export default function App() {
           <div className="flex md:hidden items-center gap-2">
             {currentPage === "rankings" && (
               <button onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
-                className="p-2.5 rounded-xl transition-all" 
+                className="p-2.5 rounded-xl transition-all"
                 style={{ background: currentTheme.cardBg, border: `1px solid ${currentTheme.border}`, color: currentTheme.text }}>
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
               </button>
             )}
             <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2.5 rounded-xl transition-all" 
+              className="p-2.5 rounded-xl transition-all"
               style={{ background: currentTheme.cardBg, border: `1px solid ${currentTheme.border}`, color: currentTheme.text }}>
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {mobileMenuOpen ? (
@@ -953,7 +940,7 @@ export default function App() {
                   style={currentPage !== "rankings" ? { background: currentTheme.headerBg, color: currentTheme.text } : {}}>
                   🏆 {t("rankings")}
                 </button>
-                
+
                 <div className="grid grid-cols-2 gap-2 pt-2 border-t" style={{ borderColor: currentTheme.border }}>
                   <div>
                     <div className="text-[10px] uppercase font-bold mb-1 px-1" style={{ color: currentTheme.textMuted }}>{t("language")}</div>
@@ -983,7 +970,7 @@ export default function App() {
                   </div>
                 </div>
 
-                <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer" 
+                <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer"
                   className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#5865F2] rounded-lg text-sm font-bold text-white">
                   <DiscordIcon className="w-5 h-5" /> {t("discord")}
                 </a>
@@ -999,7 +986,7 @@ export default function App() {
 
       <AnimatePresence mode="wait">
         <motion.div key={currentPage} initial={{ opacity: 0, y: 30, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -30, scale: 0.98 }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}>
-          
+
           {currentPage === "home" && (
             <main className="relative z-10 max-w-[1600px] mx-auto px-3 md:px-4 py-6 md:py-12">
               <div className="text-center mb-12 md:mb-20">
@@ -1009,7 +996,7 @@ export default function App() {
                   <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: currentTheme.primary }}></span>
                   <span className="hero-badge-text">{t("pvpPlatform")}</span>
                 </motion.div>
-                
+
                 <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
                   className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-4 md:mb-6 leading-tight">
                   <span className="inline-block animated-gradient-text">ABYSSAL OCEAN</span>
@@ -1022,21 +1009,21 @@ export default function App() {
                     ))}
                   </span>
                 </motion.h1>
-                
+
                 <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
                   className="text-base md:text-xl max-w-2xl mx-auto mb-6 md:mb-10 hero-subtitle px-4" style={{ color: currentTheme.textMuted }}>
                   {t("chooseLevel").split(" ").map((word, i) => (
                     <span key={i} className="inline-block subtitle-word" style={{ animationDelay: `${0.5 + i * 0.1}s`, marginRight: "0.3em" }}>{word}</span>
                   ))}
                 </motion.p>
-                
+
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
                   className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 px-4">
-                  <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer" 
+                  <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer"
                     className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 bg-[#5865F2] rounded-xl font-bold text-base md:text-lg transition-all flex items-center justify-center gap-2 shadow-lg hover:scale-105 text-white">
                     <DiscordIcon className="w-5 h-5 md:w-6 md:h-6" /> {t("joinServer")}
                   </a>
-                  <button onClick={() => setCurrentPage("rankings")} 
+                  <button onClick={() => setCurrentPage("rankings")}
                     className={`w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r ${currentTheme.primaryGradient} rounded-xl font-bold text-base md:text-lg transition-all shadow-lg hover:scale-105 text-white flex items-center justify-center gap-2`}>
                     🏆 {t("viewRankings")}
                   </button>
@@ -1057,18 +1044,14 @@ export default function App() {
                       </h3>
                       <div className="h-px flex-1 max-w-[40px] md:max-w-[60px]" style={{ background: `linear-gradient(to left, transparent, ${currentTheme.primary})` }}></div>
                     </div>
-                    <p className="text-center text-base md:text-xl font-bold mb-4 md:mb-6" style={{ color: currentTheme.primary }}>
-                      {t("intro_subtitle")}
-                    </p>
+                    <p className="text-center text-base md:text-xl font-bold mb-4 md:mb-6" style={{ color: currentTheme.primary }}>{t("intro_subtitle")}</p>
                     <p className="text-center text-sm md:text-lg leading-relaxed mb-4 md:mb-6" style={{ color: currentTheme.textMuted }}>
                       {t("intro_p1_a")} <span className="font-bold" style={{ color: currentTheme.text }}>{t("intro_p1_b")}</span> <span className={`font-bold bg-gradient-to-r ${currentTheme.primaryGradient} bg-clip-text text-transparent`}>Abyssal Ocean</span>{t("intro_p1_c")} <span className="font-bold" style={{ color: currentTheme.text }}>{t("intro_p1_d")}</span> {t("intro_p1_e")} <span className="font-bold" style={{ color: currentTheme.text }}>{t("intro_p1_f")}</span> {t("intro_p1_g")}
                     </p>
                     <p className="text-center text-sm md:text-lg leading-relaxed mb-6 md:mb-8" style={{ color: currentTheme.textMuted }}>
                       {t("intro_p2_a")} <span className="font-bold text-amber-400">{t("intro_p2_b")}</span> {t("intro_p2_c")} <span className="font-bold text-purple-400">{t("intro_p2_d")}</span> {t("intro_p2_e")}
                     </p>
-                    <p className="text-center text-base md:text-xl font-black" style={{ color: currentTheme.text }}>
-                      ⚔️ {t("intro_cta")} ⚔️
-                    </p>
+                    <p className="text-center text-base md:text-xl font-black" style={{ color: currentTheme.text }}>⚔️ {t("intro_cta")} ⚔️</p>
                     <div className="grid grid-cols-3 gap-2 md:gap-4 mt-6 md:mt-8 pt-6 md:pt-8" style={{ borderTop: `1px solid ${currentTheme.border}` }}>
                       <div className="text-center">
                         <div className={`text-2xl md:text-4xl font-black bg-gradient-to-r ${currentTheme.primaryGradient} bg-clip-text text-transparent`}>8</div>
@@ -1108,10 +1091,8 @@ export default function App() {
                             {kit.icon}
                           </div>
                         </div>
-                        <h3 className="text-xl md:text-2xl font-black mb-2 text-center transition-colors">{kit.ad}</h3>
-                        <p className="text-xs md:text-sm font-semibold text-center mb-2 md:mb-3" style={{ color: kit.color }}>
-                          {kit.description[language]}
-                        </p>
+                        <h3 className="text-xl md:text-2xl font-black mb-2 text-center">{kit.ad}</h3>
+                        <p className="text-xs md:text-sm font-semibold text-center mb-2 md:mb-3" style={{ color: kit.color }}>{kit.description[language]}</p>
                         <p className="text-[11px] md:text-xs text-center leading-relaxed" style={{ color: currentTheme.textMuted }}>{kit.detail[language]}</p>
                         <div className="mt-3 md:mt-4 pt-3 md:pt-4 text-center" style={{ borderTop: `1px solid ${currentTheme.border}` }}>
                           <span className="text-[11px] md:text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: currentTheme.primary }}>
@@ -1133,7 +1114,7 @@ export default function App() {
                 <div className="relative z-10">
                   <h2 className="text-3xl md:text-6xl font-black mb-3 md:mb-4" style={{ color: currentTheme.text }}>{t("ready")}</h2>
                   <p className="text-sm md:text-lg mb-6 md:mb-8" style={{ color: currentTheme.textMuted }}>{t("joinDiscord")}</p>
-                  <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer" 
+                  <a href="https://discord.gg/cKFwKcfcWn" target="_blank" rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 md:gap-3 px-6 md:px-10 py-3 md:py-5 bg-[#5865F2] rounded-xl font-bold text-base md:text-xl transition-all shadow-2xl hover:scale-105 text-white">
                     <DiscordIcon className="w-5 h-5 md:w-7 md:h-7" /> {t("joinNow")}
                   </a>
@@ -1144,7 +1125,7 @@ export default function App() {
 
           {currentPage === "rankings" && (
             <main className="relative z-10 max-w-[1600px] mx-auto px-2 md:px-4 py-4 md:py-6">
-              
+
               <div className="flex items-center justify-center md:justify-end gap-2 mb-4 md:mb-6 overflow-x-auto scrollbar-hide">
                 {Object.entries(REGIONS).map(([key, r]) => (
                   <button key={key} onClick={() => setSelectedRegion(key)}
@@ -1158,8 +1139,8 @@ export default function App() {
               <div className="flex flex-wrap items-center justify-between gap-3 md:gap-4 mb-4 md:mb-6">
                 <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide flex-1">
                   <span className="text-xs md:text-sm whitespace-nowrap" style={{ color: currentTheme.textMuted }}>{t("sortBy")}:</span>
-                  {[{key:"rank",label:t("sortRank")},{key:"points",label:t("sortPoints")},{key:"name",label:t("sortName")},{key:"tests",label:t("sortTests")}].map(opt => (
-                    <button key={opt.key} onClick={() => setSortType(opt.key as SortType)} 
+                  {[{ key: "rank", label: t("sortRank") }, { key: "points", label: t("sortPoints") }, { key: "name", label: t("sortName") }, { key: "tests", label: t("sortTests") }].map(opt => (
+                    <button key={opt.key} onClick={() => setSortType(opt.key as SortType)}
                       className={`px-2.5 md:px-3 py-1.5 rounded-lg text-[10px] md:text-xs font-medium whitespace-nowrap transition-all ${sortType === opt.key ? `bg-gradient-to-r ${currentTheme.primaryGradient} text-white shadow-lg` : ""}`}
                       style={sortType !== opt.key ? { background: currentTheme.cardBg, color: currentTheme.textMuted } : {}}>
                       {opt.label}
@@ -1176,7 +1157,7 @@ export default function App() {
                     const kit = isOverall ? { ad: "Overall", icon: <span className="text-xl">🏆</span> } : KITS[key];
                     const isActive = selectedKit === key;
                     return (
-                      <button key={key} onClick={() => setSelectedKit(key)} 
+                      <button key={key} onClick={() => setSelectedKit(key)}
                         className={`px-3 md:px-5 py-2 md:py-3 rounded-xl md:rounded-2xl font-medium transition-all whitespace-nowrap flex items-center gap-1.5 md:gap-2 hover:scale-105 ${isActive ? `bg-gradient-to-r ${currentTheme.primaryGradient} text-white shadow-lg` : ""}`}
                         style={!isActive ? { background: currentTheme.cardBg, color: currentTheme.textMuted } : {}}>
                         <div className="w-5 h-5 md:w-7 md:h-7 flex items-center justify-center">{kit.icon}</div>
@@ -1213,7 +1194,7 @@ export default function App() {
                               <th className="text-left px-3 md:px-6 py-3 md:py-4 text-[10px] md:text-xs font-semibold uppercase" style={{ color: currentTheme.textMuted }}>{t("player")}</th>
                               <th className="text-center px-3 md:px-6 py-3 md:py-4 text-[10px] md:text-xs font-semibold uppercase hidden md:table-cell" style={{ color: currentTheme.textMuted }}>{t("region")}</th>
                               <th className="text-right px-3 md:px-6 py-3 md:py-4 text-[10px] md:text-xs font-semibold uppercase" style={{ color: currentTheme.textMuted }}>{t("tiers")}</th>
-                            </table>
+                            </tr>
                           </thead>
                           <tbody>
                             {visiblePlayers.map((player, idx) => {
@@ -1222,7 +1203,7 @@ export default function App() {
                               return (
                                 <motion.tr key={player.id} id={`player-row-${idx}`}
                                   initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: Math.min(idx * 0.02, 0.5) }}
-                                  onClick={() => setSelectedPlayer(player)} 
+                                  onClick={() => setSelectedPlayer(player)}
                                   className={`group cursor-pointer transition-all hover:bg-white/5 ${isFocused ? 'bg-white/10' : ''}`}
                                   style={{ borderTop: `1px solid ${currentTheme.border}`, boxShadow: isFocused ? `inset 4px 0 0 ${currentTheme.primary}` : 'none' }}>
                                   <td className="px-3 md:px-6 py-3 md:py-4">
@@ -1287,7 +1268,7 @@ export default function App() {
                           </tbody>
                         </table>
                       </div>
-                      
+
                       {loadingMore && (
                         <div className="py-4 md:py-6 text-center" style={{ borderTop: `1px solid ${currentTheme.border}` }}>
                           <div className="flex items-center justify-center gap-3">
@@ -1349,11 +1330,11 @@ export default function App() {
 
       {selectedPlayer && !shareCardPlayer && (
         <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-4 bg-black/80 backdrop-blur-md" onClick={() => setSelectedPlayer(null)}>
-          <motion.div 
-            initial={{ scale: 0.9, opacity: 0, y: 100 }} 
-            animate={{ scale: 1, opacity: 1, y: 0 }} 
-            className="relative w-full max-w-2xl rounded-t-3xl md:rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto" 
-            style={{ background: `linear-gradient(135deg, ${currentTheme.cardBg}, ${currentTheme.bg})`, border: `1px solid ${currentTheme.border}` }} 
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0, y: 100 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            className="relative w-full max-w-2xl rounded-t-3xl md:rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
+            style={{ background: `linear-gradient(135deg, ${currentTheme.cardBg}, ${currentTheme.bg})`, border: `1px solid ${currentTheme.border}` }}
             onClick={e => e.stopPropagation()}>
             <div className="flex items-start justify-between p-4 md:p-6 sticky top-0 backdrop-blur-xl" style={{ borderBottom: `1px solid ${currentTheme.border}`, background: `${currentTheme.cardBg}f0` }}>
               <div className="flex items-center gap-3 md:gap-4 min-w-0">
@@ -1483,50 +1464,32 @@ export default function App() {
           animation: letterDrop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) backwards, letterGlow 3s ease-in-out infinite;
           transition: all 0.3s ease;
         }
-        .tier-letter:hover {
-          transform: translateY(-10px) scale(1.2);
-          color: #22d3ee !important;
-        }
+        .tier-letter:hover { transform: translateY(-10px) scale(1.2); color: #22d3ee !important; }
         
         @keyframes slideInBadge {
           0% { opacity: 0; transform: translateX(-10px); }
           100% { opacity: 1; transform: translateX(0); }
         }
-        .player-info-row > * {
-          animation: slideInBadge 0.4s ease-out backwards;
-        }
+        .player-info-row > * { animation: slideInBadge 0.4s ease-out backwards; }
         .player-info-row > *:nth-child(1) { animation-delay: 0.05s; }
         .player-info-row > *:nth-child(2) { animation-delay: 0.15s; }
         .player-info-row > *:nth-child(3) { animation-delay: 0.25s; }
         .player-info-row > *:nth-child(4) { animation-delay: 0.35s; }
-        
-        .player-info-row > *:hover {
-          transform: translateY(-2px) scale(1.05);
-          transition: transform 0.2s ease;
-        }
+        .player-info-row > *:hover { transform: translateY(-2px) scale(1.05); transition: transform 0.2s ease; }
         
         @keyframes skeletonShimmer {
-          0% { opacity: 0.3; }
-          50% { opacity: 0.7; }
-          100% { opacity: 0.3; }
+          0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; }
         }
-        .skeleton-pulse {
-          position: relative;
-          overflow: hidden;
-          animation: skeletonShimmer 1.5s ease-in-out infinite;
-        }
+        .skeleton-pulse { position: relative; overflow: hidden; animation: skeletonShimmer 1.5s ease-in-out infinite; }
         
         @keyframes badgeFloat {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-3px); }
+          0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); }
         }
         @keyframes badgeGlow {
           0%, 100% { box-shadow: 0 0 20px rgba(34, 211, 238, 0.3); }
           50% { box-shadow: 0 0 40px rgba(34, 211, 238, 0.6); }
         }
-        .hero-badge {
-          animation: badgeFloat 3s ease-in-out infinite, badgeGlow 2s ease-in-out infinite;
-        }
+        .hero-badge { animation: badgeFloat 3s ease-in-out infinite, badgeGlow 2s ease-in-out infinite; }
         .hero-badge-text {
           background: linear-gradient(90deg, #22d3ee, #a855f7, #ec4899, #22d3ee);
           background-size: 200% auto;
@@ -1541,25 +1504,10 @@ export default function App() {
           0% { opacity: 0; transform: translateY(20px) scale(0.8); filter: blur(10px); }
           100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
         }
-        .subtitle-word {
-          animation: wordFadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
-          transition: all 0.3s ease;
-          display: inline-block;
-        }
-        .subtitle-word:hover {
-          color: #22d3ee !important;
-          transform: translateY(-3px) scale(1.1);
-          cursor: default;
-        }
+        .subtitle-word { animation: wordFadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards; transition: all 0.3s ease; display: inline-block; }
+        .subtitle-word:hover { color: #22d3ee !important; transform: translateY(-3px) scale(1.1); cursor: default; }
         
-        img {
-          -webkit-user-drag: none;
-          -khtml-user-drag: none;
-          -moz-user-drag: none;
-          -o-user-drag: none;
-          user-drag: none;
-          -webkit-touch-callout: none;
-        }
+        img { -webkit-user-drag: none; -khtml-user-drag: none; -moz-user-drag: none; -o-user-drag: none; user-drag: none; -webkit-touch-callout: none; }
         
         @media (max-width: 768px) {
           body { overflow-x: hidden; }
@@ -1567,10 +1515,7 @@ export default function App() {
         }
         
         html { scroll-behavior: smooth; }
-        
-        @media (max-width: 768px) {
-          button, a { -webkit-tap-highlight-color: transparent; }
-        }
+        @media (max-width: 768px) { button, a { -webkit-tap-highlight-color: transparent; } }
       `}</style>
 
       <AIChatBot />
