@@ -82,7 +82,7 @@ const TRANSLATIONS: Record<LangKey, Record<string, string>> = {
     pvpTierList: "Minecraft PvP Tier List", seeRankings: "Sıralamaları Gör →",
     loading: "Yükleniyor...", loadingMore: "Daha fazla yükleniyor...",
     shareCard: "Kartı Paylaş", downloadCard: "İndir", copyLink: "Linki Kopyala", linkCopied: "Link kopyalandı!",
-    peakPoints: "Peak Puan", peak: "Peak", currentTier: "Şu Anki",
+    peakRank: "Peak Rank", peak: "Peak", currentTier: "Şu Anki",
     installApp: "Uygulamayı Yükle", installPrompt: "Abyssal Ocean'ı telefonuna ekle!", installNow: "Yükle", later: "Sonra",
     intro_subtitle: "Seviyeni Seç, Gücünü Kanıtla!",
     intro_p1_a: "Gelişmekte olan", intro_p1_b: "Minecraft tier sunucumuz", intro_p1_c: "'da,",
@@ -113,7 +113,7 @@ const TRANSLATIONS: Record<LangKey, Record<string, string>> = {
     pvpTierList: "Minecraft PvP Tier List", seeRankings: "View Rankings →",
     loading: "Loading...", loadingMore: "Loading more...",
     shareCard: "Share Card", downloadCard: "Download", copyLink: "Copy Link", linkCopied: "Link copied!",
-    peakPoints: "Peak Points", peak: "Peak", currentTier: "Current",
+    peakRank: "Peak Rank", peak: "Peak", currentTier: "Current",
     installApp: "Install App", installPrompt: "Add Abyssal Ocean to your phone!", installNow: "Install", later: "Later",
     intro_subtitle: "Choose Your Level, Prove Your Power!",
     intro_p1_a: "On our developing", intro_p1_b: "Minecraft tier server", intro_p1_c: ",",
@@ -144,7 +144,7 @@ const TRANSLATIONS: Record<LangKey, Record<string, string>> = {
     pvpTierList: "Minecraft PvP Stufenliste", seeRankings: "Ranglisten ansehen →",
     loading: "Wird geladen...", loadingMore: "Mehr wird geladen...",
     shareCard: "Karte teilen", downloadCard: "Herunterladen", copyLink: "Link kopieren", linkCopied: "Link kopiert!",
-    peakPoints: "Peak-Punkte", peak: "Peak", currentTier: "Aktuell",
+    peakRank: "Peak Rang", peak: "Peak", currentTier: "Aktuell",
     installApp: "App installieren", installPrompt: "Füge Abyssal Ocean zu deinem Handy hinzu!", installNow: "Installieren", later: "Später",
     intro_subtitle: "Wähle dein Level, beweise deine Stärke!",
     intro_p1_a: "Auf unserem aufstrebenden", intro_p1_b: "Minecraft-Tier-Server", intro_p1_c: "kannst du dich mit",
@@ -169,6 +169,12 @@ const KITS: Record<string, { ad: string; icon: JSX.Element; color: string; descr
   uhc: { ad: "UHC", icon: <img src="https://www.tierslist.net/tier_icons/uhc.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#ef4444", description: { tr: "Ultra Hardcore", en: "Ultra Hardcore", de: "Ultra Hardcore" }, detail: { tr: "Doğal yenilenme yok! Golden apple ile hayatta kal, her vuruş kritik önem taşır.", en: "No natural regen! Survive with golden apples.", de: "Keine natürliche Regeneration!" } },
   smp: { ad: "SMP", icon: <img src="https://www.tierslist.net/tier_icons/smp.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#22c55e", description: { tr: "Survival Multiplayer", en: "Survival Multiplayer", de: "Survival Multiplayer" }, detail: { tr: "Gerçek survival deneyimi! Crystal, totem, elytra - tüm modern SMP araçlarıyla savaş.", en: "Real survival experience!", de: "Echtes Survival-Erlebnis!" } },
   mace: { ad: "Mace", icon: <img src="https://www.tierslist.net/tier_icons/mace.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#eab308", description: { tr: "Çekiç Gücü", en: "Mace Power", de: "Streitkolben-Macht" }, detail: { tr: "1.21'in yeni efsanevi silahı! Yükseklikten saldır, ağır hasar ver, alanı kontrol et.", en: "The legendary new weapon of 1.21!", de: "Die legendäre neue Waffe von 1.21!" } },
+};
+
+// 🆕 EMOJI ikonlar (share card için - CORS sorununu önler)
+const KIT_EMOJIS: Record<string, string> = {
+  vanilla: "👊", sword: "⚔️", axe: "🪓", nethpot: "🛡️",
+  pot: "🧪", uhc: "🍎", smp: "💎", mace: "🔨"
 };
 
 const TIER_POINTS: Record<string, number> = { "HT1": 60, "LT1": 44, "HT2": 28, "LT2": 16, "HT3": 10, "LT3": 6, "HT4": 4, "LT4": 3, "HT5": 2, "LT5": 1 };
@@ -216,7 +222,6 @@ const calculateTotalPoints = (tiers: Record<string, string>): number => {
   return total;
 };
 
-// 🆕 PEAK RANK: current > peak ise güncelle
 const updatePeakTiers = (current: Record<string, string>, peak: Record<string, string> = {}): Record<string, string> => {
   const newPeak = { ...peak };
   Object.entries(current || {}).forEach(([kit, tier]) => {
@@ -239,6 +244,19 @@ const getTitle = (points: number, t: (key: string) => string): string => {
 const getHighestTier = (tiers: Record<string, string>): string => {
   let highestTier = "", highestValue = -1;
   for (const tier of Object.values(tiers || {})) {
+    const cleaned = cleanTier(tier);
+    if (cleaned && TIER_ORDER[cleaned] !== undefined && TIER_ORDER[cleaned] > highestValue) {
+      highestValue = TIER_ORDER[cleaned];
+      highestTier = cleaned;
+    }
+  }
+  return highestTier || "—";
+};
+
+// 🆕 Peak Rank hesaplama (en yüksek peak tier)
+const getHighestPeakTier = (peakTiers: Record<string, string>): string => {
+  let highestTier = "", highestValue = -1;
+  for (const tier of Object.values(peakTiers || {})) {
     const cleaned = cleanTier(tier);
     if (cleaned && TIER_ORDER[cleaned] !== undefined && TIER_ORDER[cleaned] > highestValue) {
       highestValue = TIER_ORDER[cleaned];
@@ -334,6 +352,11 @@ const ShareCardModal = ({ player, theme, t, onClose }: { player: Player; theme: 
     });
   };
 
+  // 🆕 Peak Rank hesapla
+  const currentHighest = getHighestTier(player.tiers);
+  const peakHighest = getHighestPeakTier(player.peakTiers || {});
+  const isPeakHigher = peakHighest !== "—" && peakHighest !== currentHighest && (TIER_ORDER[peakHighest] || 0) > (TIER_ORDER[currentHighest] || 0);
+
   return (
     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md" onClick={onClose}>
       <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="relative w-full max-w-md" onClick={e => e.stopPropagation()}>
@@ -351,10 +374,11 @@ const ShareCardModal = ({ player, theme, t, onClose }: { player: Player; theme: 
               <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-black bg-gradient-to-r ${REGIONS[player.region]?.color} text-white`}>{REGIONS[player.region]?.code}</span>
               <span className="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-black text-white" style={{ background: theme.primary }}>#{player.rank}</span>
               <span className="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-black" style={{ background: `${theme.primary}20`, color: theme.primary, border: `1px solid ${theme.primary}40` }}>{player.totalPoints} {t("points")}</span>
-              {player.peakPoints > player.totalPoints && (
-                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-black bg-gradient-to-r from-amber-400 to-yellow-600 text-black">⭐ {player.peakPoints}</span>
+              {isPeakHigher && (
+                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-black bg-gradient-to-r from-amber-400 to-yellow-600 text-black">⭐ {peakHighest}</span>
               )}
             </div>
+            {/* 🆕 EMOJI İKONLAR (CORS sorunu yok) */}
             <div className="grid grid-cols-4 gap-2 mb-4">
               {Object.entries(KITS).slice(0, 8).map(([kitKey, kit]) => {
                 const tier = cleanTier(player.tiers[kitKey]);
@@ -363,11 +387,12 @@ const ShareCardModal = ({ player, theme, t, onClose }: { player: Player; theme: 
                 return (
                   <div key={kitKey} className="rounded-lg p-2 relative" style={{ background: theme.headerBg, border: `1px solid ${theme.border}` }}>
                     {hasPeak && <div className="absolute -top-1 -right-1 text-[10px]">⭐</div>}
-                    <div className="w-6 h-6 mx-auto flex items-center justify-center">{kit.icon}</div>
+                    <div className="text-2xl text-center leading-none mb-1">{KIT_EMOJIS[kitKey] || "🎮"}</div>
+                    <div className="text-[8px] font-bold text-center" style={{ color: theme.textMuted }}>{kit.ad}</div>
                     {tier ? (
-                      <span className={`block text-[9px] font-black mt-1 ${tier.startsWith("HT") ? "text-amber-400" : "text-cyan-400"}`}>{tier}</span>
+                      <span className={`block text-[9px] font-black mt-1 text-center ${tier.startsWith("HT") ? "text-amber-400" : "text-cyan-400"}`}>{tier}</span>
                     ) : (
-                      <span className="block text-[9px] font-bold mt-1" style={{ color: theme.textMuted, opacity: 0.4 }}>—</span>
+                      <span className="block text-[9px] font-bold mt-1 text-center" style={{ color: theme.textMuted, opacity: 0.4 }}>—</span>
                     )}
                   </div>
                 );
@@ -475,13 +500,11 @@ const useRateLimit = () => {
   }, []);
 };
 
-// 🆕 PWA HOOK
 const usePWA = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
 
   useEffect(() => {
-    // Service Worker kaydet
     if ('serviceWorker' in navigator) {
       const swCode = `
         const CACHE_NAME = 'abyssal-ocean-v1';
@@ -498,7 +521,6 @@ const usePWA = () => {
       navigator.serviceWorker.register(swUrl).catch(() => {});
     }
 
-    // Manifest oluştur ve ekle
     const manifest = {
       name: "Abyssal Ocean Tier List",
       short_name: "Abyssal Ocean",
@@ -524,7 +546,6 @@ const usePWA = () => {
     }
     link.href = manifestURL;
 
-    // Theme color meta
     let themeColorMeta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement;
     if (!themeColorMeta) {
       themeColorMeta = document.createElement('meta');
@@ -533,7 +554,6 @@ const usePWA = () => {
     }
     themeColorMeta.content = '#22d3ee';
 
-    // Install prompt yakala
     const handleBeforeInstall = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -613,7 +633,6 @@ export default function App() {
       let rawPlayers: Player[] = [];
       if (data.result) {
         rawPlayers = JSON.parse(data.result);
-        // 🆕 PEAK RANK UYGULAMA
         rawPlayers = rawPlayers.map(p => {
           const tiers = p.tiers || {};
           const peakTiers = updatePeakTiers(tiers, p.peakTiers || {});
@@ -630,7 +649,6 @@ export default function App() {
           return { ...p, rank: 0 };
         });
         
-        // 🆕 Peak'leri Upstash'e geri kaydet (arka planda)
         fetch(`${UPSTASH_URL}/set/players`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${UPSTASH_TOKEN}`, 'Content-Type': 'application/json' },
@@ -1084,6 +1102,10 @@ export default function App() {
                             {visiblePlayers.map((player, idx) => {
                               const displayRank = sortType === "rank" ? player.rank : idx + 1;
                               const isFocused = focusedIndex === idx;
+                              // 🆕 Peak Rank kontrolü
+                              const currentHighest = getHighestTier(player.tiers);
+                              const peakHighest = getHighestPeakTier(player.peakTiers || {});
+                              const isPeakHigher = peakHighest !== "—" && peakHighest !== currentHighest && (TIER_ORDER[peakHighest] || 0) > (TIER_ORDER[currentHighest] || 0);
                               return (
                                 <motion.tr key={player.id} id={`player-row-${idx}`} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: Math.min(idx * 0.02, 0.5) }} onClick={() => setSelectedPlayer(player)} className={`group cursor-pointer transition-all hover:bg-white/5 ${isFocused ? 'bg-white/10' : ''}`} style={{ borderTop: `1px solid ${currentTheme.border}`, boxShadow: isFocused ? `inset 4px 0 0 ${currentTheme.primary}` : 'none' }}>
                                   <td className="px-3 md:px-6 py-3 md:py-4">
@@ -1106,9 +1128,9 @@ export default function App() {
                                             <span className="inline-block w-1 md:w-1.5 h-1 md:h-1.5 rounded-full animate-pulse" style={{ background: currentTheme.primary }}></span>
                                             {player.totalPoints}p
                                           </span>
-                                          {player.peakPoints > player.totalPoints && (
-                                            <span className="text-[9px] md:text-xs font-black px-1.5 md:px-2 py-0.5 rounded-md flex items-center gap-1 bg-gradient-to-r from-amber-400/20 to-yellow-600/20 text-amber-400 border border-amber-400/30" title={`Peak: ${player.peakPoints}p`}>
-                                              ⭐ {player.peakPoints}
+                                          {isPeakHigher && (
+                                            <span className="text-[9px] md:text-xs font-black px-1.5 md:px-2 py-0.5 rounded-md flex items-center gap-1 bg-gradient-to-r from-amber-400/20 to-yellow-600/20 text-amber-400 border border-amber-400/30" title={`Peak: ${peakHighest}`}>
+                                              ⭐ {peakHighest}
                                             </span>
                                           )}
                                           <span className="hidden sm:flex text-[9px] md:text-xs font-medium text-[#5865F2] px-1.5 md:px-2 py-0.5 bg-[#5865F2]/10 rounded-md border border-[#5865F2]/20 items-center gap-1">
@@ -1158,7 +1180,6 @@ export default function App() {
                         </table>
                       </div>
                       
-                      {/* 🔥 SONSUZ SCROLL - Buton kaldırıldı */}
                       {displayCount < kitPlayers.length && (
                         <div ref={loadMoreRef} className="py-6 text-center" style={{ borderTop: `1px solid ${currentTheme.border}` }}>
                           <div className="flex items-center justify-center gap-3">
@@ -1280,6 +1301,7 @@ export default function App() {
                   );
                 })}
               </div>
+              {/* 🆕 Peak Rank gösterimi (puan değil tier) */}
               <div className="mt-4 md:mt-6 pt-4 md:pt-6 grid grid-cols-3 gap-4" style={{ borderTop: `1px solid ${currentTheme.border}` }}>
                 <div className="text-center">
                   <div className="text-xl md:text-2xl font-black">{selectedPlayer.tests}</div>
@@ -1290,8 +1312,10 @@ export default function App() {
                   <div className="text-[10px] md:text-xs mt-1" style={{ color: currentTheme.textMuted }}>{t("highestTier")}</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl md:text-2xl font-black bg-gradient-to-r from-amber-400 to-yellow-600 bg-clip-text text-transparent">⭐ {selectedPlayer.peakPoints || selectedPlayer.totalPoints}</div>
-                  <div className="text-[10px] md:text-xs mt-1" style={{ color: currentTheme.textMuted }}>{t("peakPoints")}</div>
+                  <div className="text-xl md:text-2xl font-black bg-gradient-to-r from-amber-400 to-yellow-600 bg-clip-text text-transparent">
+                    ⭐ {getHighestPeakTier(selectedPlayer.peakTiers || selectedPlayer.tiers)}
+                  </div>
+                  <div className="text-[10px] md:text-xs mt-1" style={{ color: currentTheme.textMuted }}>{t("peakRank")}</div>
                 </div>
               </div>
             </div>
@@ -1301,7 +1325,6 @@ export default function App() {
 
       {shareCardPlayer && (<ShareCardModal player={shareCardPlayer} theme={currentTheme} t={t} onClose={() => setShareCardPlayer(null)} />)}
 
-      {/* 🆕 PWA INSTALL BANNER */}
       <AnimatePresence>
         {showInstallBanner && (
           <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }} className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm z-[120] rounded-2xl shadow-2xl backdrop-blur-xl p-4 border-2" style={{ background: `${currentTheme.cardBg}f5`, borderColor: currentTheme.primary }}>
