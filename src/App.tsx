@@ -171,7 +171,6 @@ const KITS: Record<string, { ad: string; icon: JSX.Element; color: string; descr
   mace: { ad: "Mace", icon: <img src="https://www.tierslist.net/tier_icons/mace.svg" width="30" height="30" alt="" className="w-7 h-7" />, color: "#eab308", description: { tr: "Çekiç Gücü", en: "Mace Power", de: "Streitkolben-Macht" }, detail: { tr: "1.21'in yeni efsanevi silahı! Yükseklikten saldır, ağır hasar ver, alanı kontrol et.", en: "The legendary new weapon of 1.21!", de: "Die legendäre neue Waffe von 1.21!" } },
 };
 
-// 🆕 EMOJI ikonlar (share card için - CORS sorununu önler)
 const KIT_EMOJIS: Record<string, string> = {
   vanilla: "👊", sword: "⚔️", axe: "🪓", nethpot: "🛡️",
   pot: "🧪", uhc: "🍎", smp: "💎", mace: "🔨"
@@ -253,7 +252,6 @@ const getHighestTier = (tiers: Record<string, string>): string => {
   return highestTier || "—";
 };
 
-// 🆕 Peak Rank hesaplama (en yüksek peak tier)
 const getHighestPeakTier = (peakTiers: Record<string, string>): string => {
   let highestTier = "", highestValue = -1;
   for (const tier of Object.values(peakTiers || {})) {
@@ -264,6 +262,33 @@ const getHighestPeakTier = (peakTiers: Record<string, string>): string => {
     }
   }
   return highestTier || "—";
+};
+
+// 🔥 Peak'leri Upstash'tan çek
+const fetchPeaks = async (): Promise<Record<string, Record<string, string>>> => {
+  try {
+    const response = await fetch(`${UPSTASH_URL}/get/peaks`, {
+      headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` }
+    });
+    const data = await response.json();
+    return data.result ? JSON.parse(data.result) : {};
+  } catch {
+    return {};
+  }
+};
+
+// 🔥 Peak'leri Upstash'a kaydet
+const savePeaks = async (peaks: Record<string, Record<string, string>>) => {
+  try {
+    await fetch(`${UPSTASH_URL}/set/peaks`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${UPSTASH_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ value: JSON.stringify(peaks) })
+    });
+  } catch {}
 };
 
 const DiscordIcon = ({ className }: { className?: string }) => (
@@ -352,7 +377,6 @@ const ShareCardModal = ({ player, theme, t, onClose }: { player: Player; theme: 
     });
   };
 
-  // 🆕 Peak Rank hesapla
   const currentHighest = getHighestTier(player.tiers);
   const peakHighest = getHighestPeakTier(player.peakTiers || {});
   const isPeakHigher = peakHighest !== "—" && peakHighest !== currentHighest && (TIER_ORDER[peakHighest] || 0) > (TIER_ORDER[currentHighest] || 0);
@@ -378,7 +402,6 @@ const ShareCardModal = ({ player, theme, t, onClose }: { player: Player; theme: 
                 <span className="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-black bg-gradient-to-r from-amber-400 to-yellow-600 text-black">⭐ {peakHighest}</span>
               )}
             </div>
-            {/* 🆕 EMOJI İKONLAR (CORS sorunu yok) */}
             <div className="grid grid-cols-4 gap-2 mb-4">
               {Object.entries(KITS).slice(0, 8).map(([kitKey, kit]) => {
                 const tier = cleanTier(player.tiers[kitKey]);
@@ -624,46 +647,84 @@ export default function App() {
 
   const currentTheme = THEMES[theme];
 
-  const fetchPlayers = async () => {
+  // 🔥 YENİ fetchPlayers - localStorage + Upstash peaks birleşimi
+  const fetchPlayers = useCallback(async () => {
     try {
-      const response = await fetch(`${UPSTASH_URL}/get/players`, {
-        headers: { Authorization: `Bearer ${UPSTASH_TOKEN}`, 'Content-Type': 'application/json' }
-      });
-      const data = await response.json();
+      const [playersResponse, upstashPeaks] = await Promise.all([
+        fetch(`${UPSTASH_URL}/get/players`, {
+          headers: { Authorization: `Bearer ${UPSTASH_TOKEN}`, 'Content-Type': 'application/json' }
+        }),
+        fetchPeaks()
+      ]);
+
+      const data = await playersResponse.json();
       let rawPlayers: Player[] = [];
+
       if (data.result) {
         rawPlayers = JSON.parse(data.result);
+
+        // 🔥 localStorage'dan peak'leri al
+        const localPeaks: Record<string, Record<string, string>> = JSON.parse(
+          localStorage.getItem('playerPeaks') || '{}'
+        );
+
+        // 🔥 Upstash + localStorage peak'lerini birleştir (en yükseği al)
+        const mergedPeaks: Record<string, Record<string, string>> = { ...upstashPeaks };
+        Object.entries(localPeaks).forEach(([playerId, peakTiers]) => {
+          if (!mergedPeaks[playerId]) {
+            mergedPeaks[playerId] = peakTiers;
+          } else {
+            Object.entries(peakTiers).forEach(([kit, tier]) => {
+              if (getTierRank(tier) > getTierRank(mergedPeaks[playerId][kit])) {
+                mergedPeaks[playerId][kit] = tier;
+              }
+            });
+          }
+        });
+
         rawPlayers = rawPlayers.map(p => {
           const tiers = p.tiers || {};
-          const peakTiers = updatePeakTiers(tiers, p.peakTiers || {});
+          // 🔥 Önce merged peaks'i al, sonra mevcut tiers ile güncelle
+          const oldPeak = mergedPeaks[p.id] || p.peakTiers || {};
+          const peakTiers = updatePeakTiers(tiers, oldPeak);
+          // 🔥 Güncel peak'i merged'e yaz
+          mergedPeaks[p.id] = peakTiers;
+
           const totalPoints = calculateTotalPoints(tiers);
           const peakPoints = calculateTotalPoints(peakTiers);
           return {
             ...p, tiers, peakTiers, tests: p.tests || 0, totalPoints, peakPoints
           };
         });
+
+        // 🔥 localStorage'a kaydet
+        localStorage.setItem('playerPeaks', JSON.stringify(mergedPeaks));
+
+        // 🔥 Upstash'a peak'leri kaydet (arka planda)
+        savePeaks(mergedPeaks).catch(() => {});
+
         rawPlayers.sort((a, b) => b.totalPoints - a.totalPoints);
         let trRank = 0;
         rawPlayers = rawPlayers.map(p => {
           if (p.region === "TR") { trRank++; return { ...p, rank: trRank }; }
           return { ...p, rank: 0 };
         });
-        
-        fetch(`${UPSTASH_URL}/set/players`, {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${UPSTASH_TOKEN}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify(rawPlayers)
-        }).catch(() => {});
       }
+
       setPlayers(rawPlayers);
-    } catch (e) { setPlayers([]); } finally { setLoading(false); }
-  };
+    } catch (e) {
+      console.error('Fetch hatası:', e);
+      setPlayers([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetchPlayers();
     const interval = setInterval(fetchPlayers, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchPlayers]);
 
   useEffect(() => {
     if (players.length === 0) return;
@@ -1102,7 +1163,6 @@ export default function App() {
                             {visiblePlayers.map((player, idx) => {
                               const displayRank = sortType === "rank" ? player.rank : idx + 1;
                               const isFocused = focusedIndex === idx;
-                              // 🆕 Peak Rank kontrolü
                               const currentHighest = getHighestTier(player.tiers);
                               const peakHighest = getHighestPeakTier(player.peakTiers || {});
                               const isPeakHigher = peakHighest !== "—" && peakHighest !== currentHighest && (TIER_ORDER[peakHighest] || 0) > (TIER_ORDER[currentHighest] || 0);
@@ -1301,7 +1361,6 @@ export default function App() {
                   );
                 })}
               </div>
-              {/* 🆕 Peak Rank gösterimi (puan değil tier) */}
               <div className="mt-4 md:mt-6 pt-4 md:pt-6 grid grid-cols-3 gap-4" style={{ borderTop: `1px solid ${currentTheme.border}` }}>
                 <div className="text-center">
                   <div className="text-xl md:text-2xl font-black">{selectedPlayer.tests}</div>
