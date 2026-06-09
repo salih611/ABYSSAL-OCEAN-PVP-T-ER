@@ -77,7 +77,7 @@ const TRANSLATIONS: Record<LangKey, Record<string, string>> = {
     player: "Oyuncu", tiers: "Tierler", noPlayers: "Bu bölgede henüz oyuncu yok",
     previous: "◀ Önceki", next: "Sonraki ▶", page: "Sayfa {current}/{total}",
     points: "puan", allKitTiers: "Tüm Kit Tierleri", totalTests: "Toplam Test",
-    highestTier: "En Yüksek Tier", theme: "Tema", language: "Dil",
+    theme: "Tema", language: "Dil",
     allRights: "Tüm hakları gizlidir", madeWith: "Türk PvP Topluluğu için 💙 ile yapıldı",
     pvpTierList: "Minecraft PvP Tier List", seeRankings: "Sıralamaları Gör →",
     loading: "Yükleniyor...", loadingMore: "Daha fazla yükleniyor...",
@@ -108,7 +108,7 @@ const TRANSLATIONS: Record<LangKey, Record<string, string>> = {
     player: "Player", tiers: "Tiers", noPlayers: "No players in this region yet",
     previous: "◀ Previous", next: "Next ▶", page: "Page {current}/{total}",
     points: "points", allKitTiers: "All Kit Tiers", totalTests: "Total Tests",
-    highestTier: "Highest Tier", theme: "Theme", language: "Language",
+    theme: "Theme", language: "Language",
     allRights: "All rights reserved", madeWith: "Made with 💙 for Turkish PvP Community",
     pvpTierList: "Minecraft PvP Tier List", seeRankings: "View Rankings →",
     loading: "Loading...", loadingMore: "Loading more...",
@@ -139,7 +139,7 @@ const TRANSLATIONS: Record<LangKey, Record<string, string>> = {
     player: "Spieler", tiers: "Stufen", noPlayers: "Noch keine Spieler in dieser Region",
     previous: "◀ Zurück", next: "Weiter ▶", page: "Seite {current}/{total}",
     points: "Punkte", allKitTiers: "Alle Kit-Stufen", totalTests: "Gesamttests",
-    highestTier: "Höchste Stufe", theme: "Theme", language: "Sprache",
+    theme: "Theme", language: "Sprache",
     allRights: "Alle Rechte vorbehalten", madeWith: "Mit 💙 für die türkische PvP-Community",
     pvpTierList: "Minecraft PvP Stufenliste", seeRankings: "Ranglisten ansehen →",
     loading: "Wird geladen...", loadingMore: "Mehr wird geladen...",
@@ -264,7 +264,6 @@ const getHighestPeakTier = (peakTiers: Record<string, string>): string => {
   return highestTier || "—";
 };
 
-// 🔥 Peak'leri Upstash'tan çek
 const fetchPeaks = async (): Promise<Record<string, Record<string, string>>> => {
   try {
     const response = await fetch(`${UPSTASH_URL}/get/peaks`, {
@@ -277,7 +276,6 @@ const fetchPeaks = async (): Promise<Record<string, Record<string, string>>> => 
   }
 };
 
-// 🔥 Peak'leri Upstash'a kaydet
 const savePeaks = async (peaks: Record<string, Record<string, string>>) => {
   try {
     await fetch(`${UPSTASH_URL}/set/peaks`, {
@@ -647,7 +645,6 @@ export default function App() {
 
   const currentTheme = THEMES[theme];
 
-  // 🔥 YENİ fetchPlayers - localStorage + Upstash peaks birleşimi
   const fetchPlayers = useCallback(async () => {
     try {
       const [playersResponse, upstashPeaks] = await Promise.all([
@@ -663,12 +660,10 @@ export default function App() {
       if (data.result) {
         rawPlayers = JSON.parse(data.result);
 
-        // 🔥 localStorage'dan peak'leri al
         const localPeaks: Record<string, Record<string, string>> = JSON.parse(
           localStorage.getItem('playerPeaks') || '{}'
         );
 
-        // 🔥 Upstash + localStorage peak'lerini birleştir (en yükseği al)
         const mergedPeaks: Record<string, Record<string, string>> = { ...upstashPeaks };
         Object.entries(localPeaks).forEach(([playerId, peakTiers]) => {
           if (!mergedPeaks[playerId]) {
@@ -684,10 +679,8 @@ export default function App() {
 
         rawPlayers = rawPlayers.map(p => {
           const tiers = p.tiers || {};
-          // 🔥 Önce merged peaks'i al, sonra mevcut tiers ile güncelle
           const oldPeak = mergedPeaks[p.id] || p.peakTiers || {};
           const peakTiers = updatePeakTiers(tiers, oldPeak);
-          // 🔥 Güncel peak'i merged'e yaz
           mergedPeaks[p.id] = peakTiers;
 
           const totalPoints = calculateTotalPoints(tiers);
@@ -697,10 +690,7 @@ export default function App() {
           };
         });
 
-        // 🔥 localStorage'a kaydet
         localStorage.setItem('playerPeaks', JSON.stringify(mergedPeaks));
-
-        // 🔥 Upstash'a peak'leri kaydet (arka planda)
         savePeaks(mergedPeaks).catch(() => {});
 
         rawPlayers.sort((a, b) => b.totalPoints - a.totalPoints);
@@ -759,11 +749,15 @@ export default function App() {
   }, [filteredPlayers, selectedKit]);
 
   const visiblePlayers = useMemo(() => kitPlayers.slice(0, displayCount), [kitPlayers, displayCount]);
+  const hasMore = displayCount < kitPlayers.length;
 
   useEffect(() => { setDisplayCount(20); setFocusedIndex(-1); }, [sortType, selectedKit, searchQuery, selectedRegion]);
 
+  // ✅ FIX: Infinite scroll - selectedKit kısıtlaması kaldırıldı, her zaman çalışır
   useEffect(() => {
-    if (!loadMoreRef.current || selectedKit !== "overall") return;
+    const el = loadMoreRef.current;
+    if (!el) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && displayCount < kitPlayers.length && !loadingMore) {
@@ -773,11 +767,12 @@ export default function App() {
             setLoadingMore(false);
           }, 300);
         }
-      }, { threshold: 0.1, rootMargin: '300px' }
+      },
+      { threshold: 0.1, rootMargin: '400px' }
     );
-    observer.observe(loadMoreRef.current);
+    observer.observe(el);
     return () => observer.disconnect();
-  }, [displayCount, kitPlayers.length, selectedKit, loadingMore]);
+  }, [displayCount, kitPlayers.length, loadingMore]);
 
   useEffect(() => {
     if (currentPage !== "rankings" || selectedKit !== "overall") return;
@@ -1240,14 +1235,15 @@ export default function App() {
                         </table>
                       </div>
                       
-                      {displayCount < kitPlayers.length && (
-                        <div ref={loadMoreRef} className="py-6 text-center" style={{ borderTop: `1px solid ${currentTheme.border}` }}>
+                      {/* ✅ FIX: loadMoreRef her zaman DOM'da, görünürlük hasMore'a bağlı */}
+                      <div ref={loadMoreRef} className="py-6 text-center" style={{ borderTop: hasMore ? `1px solid ${currentTheme.border}` : 'none', display: hasMore ? 'block' : 'none' }}>
+                        {hasMore && (
                           <div className="flex items-center justify-center gap-3">
                             <div className="w-5 h-5 rounded-full border-2 border-r-transparent animate-spin" style={{ borderColor: currentTheme.primary, borderRightColor: 'transparent' }}></div>
                             <span className="text-sm" style={{ color: currentTheme.textMuted }}>{t("loadingMore")}</span>
                           </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </>
                   )}
                 </div>
@@ -1298,6 +1294,7 @@ export default function App() {
         </motion.div>
       </AnimatePresence>
 
+      {/* ✅ FIX: Player Modal - "En Yüksek Tier" kaldırıldı, 2'li grid */}
       {selectedPlayer && !shareCardPlayer && (
         <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-4 bg-black/80 backdrop-blur-md" onClick={() => setSelectedPlayer(null)}>
           <motion.div initial={{ scale: 0.9, opacity: 0, y: 100 }} animate={{ scale: 1, opacity: 1, y: 0 }} className="relative w-full max-w-2xl rounded-t-3xl md:rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto" style={{ background: `linear-gradient(135deg, ${currentTheme.cardBg}, ${currentTheme.bg})`, border: `1px solid ${currentTheme.border}` }} onClick={e => e.stopPropagation()}>
@@ -1361,14 +1358,11 @@ export default function App() {
                   );
                 })}
               </div>
-              <div className="mt-4 md:mt-6 pt-4 md:pt-6 grid grid-cols-3 gap-4" style={{ borderTop: `1px solid ${currentTheme.border}` }}>
+              {/* ✅ "En Yüksek Tier" kaldırıldı — sadece Toplam Test + Peak Rank */}
+              <div className="mt-4 md:mt-6 pt-4 md:pt-6 grid grid-cols-2 gap-4" style={{ borderTop: `1px solid ${currentTheme.border}` }}>
                 <div className="text-center">
                   <div className="text-xl md:text-2xl font-black">{selectedPlayer.tests}</div>
                   <div className="text-[10px] md:text-xs mt-1" style={{ color: currentTheme.textMuted }}>{t("totalTests")}</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-xl md:text-2xl font-black">{getHighestTier(selectedPlayer.tiers)}</div>
-                  <div className="text-[10px] md:text-xs mt-1" style={{ color: currentTheme.textMuted }}>{t("highestTier")}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-xl md:text-2xl font-black bg-gradient-to-r from-amber-400 to-yellow-600 bg-clip-text text-transparent">
