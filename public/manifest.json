@@ -1,21 +1,26 @@
 {
   "name": "Abyssal Ocean Tier List",
   "short_name": "Abyssal Ocean",
-  "description": "Minecraft PvP Tier List",
+  "description": "Minecraft PvP Tier List - oyuncu sıralamaları, kit tierleri ve PvP istatistikleri",
+  "lang": "tr",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0a0e14",
   "theme_color": "#22d3ee",
   "icons": [
     {
       "src": "/logo.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/logo.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
