@@ -327,7 +327,7 @@ const SkeletonRow = ({ theme }: { theme: typeof THEMES[ThemeKey] }) => (
   <tr style={{ borderTop: `1px solid ${theme.border}` }}>
     <td className="px-3 md:px-6 py-4">
       <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl skeleton-pulse" style={{ background: theme.cardBg }}></div>
-    </td>
+    </tr>
     <td className="px-3 md:px-6 py-4">
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl skeleton-pulse" style={{ background: theme.cardBg }}></div>
@@ -360,7 +360,6 @@ const ShareCardModal = ({ player, theme, t, onClose }: {
   const [copied, setCopied] = useState(false);
   const [downloading, setDownloading] = useState(false);
 
-  // 🔥 GERÇEK PNG İNDİRME (1. fotodaki gibi)
   const downloadCard = async () => {
     if (!cardRef.current) return;
     setDownloading(true);
@@ -728,22 +727,31 @@ export default function App() {
 
   useEffect(() => { setDisplayCount(20); setFocusedIndex(-1); }, [sortType, selectedKit, searchQuery, selectedRegion]);
 
+  // 🔥 YENİ INFINITE SCROLL (Sağa kaydırma değil, AŞAĞI KAYDIRMA)
   useEffect(() => {
-    if (!loadMoreRef.current || selectedKit !== "overall") return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && displayCount < kitPlayers.length) {
+    if (selectedKit !== "overall") return;
+    if (displayCount >= kitPlayers.length) return;
+
+    const handleScroll = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      
+      // Sayfanın altına 500px kala yükleme yap
+      if (scrollTop + windowHeight >= documentHeight - 500) {
+        if (!loadingMore) {
           setLoadingMore(true);
           setTimeout(() => {
             setDisplayCount(prev => Math.min(prev + 20, kitPlayers.length));
             setLoadingMore(false);
-          }, 500);
+          }, 300);
         }
-      }, { threshold: 0.1 }
-    );
-    observer.observe(loadMoreRef.current);
-    return () => observer.disconnect();
-  }, [displayCount, kitPlayers.length, selectedKit]);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [selectedKit, displayCount, kitPlayers.length, loadingMore]);
 
   useEffect(() => {
     if (currentPage !== "rankings" || selectedKit !== "overall") return;
@@ -1285,19 +1293,13 @@ export default function App() {
                         </table>
                       </div>
                       
-                      {displayCount < kitPlayers.length && (
-                        <div ref={loadMoreRef} className="py-4 md:py-6 text-center" style={{ borderTop: `1px solid ${currentTheme.border}` }}>
-                          {loadingMore ? (
-                            <div className="flex items-center justify-center gap-3">
-                              <div className="w-5 h-5 rounded-full border-2 border-r-transparent animate-spin" style={{ borderColor: currentTheme.primary, borderRightColor: 'transparent' }}></div>
-                              <span className="text-sm" style={{ color: currentTheme.textMuted }}>{t("loadingMore")}</span>
-                            </div>
-                          ) : (
-                            <button onClick={() => setDisplayCount(prev => Math.min(prev + 20, kitPlayers.length))}
-                              className={`px-5 md:px-6 py-2 rounded-xl text-xs md:text-sm font-bold bg-gradient-to-r ${currentTheme.primaryGradient} text-white hover:scale-105 transition-all`}>
-                              + {Math.min(20, kitPlayers.length - displayCount)} {t("player")}
-                            </button>
-                          )}
+                      {/* 🔥 DEĞİŞTİRİLDİ: Artık buton yok, sadece loading göstergesi */}
+                      {loadingMore && (
+                        <div className="py-4 md:py-6 text-center" style={{ borderTop: `1px solid ${currentTheme.border}` }}>
+                          <div className="flex items-center justify-center gap-3">
+                            <div className="w-5 h-5 rounded-full border-2 border-r-transparent animate-spin" style={{ borderColor: currentTheme.primary, borderRightColor: 'transparent' }}></div>
+                            <span className="text-sm" style={{ color: currentTheme.textMuted }}>{t("loadingMore")}</span>
+                          </div>
                         </div>
                       )}
                     </>
