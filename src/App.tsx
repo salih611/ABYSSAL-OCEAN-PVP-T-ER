@@ -327,7 +327,7 @@ const SkeletonRow = ({ theme }: { theme: typeof THEMES[ThemeKey] }) => (
   <tr style={{ borderTop: `1px solid ${theme.border}` }}>
     <td className="px-3 md:px-6 py-4">
       <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl skeleton-pulse" style={{ background: theme.cardBg }}></div>
-    </tr>
+    </td>
     <td className="px-3 md:px-6 py-4">
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl skeleton-pulse" style={{ background: theme.cardBg }}></div>
@@ -352,7 +352,6 @@ const SkeletonRow = ({ theme }: { theme: typeof THEMES[ThemeKey] }) => (
   </tr>
 );
 
-// 🔥 GÜNCELLENDİ: PNG İNDİRME + LİNK KOPYALA (DİREKT PROFİL AÇAR)
 const ShareCardModal = ({ player, theme, t, onClose }: { 
   player: Player; theme: typeof THEMES[ThemeKey]; t: (key: string) => string; onClose: () => void;
 }) => {
@@ -628,7 +627,6 @@ export default function App() {
   const [selectedRegion, setSelectedRegion] = useState<string>("TR");
   const [displayCount, setDisplayCount] = useState(20);
   const [loadingMore, setLoadingMore] = useState(false);
-  const loadMoreRef = useRef<HTMLDivElement>(null);
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
@@ -687,7 +685,6 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // 🔥 YENİ EKLENDİ: URL'den ?player=ID okuyup direkt profili açar
   useEffect(() => {
     if (players.length === 0) return;
     const urlParams = new URLSearchParams(window.location.search);
@@ -727,7 +724,6 @@ export default function App() {
 
   useEffect(() => { setDisplayCount(20); setFocusedIndex(-1); }, [sortType, selectedKit, searchQuery, selectedRegion]);
 
-  // 🔥 YENİ INFINITE SCROLL (Sağa kaydırma değil, AŞAĞI KAYDIRMA)
   useEffect(() => {
     if (selectedKit !== "overall") return;
     if (displayCount >= kitPlayers.length) return;
@@ -737,7 +733,6 @@ export default function App() {
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
       
-      // Sayfanın altına 500px kala yükleme yap
       if (scrollTop + windowHeight >= documentHeight - 500) {
         if (!loadingMore) {
           setLoadingMore(true);
@@ -1218,7 +1213,7 @@ export default function App() {
                               <th className="text-left px-3 md:px-6 py-3 md:py-4 text-[10px] md:text-xs font-semibold uppercase" style={{ color: currentTheme.textMuted }}>{t("player")}</th>
                               <th className="text-center px-3 md:px-6 py-3 md:py-4 text-[10px] md:text-xs font-semibold uppercase hidden md:table-cell" style={{ color: currentTheme.textMuted }}>{t("region")}</th>
                               <th className="text-right px-3 md:px-6 py-3 md:py-4 text-[10px] md:text-xs font-semibold uppercase" style={{ color: currentTheme.textMuted }}>{t("tiers")}</th>
-                            </tr>
+                            </table>
                           </thead>
                           <tbody>
                             {visiblePlayers.map((player, idx) => {
@@ -1293,7 +1288,6 @@ export default function App() {
                         </table>
                       </div>
                       
-                      {/* 🔥 DEĞİŞTİRİLDİ: Artık buton yok, sadece loading göstergesi */}
                       {loadingMore && (
                         <div className="py-4 md:py-6 text-center" style={{ borderTop: `1px solid ${currentTheme.border}` }}>
                           <div className="flex items-center justify-center gap-3">
